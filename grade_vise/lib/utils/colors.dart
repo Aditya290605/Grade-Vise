@@ -1,4 +1,6 @@
 import 'dart:ui';
 
-final bgColor = Color.fromARGB(255, 38, 45, 59);
+import 'package:flutter/material.dart';
+
+final bgColor = Color(0xFF293241);
 final maxWidth = 800.0;
