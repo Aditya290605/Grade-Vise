@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:grade_vise/pages/sign_in.dart';
+import 'package:grade_vise/pages/sign_up.dart';
 import 'package:grade_vise/utils/colors.dart';
 import 'package:grade_vise/widgets/custom_button.dart';
 import 'package:grade_vise/widgets/custom_textfeild.dart';
 
-class SignUp extends StatefulWidget {
-  const SignUp({super.key});
+class SignIn extends StatefulWidget {
+  const SignIn({super.key});
 
   @override
-  State<SignUp> createState() => _SignUpState();
+  State<SignIn> createState() => _SignUpState();
 }
 
-class _SignUpState extends State<SignUp> with TickerProviderStateMixin {
+class _SignUpState extends State<SignIn> with TickerProviderStateMixin {
   // Controllers for the animations
   late AnimationController _textController;
   late AnimationController _drawerController;
@@ -88,7 +88,7 @@ class _SignUpState extends State<SignUp> with TickerProviderStateMixin {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: MediaQuery.of(context).size.height * 0.10),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.3),
             // Animated title with slide effect
             SlideTransition(
               position: _textSlideAnimation,
@@ -111,7 +111,7 @@ class _SignUpState extends State<SignUp> with TickerProviderStateMixin {
                   vertical: 15,
                 ),
                 child: Text(
-                  "Sign Up",
+                  "Sign In",
                   style: Theme.of(
                     context,
                   ).textTheme.titleMedium!.copyWith(color: Colors.white),
@@ -123,7 +123,7 @@ class _SignUpState extends State<SignUp> with TickerProviderStateMixin {
             SlideTransition(
               position: _drawerSlideAnimation,
               child: Container(
-                height: MediaQuery.of(context).size.height * 0.75,
+                height: MediaQuery.of(context).size.height * 0.55,
                 width: double.infinity,
                 decoration: const BoxDecoration(
                   borderRadius: BorderRadius.only(
@@ -142,31 +142,18 @@ class _SignUpState extends State<SignUp> with TickerProviderStateMixin {
                           SizedBox(
                             height: MediaQuery.of(context).size.height * 0.06,
                           ),
-                          CustomTextfeild(
-                            hintText: "First name",
-                            isObute: false,
-                          ),
-                          const SizedBox(height: 25),
-                          CustomTextfeild(
-                            hintText: "Last name",
-                            isObute: false,
-                          ),
-                          const SizedBox(height: 25),
+
                           CustomTextfeild(
                             hintText: "Email address",
                             isObute: false,
                           ),
                           const SizedBox(height: 25),
                           CustomTextfeild(hintText: "Password", isObute: true),
-                          const SizedBox(height: 25),
-                          CustomTextfeild(
-                            hintText: "Confirm password",
-                            isObute: true,
-                          ),
+
                           const SizedBox(height: 40),
                           CustomButton(
                             onPressed: () {},
-                            text: "Sign Up",
+                            text: "Sign In",
                             color: bgColor,
                           ),
                           const SizedBox(height: 20),
@@ -175,12 +162,12 @@ class _SignUpState extends State<SignUp> with TickerProviderStateMixin {
                                 () => Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => SignIn(),
+                                    builder: (context) => SignUp(),
                                   ),
                                 ),
                             child: RichText(
                               text: TextSpan(
-                                text: "Already have an account? ",
+                                text: "Don't have an account? ",
                                 style: Theme.of(
                                   context,
                                 ).textTheme.bodyMedium!.copyWith(
@@ -189,7 +176,7 @@ class _SignUpState extends State<SignUp> with TickerProviderStateMixin {
                                 ),
                                 children: [
                                   TextSpan(
-                                    text: "Sign In",
+                                    text: "Sign Up",
                                     style: Theme.of(
                                       context,
                                     ).textTheme.bodyMedium!.copyWith(
