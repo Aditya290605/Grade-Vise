@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:grade_vise/screens/starter_screen.dart';
 import 'package:grade_vise/pages/sign_in.dart';
 import 'package:grade_vise/utils/colors.dart';
 import 'package:grade_vise/widgets/custom_button.dart';
@@ -165,7 +166,14 @@ class _SignUpState extends State<SignUp> with TickerProviderStateMixin {
                           ),
                           const SizedBox(height: 40),
                           CustomButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => HomePage(),
+                                ),
+                              );
+                            },
                             text: "Sign Up",
                             color: bgColor,
                           ),
