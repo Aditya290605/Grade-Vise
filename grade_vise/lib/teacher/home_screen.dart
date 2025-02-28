@@ -119,37 +119,39 @@ class HomeScreen extends StatelessWidget {
                 MediaQuery.of(context).size.height *
                 0.79, // Matching main container height
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 100),
-            child: Column(
-              children: [
-                Text(
-                  "Enter Details",
-                  style: Theme.of(context).textTheme.headlineSmall!.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Text(
+                    "Enter Details",
+                    style: Theme.of(context).textTheme.headlineSmall!.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 20),
-                _buildTextField("Classroom Name", false, context),
-                _buildTextField("Section", false, context),
-                _buildTextField("Subject", false, context),
-                _buildTextField("Password", true, context),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context); // Close bottom sheet
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    fixedSize: Size(120, 50),
+                  const SizedBox(height: 20),
+                  _buildTextField("Classroom Name", false, context),
+                  _buildTextField("Section", false, context),
+                  _buildTextField("Subject", false, context),
+                  _buildTextField("Password", true, context),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context); // Close bottom sheet
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      fixedSize: Size(120, 50),
+                    ),
+                    child: Text(
+                      "Create",
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodyLarge!.copyWith(color: Colors.black),
+                    ),
                   ),
-                  child: Text(
-                    "Create",
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodyLarge!.copyWith(color: Colors.black),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         );
