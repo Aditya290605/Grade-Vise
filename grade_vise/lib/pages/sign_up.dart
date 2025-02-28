@@ -124,7 +124,7 @@ class _SignUpState extends State<SignUp> with TickerProviderStateMixin {
             SlideTransition(
               position: _drawerSlideAnimation,
               child: Container(
-                height: MediaQuery.of(context).size.height * 0.75,
+                height: MediaQuery.of(context).size.height * 0.7,
                 width: double.infinity,
                 decoration: const BoxDecoration(
                   borderRadius: BorderRadius.only(

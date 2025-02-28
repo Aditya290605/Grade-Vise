@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:grade_vise/teacher/home_screen.dart';
 import 'package:grade_vise/utils/colors.dart';
 
 class HomePage extends StatelessWidget {
@@ -63,25 +64,32 @@ class HomePage extends StatelessWidget {
 
             const Spacer(),
 
-            ClipOval(
-              child: Container(
-                padding: EdgeInsets.symmetric(vertical: 20),
-                height: MediaQuery.of(context).size.height * 0.2,
-                width: MediaQuery.of(context).size.width * 0.4,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  image: DecorationImage(
-                    image: NetworkImage(
-                      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR4Bwz8-TWJNKPdLhikrDm97LAOm7OJQgCIgQ&s",
+            GestureDetector(
+              onTap: () {
+                Navigator.of(
+                  context,
+                ).push(MaterialPageRoute(builder: (context) => HomeScreen()));
+              },
+              child: ClipOval(
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 20),
+                  height: MediaQuery.of(context).size.height * 0.2,
+                  width: MediaQuery.of(context).size.width * 0.4,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    image: DecorationImage(
+                      image: NetworkImage(
+                        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR4Bwz8-TWJNKPdLhikrDm97LAOm7OJQgCIgQ&s",
+                      ),
+                      fit: BoxFit.fill,
                     ),
-                    fit: BoxFit.fill,
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  borderRadius: BorderRadius.circular(12),
                 ),
+              ).animate().scale(
+                duration: Duration(milliseconds: 850),
+                curve: Curves.easeInOut,
               ),
-            ).animate().scale(
-              duration: Duration(milliseconds: 850),
-              curve: Curves.easeInOut,
             ),
             const SizedBox(height: 10),
             Text(
