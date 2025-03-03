@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:grade_vise/teacher/home_screen.dart';
-import 'package:grade_vise/utils/colors.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -11,16 +10,8 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
+        leading: Container(),
         elevation: 3,
-        centerTitle: true,
-        title: Text(
-          "Select Your Role",
-          style: TextStyle(
-            color: Colors.black87,
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
-          ),
-        ),
       ),
       body: Container(
         width: double.infinity,
@@ -45,11 +36,9 @@ class HomePage extends StatelessWidget {
             const SizedBox(height: 30),
             Text(
               "What is your role?",
-              style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 24,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge!.copyWith(color: Colors.white),
             ).animate().fade(duration: 500.ms),
 
             const Spacer(),
@@ -117,11 +106,9 @@ class RoleCard extends StatelessWidget {
         const SizedBox(height: 10),
         Text(
           label,
-          style: Theme.of(context).textTheme.titleLarge!.copyWith(
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-            fontSize: 20,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge!.copyWith(color: Colors.white),
         ).animate().fade(duration: 600.ms),
       ],
     );

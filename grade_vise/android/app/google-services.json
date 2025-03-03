@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1002383080884",
+    "project_id": "gradevise-e5c0d",
+    "storage_bucket": "gradevise-e5c0d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1002383080884:android:a4f5035e50ab6f52e386e1",
+        "android_client_info": {
+          "package_name": "com.teamgradevise.grade_vise"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC-rB4l8vm-8qwvynNstXa3rh3FwYlm8mc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
