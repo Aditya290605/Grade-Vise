@@ -117,7 +117,7 @@ class HomeScreen extends StatelessWidget {
           child: Container(
             height:
                 MediaQuery.of(context).size.height *
-                0.79, // Matching main container height
+                0.75, // Matching main container height
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 100),
             child: SingleChildScrollView(
               child: Column(
