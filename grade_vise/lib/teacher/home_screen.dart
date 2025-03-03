@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:grade_vise/teacher/Landing_page.dart';
 import 'package:grade_vise/utils/colors.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -143,11 +144,21 @@ class HomeScreen extends StatelessWidget {
                       backgroundColor: Colors.white,
                       fixedSize: Size(120, 50),
                     ),
-                    child: Text(
-                      "Create",
-                      style: Theme.of(
-                        context,
-                      ).textTheme.bodyLarge!.copyWith(color: Colors.black),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => LandingPage(),
+                          ), // Replace NewPage with your new page widget
+                        );
+                      },
+                      child: Text(
+                        "Create",
+                        style: Theme.of(
+                          context,
+                        ).textTheme.bodyLarge!.copyWith(color: Colors.black),
+                      ),
                     ),
                   ),
                 ],
