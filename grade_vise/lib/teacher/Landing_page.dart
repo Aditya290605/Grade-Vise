@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:grade_vise/utils/colors.dart';
+import 'package:grade_vise/widgets/classroom_container.dart';
 
 class LandingPage extends StatelessWidget {
-  const LandingPage({Key? key}) : super(key: key);
+  const LandingPage({super.key});
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -13,7 +15,7 @@ class LandingPage extends StatelessWidget {
 }
 
 class HomePage extends StatelessWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,18 +29,18 @@ class HomePage extends StatelessWidget {
       body: SafeArea(
         child: Stack(
           children: [
-            // Background dots
-            ...generateDots(),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 20),
 
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 20),
-
-                  // Top Bar with Profile
-                  Row(
+                // Top Bar with Profile
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 10,
+                  ),
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Column(
@@ -73,168 +75,68 @@ class HomePage extends StatelessWidget {
                         ],
                       ),
                       Container(
-                        width: 70,
-                        height: 70,
+                        width: 60,
+                        height: 60,
                         decoration: BoxDecoration(
                           color: Colors.grey.shade300,
+                          image: DecorationImage(
+                            fit: BoxFit.cover,
+                            image: NetworkImage(
+                              "https://i.pinimg.com/474x/66/a3/89/66a389d6c88a66e5d6fc1a5a83c7930c.jpg",
+                            ),
+                          ),
                           shape: BoxShape.circle,
                         ),
                       ),
                     ],
                   ),
+                ),
 
-                  const SizedBox(height: 40),
+                const SizedBox(height: 30),
 
-                  // Club Promotion Card - IMPROVED WITH LOWER HEIGHT
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 18,
+                // Class Schedule Card with Scroll Fix
+                Expanded(
+                  child: ClipRRect(
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(45),
+                      topRight: Radius.circular(45),
                     ),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.95),
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Get Involved – Join a Club Today!',
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF23293A),
-                          ),
+                    child: Container(
+                      width: double.infinity,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(45),
+                          topRight: Radius.circular(45),
                         ),
-                        const SizedBox(height: 8),
-                        const Text(
-                          'Explore your interests and meet like-minded students by joining one of our many clubs. Whether you\'re into sports, arts, or academics, there\'s a club for you. Find your community!',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Color(0xFF23293A),
-                            height: 1.3,
-                          ),
-                          maxLines: 3,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 12),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: ElevatedButton(
-                            onPressed: () {},
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF23293A),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 8,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              minimumSize: const Size(10, 10),
+                      ),
+                      child: ListView.builder(
+                        padding: const EdgeInsets.only(top: 20),
+                        itemCount: 4,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 15,
+                              vertical: 8,
                             ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: const [
-                                Text(
-                                  'Learn More',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                SizedBox(width: 5),
-                                Icon(
-                                  Icons.arrow_forward,
-                                  color: Colors.white,
-                                  size: 16,
-                                ),
-                              ],
+                            child: ClassroomContainer(
+                              classroomName: 'Data Mining',
+                              room: 'aditya magar',
+                              section: 'A',
+                              subject: 'DM',
+                              color: containerColor,
                             ),
-                          ),
-                        ),
-                      ],
+                          );
+                        },
+                      ),
                     ),
                   ),
-
-                  const SizedBox(height: 20),
-
-                  // Class Schedule Card
-                  Container(
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFD8CCEE),
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text(
-                          'Graphic Fundamentals - ART101',
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF23293A),
-                          ),
-                        ),
-                        SizedBox(height: 12),
-                        Text(
-                          '08:15am - 9:00am',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Color(0xFF23293A),
-                          ),
-                        ),
-                        SizedBox(height: 20),
-                        Text(
-                          'Cherise James',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Color(0xFF23293A),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ],
         ),
       ),
-    );
-  }
-
-  List<Widget> generateDots() {
-    // Generating some random dots for the background
-    return [
-      Positioned(left: 70, top: 320, child: _buildDot(3)),
-      Positioned(right: 160, top: 340, child: _buildDot(3)),
-      Positioned(right: 50, top: 320, child: _buildDot(3)),
-      Positioned(left: 40, top: 380, child: _buildDot(3)),
-      Positioned(
-        right: 90,
-        top: 335,
-        child: Container(
-          width: 22,
-          height: 22,
-          decoration: BoxDecoration(
-            color: Colors.grey.withOpacity(0.2),
-            shape: BoxShape.circle,
-          ),
-          child: const Center(
-            child: Icon(Icons.add, color: Colors.white, size: 12),
-          ),
-        ),
-      ),
-    ];
-  }
-
-  Widget _buildDot(double size) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(color: Colors.yellow, shape: BoxShape.circle),
     );
   }
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:grade_vise/teacher/Landing_page.dart';
+import 'package:grade_vise/teacher/landing_page.dart';
 import 'package:grade_vise/utils/colors.dart';
 
 class HomeScreen extends StatelessWidget {
