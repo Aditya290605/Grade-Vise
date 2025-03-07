@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:grade_vise/utils/fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 class ClassroomContainer extends StatelessWidget {
@@ -45,6 +46,7 @@ class ClassroomContainer extends StatelessWidget {
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
+                      fontFamily: poppins,
                     ),
                   ),
                 ),
@@ -66,7 +68,12 @@ class InfoRow extends StatelessWidget {
   final String label;
   final String value;
 
-  const InfoRow({required this.icon, required this.label, required this.value});
+  const InfoRow({
+    super.key,
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -81,6 +88,7 @@ class InfoRow extends StatelessWidget {
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
               color: Colors.black,
               fontWeight: FontWeight.w500,
+              fontFamily: poppins,
             ),
           ),
           Expanded(
@@ -89,6 +97,7 @@ class InfoRow extends StatelessWidget {
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 color: Colors.black,
                 fontWeight: FontWeight.w600,
+                fontFamily: poppins,
               ),
               overflow: TextOverflow.ellipsis,
             ),

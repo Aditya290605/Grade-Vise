@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:grade_vise/teacher/home_screen.dart';
+import 'package:grade_vise/teacher/landing_page.dart';
+import 'package:grade_vise/utils/fonts.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -36,9 +38,10 @@ class HomePage extends StatelessWidget {
             const SizedBox(height: 30),
             Text(
               "What is your role?",
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge!.copyWith(color: Colors.white),
+              style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                color: Colors.white,
+                fontFamily: dmSans,
+              ),
             ).animate().fade(duration: 500.ms),
 
             const Spacer(),
@@ -106,9 +109,10 @@ class RoleCard extends StatelessWidget {
         const SizedBox(height: 10),
         Text(
           label,
-          style: Theme.of(
-            context,
-          ).textTheme.titleLarge!.copyWith(color: Colors.white),
+          style: Theme.of(context).textTheme.titleLarge!.copyWith(
+            color: Colors.white,
+            fontFamily: dmSans,
+          ),
         ).animate().fade(duration: 600.ms),
       ],
     );

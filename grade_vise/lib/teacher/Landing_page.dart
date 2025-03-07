@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:grade_vise/utils/colors.dart';
+import 'package:grade_vise/utils/fonts.dart';
 import 'package:grade_vise/widgets/classroom_container.dart';
 
 class LandingPage extends StatelessWidget {
@@ -52,6 +53,7 @@ class HomePage extends StatelessWidget {
                               fontSize: 40,
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
+                              fontFamily: sourceSans,
                             ),
                           ),
                           const SizedBox(height: 10),

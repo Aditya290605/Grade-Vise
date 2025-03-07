@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:grade_vise/utils/fonts.dart';
 
 class CustomTextfeild extends StatelessWidget {
   final String hintText;
@@ -17,9 +18,10 @@ class CustomTextfeild extends StatelessWidget {
 
       decoration: InputDecoration(
         label: Text(hintText),
-        labelStyle: Theme.of(
-          context,
-        ).textTheme.bodyMedium!.copyWith(color: Colors.black),
+        labelStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
+          color: Colors.black,
+          fontFamily: sourceSans,
+        ),
 
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 20,

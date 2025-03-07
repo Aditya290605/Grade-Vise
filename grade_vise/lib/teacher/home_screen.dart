@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:grade_vise/teacher/landing_page.dart';
 import 'package:grade_vise/utils/colors.dart';
+import 'package:grade_vise/utils/fonts.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -21,9 +22,10 @@ class HomeScreen extends StatelessWidget {
                 children: [
                   Text(
                     "Hello Akshay",
-                    style: Theme.of(
-                      context,
-                    ).textTheme.titleLarge!.copyWith(color: Colors.white),
+                    style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                      color: Colors.white,
+                      fontFamily: sourceSans,
+                    ),
                   ),
                   const CircleAvatar(radius: 30),
                 ],
@@ -73,8 +75,12 @@ class HomeScreen extends StatelessWidget {
                           children: [
                             Text(
                               "Create new",
-                              style: Theme.of(context).textTheme.bodyLarge!
-                                  .copyWith(color: Colors.white),
+                              style: Theme.of(
+                                context,
+                              ).textTheme.bodyLarge!.copyWith(
+                                color: Colors.white,
+                                fontFamily: sourceSans,
+                              ),
                             ),
                             const SizedBox(width: 5),
                             const Icon(
@@ -128,6 +134,7 @@ class HomeScreen extends StatelessWidget {
                     style: Theme.of(context).textTheme.headlineSmall!.copyWith(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
+                      fontFamily: sourceSans,
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -155,9 +162,10 @@ class HomeScreen extends StatelessWidget {
                       },
                       child: Text(
                         "Create",
-                        style: Theme.of(
-                          context,
-                        ).textTheme.bodyLarge!.copyWith(color: Colors.black),
+                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                          color: Colors.black,
+                          fontFamily: sourceSans,
+                        ),
                       ),
                     ),
                   ),

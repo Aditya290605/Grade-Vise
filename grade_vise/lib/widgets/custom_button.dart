@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:grade_vise/utils/fonts.dart';
 
 class CustomButton extends StatelessWidget {
   final VoidCallback onPressed;
@@ -29,9 +30,10 @@ class CustomButton extends StatelessWidget {
 
       child: Text(
         text,
-        style: Theme.of(
-          context,
-        ).textTheme.bodyLarge!.copyWith(color: Colors.white),
+        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+          color: Colors.white,
+          fontFamily: sourceSans,
+        ),
       ),
     );
   }

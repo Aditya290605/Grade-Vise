@@ -12,7 +12,20 @@
           "package_name": "com.teamgradevise.grade_vise"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1002383080884-6s2oubl5p73dcmo1ekevmtenooar0m38.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.teamgradevise.grade_vise",
+            "certificate_hash": "d213acc0f045bdfb1d2ad825eadf2459dc069d49"
+          }
+        },
+        {
+          "client_id": "1002383080884-5c90u7e08nc4clslo2p5eojmbimcpufb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyC-rB4l8vm-8qwvynNstXa3rh3FwYlm8mc"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1002383080884-5c90u7e08nc4clslo2p5eojmbimcpufb.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1002383080884-p8n6mv1aaddeqcjtvqdinq6uav5molef.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.gradeVise"
+              }
+            }
+          ]
         }
       }
     }

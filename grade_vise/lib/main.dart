@@ -21,12 +21,12 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         textTheme: TextTheme(
-          titleLarge: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-          titleMedium: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          titleSmall: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+          titleLarge: TextStyle(fontSize: 34, fontWeight: FontWeight.bold),
+          titleMedium: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          titleSmall: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           bodyLarge: TextStyle(fontSize: 20, fontWeight: FontWeight.normal),
-          bodyMedium: TextStyle(fontSize: 15, fontWeight: FontWeight.normal),
-          bodySmall: TextStyle(fontSize: 10, fontWeight: FontWeight.normal),
+          bodyMedium: TextStyle(fontSize: 18, fontWeight: FontWeight.normal),
+          bodySmall: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
         ),
       ),
       home: AnimatedSplashScreen(

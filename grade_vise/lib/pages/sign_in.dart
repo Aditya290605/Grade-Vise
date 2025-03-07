@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:grade_vise/pages/sign_up.dart';
 import 'package:grade_vise/utils/colors.dart';
+import 'package:grade_vise/utils/fonts.dart';
 import 'package:grade_vise/widgets/custom_button.dart';
 import 'package:grade_vise/widgets/custom_textfeild.dart';
 
@@ -88,7 +89,7 @@ class _SignUpState extends State<SignIn> with TickerProviderStateMixin {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: MediaQuery.of(context).size.height * 0.3),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.25),
             // Animated title with slide effect
             SlideTransition(
               position: _textSlideAnimation,
@@ -96,9 +97,10 @@ class _SignUpState extends State<SignIn> with TickerProviderStateMixin {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Text(
                   "Hello Student",
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleLarge!.copyWith(color: Colors.white),
+                  style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                    color: Colors.white,
+                    fontFamily: sourceSans,
+                  ),
                 ),
               ),
             ),
@@ -112,84 +114,144 @@ class _SignUpState extends State<SignIn> with TickerProviderStateMixin {
                 ),
                 child: Text(
                   "Sign In",
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleMedium!.copyWith(color: Colors.white),
+                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                    color: Colors.white,
+                    fontFamily: sourceSans,
+                  ),
                 ),
               ),
             ),
-            const Spacer(),
+
             // Drawer animation coming from bottom
-            SlideTransition(
-              position: _drawerSlideAnimation,
-              child: Container(
-                height: MediaQuery.of(context).size.height * 0.5,
-                width: double.infinity,
-                decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(45),
-                    topLeft: Radius.circular(45),
+            Expanded(
+              child: SlideTransition(
+                position: _drawerSlideAnimation,
+                child: Container(
+                  width: double.infinity,
+                  decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(45),
+                      topLeft: Radius.circular(45),
+                    ),
+                    color: Colors.white,
                   ),
-                  color: Colors.white,
-                ),
-                child: FadeTransition(
-                  opacity: _contentOpacityAnimation,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          SizedBox(
-                            height: MediaQuery.of(context).size.height * 0.06,
-                          ),
+                  child: FadeTransition(
+                    opacity: _contentOpacityAnimation,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            SizedBox(
+                              height: MediaQuery.of(context).size.height * 0.06,
+                            ),
 
-                          CustomTextfeild(
-                            hintText: "Email address",
-                            isObute: false,
-                          ),
-                          const SizedBox(height: 25),
-                          CustomTextfeild(hintText: "Password", isObute: true),
+                            CustomTextfeild(
+                              hintText: "Email address",
+                              isObute: false,
+                            ),
+                            const SizedBox(height: 25),
+                            CustomTextfeild(
+                              hintText: "Password",
+                              isObute: true,
+                            ),
 
-                          const SizedBox(height: 40),
-                          CustomButton(
-                            onPressed: () {},
-                            text: "Sign In",
-                            color: bgColor,
-                          ),
-                          const SizedBox(height: 20),
-                          GestureDetector(
-                            onTap:
-                                () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => SignUp(),
+                            const SizedBox(height: 40),
+                            CustomButton(
+                              onPressed: () {},
+                              text: "Sign In",
+                              color: bgColor,
+                            ),
+
+                            const SizedBox(height: 20),
+
+                            const Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(child: Divider()),
+                                Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 10),
+                                  child: Text(
+                                    "Or",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
-                            child: RichText(
-                              text: TextSpan(
-                                text: "Don't have an account? ",
-                                style: Theme.of(
-                                  context,
-                                ).textTheme.bodyMedium!.copyWith(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.normal,
+                                Expanded(child: Divider()),
+                              ],
+                            ),
+                            const SizedBox(height: 20),
+                            Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(14),
+                                border: Border.all(
+                                  color: const Color.fromARGB(
+                                    221,
+                                    190,
+                                    186,
+                                    186,
+                                  ),
                                 ),
+                              ),
+                              height: MediaQuery.of(context).size.height * 0.06,
+                              width: double.infinity,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  TextSpan(
-                                    text: "Sign Up",
+                                  Image.asset('assets/images/google.png'),
+                                  const SizedBox(width: 15),
+                                  Text(
+                                    "Continue to Google",
                                     style: Theme.of(
                                       context,
                                     ).textTheme.bodyMedium!.copyWith(
-                                      color: bgColor,
                                       fontWeight: FontWeight.bold,
+                                      fontFamily: sourceSans,
                                     ),
                                   ),
                                 ],
                               ),
                             ),
-                          ),
-                          const SizedBox(height: 20),
-                        ],
+
+                            const SizedBox(height: 20),
+
+                            GestureDetector(
+                              onTap:
+                                  () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => SignUp(),
+                                    ),
+                                  ),
+                              child: RichText(
+                                text: TextSpan(
+                                  text: "Don't have an account? ",
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.bodyMedium!.copyWith(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.normal,
+                                    fontFamily: sourceSans,
+                                  ),
+                                  children: [
+                                    TextSpan(
+                                      text: "Sign Up",
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.bodyMedium!.copyWith(
+                                        color: bgColor,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: sourceSans,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
