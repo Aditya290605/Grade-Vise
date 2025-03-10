@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:grade_vise/teacher/home_screen.dart';
-import 'package:grade_vise/teacher/landing_page.dart';
+
 import 'package:grade_vise/utils/fonts.dart';
 
 class HomePage extends StatelessWidget {

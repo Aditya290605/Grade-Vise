@@ -1,8 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:grade_vise/screens/starter_screen.dart';
 import 'package:grade_vise/pages/sign_in.dart';
+import 'package:grade_vise/services/firebase_auth_methods.dart';
+import 'package:grade_vise/services/firestore_methods.dart';
 import 'package:grade_vise/utils/colors.dart';
 import 'package:grade_vise/utils/fonts.dart';
+import 'package:grade_vise/utils/show_error.dart';
 import 'package:grade_vise/widgets/custom_button.dart';
 import 'package:grade_vise/widgets/custom_textfeild.dart';
 
@@ -83,6 +87,32 @@ class _SignUpState extends State<SignUp> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    bool isLoading = false;
+    final TextEditingController fname = TextEditingController();
+    final TextEditingController lname = TextEditingController();
+    final TextEditingController email = TextEditingController();
+    final TextEditingController pass = TextEditingController();
+    final TextEditingController confrimPass = TextEditingController();
+
+    void getUserSignUp(String email, String pass) async {
+      await FirebaseAuthMethods().signUpUser(context, email, pass);
+    }
+
+    void addUser(String fname, String lname, String email, String pass) async {
+      await FirestoreMethods().createUser(
+        context,
+        await FirebaseAuth.instance.currentUser!.uid,
+        fname,
+        lname,
+        email,
+        pass,
+      );
+    }
+
+    void signInWithGoogle() {
+      FirebaseAuthMethods().googleSingIn(context);
+    }
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: bgColor,
@@ -149,36 +179,79 @@ class _SignUpState extends State<SignUp> with TickerProviderStateMixin {
                             CustomTextfeild(
                               hintText: "First name",
                               isObute: false,
+                              controller: fname,
                             ),
                             const SizedBox(height: 25),
                             CustomTextfeild(
                               hintText: "Last name",
                               isObute: false,
+                              controller: lname,
                             ),
                             const SizedBox(height: 25),
                             CustomTextfeild(
                               hintText: "Email address",
                               isObute: false,
+                              controller: email,
                             ),
                             const SizedBox(height: 25),
                             CustomTextfeild(
                               hintText: "Password",
                               isObute: true,
+                              controller: pass,
                             ),
                             const SizedBox(height: 25),
                             CustomTextfeild(
                               hintText: "Confirm password",
                               isObute: true,
+                              controller: confrimPass,
                             ),
                             const SizedBox(height: 40),
                             CustomButton(
+                              isLoading: isLoading,
                               onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => HomePage(),
-                                  ),
-                                );
+                                setState(() {
+                                  isLoading = true;
+                                });
+
+                                if (fname.text.isEmpty ||
+                                    lname.text.isEmpty ||
+                                    email.text.isEmpty ||
+                                    pass.text.isEmpty ||
+                                    confrimPass.text.isEmpty) {
+                                  showSnakbar(
+                                    context,
+                                    "please enter all details",
+                                  );
+                                } else if (pass.text != confrimPass.text) {
+                                  showSnakbar(
+                                    context,
+                                    "password doesn't match",
+                                  );
+                                } else {
+                                  getUserSignUp(
+                                    email.text.trim(),
+
+                                    pass.text.trim(),
+                                  );
+
+                                  addUser(
+                                    fname.text.trim(),
+                                    lname.text.trim(),
+                                    email.text.trim(),
+                                    pass.text.trim(),
+                                  );
+
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => HomePage(),
+                                    ),
+                                  );
+                                }
+
+                                setState(() {
+                                  isLoading = false;
+                                });
                               },
                               text: "Sign Up",
                               color: bgColor,
@@ -204,35 +277,46 @@ class _SignUpState extends State<SignUp> with TickerProviderStateMixin {
                             ),
                             const SizedBox(height: 20),
 
-                            Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(14),
-                                border: Border.all(
-                                  color: const Color.fromARGB(
-                                    221,
-                                    190,
-                                    186,
-                                    186,
+                            InkWell(
+                              onTap: () {
+                                signInWithGoogle();
+                                Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                    builder: (context) => HomePage(),
                                   ),
-                                ),
-                              ),
-                              height: MediaQuery.of(context).size.height * 0.06,
-                              width: double.infinity,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Image.asset('assets/images/google.png'),
-                                  const SizedBox(width: 15),
-                                  Text(
-                                    "Continue to Google",
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.bodyMedium!.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: sourceSans,
+                                );
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(14),
+                                  border: Border.all(
+                                    color: const Color.fromARGB(
+                                      221,
+                                      190,
+                                      186,
+                                      186,
                                     ),
                                   ),
-                                ],
+                                ),
+                                height:
+                                    MediaQuery.of(context).size.height * 0.06,
+                                width: double.infinity,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Image.asset('assets/images/google.png'),
+                                    const SizedBox(width: 15),
+                                    Text(
+                                      "Continue to Google",
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.bodyMedium!.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: sourceSans,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
 

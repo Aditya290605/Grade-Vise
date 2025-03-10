@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:grade_vise/pages/sign_up.dart';
+import 'package:grade_vise/screens/starter_screen.dart';
+import 'package:grade_vise/services/firebase_auth_methods.dart';
+
 import 'package:grade_vise/utils/colors.dart';
 import 'package:grade_vise/utils/fonts.dart';
+import 'package:grade_vise/utils/show_error.dart';
 import 'package:grade_vise/widgets/custom_button.dart';
 import 'package:grade_vise/widgets/custom_textfeild.dart';
 
@@ -80,8 +84,16 @@ class _SignUpState extends State<SignIn> with TickerProviderStateMixin {
     super.dispose();
   }
 
+  void getUserLogin(String email, String pass) async {
+    await FirebaseAuthMethods().singInUser(context, email, pass);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final TextEditingController email = TextEditingController();
+    final TextEditingController password = TextEditingController();
+    bool isLoading = false;
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: bgColor,
@@ -149,18 +161,43 @@ class _SignUpState extends State<SignIn> with TickerProviderStateMixin {
                             CustomTextfeild(
                               hintText: "Email address",
                               isObute: false,
+                              controller: email,
                             ),
                             const SizedBox(height: 25),
                             CustomTextfeild(
                               hintText: "Password",
                               isObute: true,
+                              controller: password,
                             ),
 
                             const SizedBox(height: 40),
                             CustomButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                if (email.text.isEmpty || email.text.isEmpty) {
+                                  showSnakbar(
+                                    context,
+                                    'please enter the detais',
+                                  );
+                                } else {
+                                  setState(() {
+                                    isLoading = true;
+                                  });
+
+                                  getUserLogin(email.text, password.text);
+                                  Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                      builder: (context) => HomePage(),
+                                    ),
+                                  );
+
+                                  setState(() {
+                                    isLoading = false;
+                                  });
+                                }
+                              },
                               text: "Sign In",
                               color: bgColor,
+                              isLoading: isLoading,
                             ),
 
                             const SizedBox(height: 20),
