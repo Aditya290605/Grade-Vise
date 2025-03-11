@@ -22,14 +22,6 @@
           }
         },
         {
-          "client_id": "1002383080884-urcvskaa4tg70mjm9ltb922bfhs8qjbt.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.teamgradevise.grade_vise",
-            "certificate_hash": "e793fe5eb76e181d40eacc9f8daa37d0595273ee"
-          }
-        },
-        {
           "client_id": "1002383080884-5c90u7e08nc4clslo2p5eojmbimcpufb.apps.googleusercontent.com",
           "client_type": 3
         }
