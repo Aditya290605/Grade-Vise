@@ -1,7 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:grade_vise/pages/sign_up.dart';
-import 'package:grade_vise/screens/starter_screen.dart';
 import 'package:grade_vise/services/firebase_auth_methods.dart';
+import 'package:grade_vise/teacher/home_screen.dart';
 
 import 'package:grade_vise/utils/colors.dart';
 import 'package:grade_vise/utils/fonts.dart';
@@ -84,15 +85,27 @@ class _SignUpState extends State<SignIn> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  void getUserLogin(String email, String pass) async {
-    await FirebaseAuthMethods().singInUser(context, email, pass);
+  void _handleSignIn() async {
+    User? user =
+        await FirebaseAuthMethods(FirebaseAuth.instance).signInWithGoogle();
+
+    if (user != null) {
+      // Only navigate after sign-in is complete
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomeScreen()),
+      );
+    } else {
+      debugPrint("Sign-in failed!");
+    }
   }
+
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
     final TextEditingController email = TextEditingController();
     final TextEditingController password = TextEditingController();
-    bool isLoading = false;
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -183,12 +196,7 @@ class _SignUpState extends State<SignIn> with TickerProviderStateMixin {
                                     isLoading = true;
                                   });
 
-                                  getUserLogin(email.text, password.text);
-                                  Navigator.of(context).pushReplacement(
-                                    MaterialPageRoute(
-                                      builder: (context) => HomePage(),
-                                    ),
-                                  );
+                                  _handleSignIn();
 
                                   setState(() {
                                     isLoading = false;

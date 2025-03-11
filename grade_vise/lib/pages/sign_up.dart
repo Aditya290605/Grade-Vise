@@ -4,6 +4,7 @@ import 'package:grade_vise/screens/starter_screen.dart';
 import 'package:grade_vise/pages/sign_in.dart';
 import 'package:grade_vise/services/firebase_auth_methods.dart';
 import 'package:grade_vise/services/firestore_methods.dart';
+import 'package:grade_vise/teacher/home_screen.dart';
 import 'package:grade_vise/utils/colors.dart';
 import 'package:grade_vise/utils/fonts.dart';
 import 'package:grade_vise/utils/show_error.dart';
@@ -85,32 +86,46 @@ class _SignUpState extends State<SignUp> with TickerProviderStateMixin {
     super.dispose();
   }
 
+  bool isLoading = false;
+
   @override
   Widget build(BuildContext context) {
-    bool isLoading = false;
     final TextEditingController fname = TextEditingController();
-    final TextEditingController lname = TextEditingController();
+
     final TextEditingController email = TextEditingController();
     final TextEditingController pass = TextEditingController();
     final TextEditingController confrimPass = TextEditingController();
 
     void getUserSignUp(String email, String pass) async {
-      await FirebaseAuthMethods().signUpUser(context, email, pass);
+      await FirebaseAuthMethods(
+        FirebaseAuth.instance,
+      ).signUpUser(context, email, pass);
     }
 
-    void addUser(String fname, String lname, String email, String pass) async {
-      await FirestoreMethods().createUser(
+    void addUser(String fname, String email) {
+      FirestoreMethods().createUser(
         context,
-        await FirebaseAuth.instance.currentUser!.uid,
+        FirebaseAuth.instance.currentUser!.uid,
         fname,
-        lname,
         email,
-        pass,
       );
     }
 
-    void signInWithGoogle() {
-      FirebaseAuthMethods().googleSingIn(context);
+    void handleSignIn() async {
+      User? user =
+          await FirebaseAuthMethods(FirebaseAuth.instance).signInWithGoogle();
+
+      if (user != null) {
+        // Only navigate after sign-in is complete
+        if (context.mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => HomeScreen()),
+          );
+        }
+      } else {
+        debugPrint("Sign-in failed!");
+      }
     }
 
     return Scaffold(
@@ -181,12 +196,7 @@ class _SignUpState extends State<SignUp> with TickerProviderStateMixin {
                               isObute: false,
                               controller: fname,
                             ),
-                            const SizedBox(height: 25),
-                            CustomTextfeild(
-                              hintText: "Last name",
-                              isObute: false,
-                              controller: lname,
-                            ),
+
                             const SizedBox(height: 25),
                             CustomTextfeild(
                               hintText: "Email address",
@@ -214,7 +224,6 @@ class _SignUpState extends State<SignUp> with TickerProviderStateMixin {
                                 });
 
                                 if (fname.text.isEmpty ||
-                                    lname.text.isEmpty ||
                                     email.text.isEmpty ||
                                     pass.text.isEmpty ||
                                     confrimPass.text.isEmpty) {
@@ -234,12 +243,7 @@ class _SignUpState extends State<SignUp> with TickerProviderStateMixin {
                                     pass.text.trim(),
                                   );
 
-                                  addUser(
-                                    fname.text.trim(),
-                                    lname.text.trim(),
-                                    email.text.trim(),
-                                    pass.text.trim(),
-                                  );
+                                  addUser(fname.text.trim(), email.text.trim());
 
                                   Navigator.pushReplacement(
                                     context,
@@ -279,7 +283,7 @@ class _SignUpState extends State<SignUp> with TickerProviderStateMixin {
 
                             InkWell(
                               onTap: () {
-                                signInWithGoogle();
+                                handleSignIn();
                                 Navigator.of(context).pushReplacement(
                                   MaterialPageRoute(
                                     builder: (context) => HomePage(),
