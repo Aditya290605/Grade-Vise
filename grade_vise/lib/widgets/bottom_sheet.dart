@@ -33,6 +33,10 @@ Widget _buildTextField(
 }
 
 class BottomDailog {
+  TextEditingController classRoom = TextEditingController();
+  TextEditingController section = TextEditingController();
+  TextEditingController subject = TextEditingController();
+  TextEditingController room = TextEditingController();
   void showCreateDailog(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -44,11 +48,6 @@ class BottomDailog {
         ), // Smooth rounded top
       ),
       builder: (context) {
-        TextEditingController classRoom = TextEditingController();
-        TextEditingController section = TextEditingController();
-        TextEditingController subject = TextEditingController();
-        TextEditingController room = TextEditingController();
-
         return AnimatedPadding(
           duration: const Duration(milliseconds: 400), // Smooth animation
           curve: Curves.easeIn, // Smooth transition
