@@ -48,6 +48,14 @@ class FirebaseAuthMethods {
     }
   }
 
+  Future<void> signOut() async {
+    try {
+      await FirebaseAuth.instance.signOut();
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
+
   // Google Sign-In
   Future<User?> signInWithGoogle() async {
     try {
