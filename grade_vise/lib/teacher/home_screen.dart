@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:grade_vise/services/firebase_auth_methods.dart';
 import 'package:grade_vise/teacher/landing_page.dart';
 import 'package:grade_vise/utils/colors.dart';
 import 'package:grade_vise/utils/fonts.dart';
@@ -62,13 +63,20 @@ class HomeScreen extends StatelessWidget {
                                   fontFamily: sourceSans,
                                 ),
                               ),
-                              CircleAvatar(
-                                backgroundImage: NetworkImage(
-                                  userData['photoURL'].isEmpty
-                                      ? "https://i.pinimg.com/474x/59/af/9c/59af9cd100daf9aa154cc753dd58316d.jpg"
-                                      : userData['photoURL'],
+                              InkWell(
+                                onTap: () {
+                                  FirebaseAuthMethods(
+                                    FirebaseAuth.instance,
+                                  ).signOut();
+                                },
+                                child: CircleAvatar(
+                                  backgroundImage: NetworkImage(
+                                    userData['photoURL'].isEmpty
+                                        ? "https://i.pinimg.com/474x/59/af/9c/59af9cd100daf9aa154cc753dd58316d.jpg"
+                                        : userData['photoURL'],
+                                  ),
+                                  radius: 30,
                                 ),
-                                radius: 30,
                               ),
                             ],
                           ),

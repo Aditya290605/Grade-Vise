@@ -87,28 +87,18 @@ class _SignUpState extends State<SignUp> with TickerProviderStateMixin {
   }
 
   bool isLoading = false;
+  final TextEditingController fname = TextEditingController();
+
+  final TextEditingController email = TextEditingController();
+  final TextEditingController pass = TextEditingController();
+  final TextEditingController confrimPass = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    final TextEditingController fname = TextEditingController();
-
-    final TextEditingController email = TextEditingController();
-    final TextEditingController pass = TextEditingController();
-    final TextEditingController confrimPass = TextEditingController();
-
     void getUserSignUp(String email, String pass) async {
       await FirebaseAuthMethods(
         FirebaseAuth.instance,
       ).signUpUser(context, email, pass);
-    }
-
-    void addUser(String fname, String email) async {
-      await FirestoreMethods().createUser(
-        context,
-        FirebaseAuth.instance.currentUser!.uid,
-        fname,
-        email,
-      );
     }
 
     void handleSignIn() async {
@@ -239,11 +229,15 @@ class _SignUpState extends State<SignUp> with TickerProviderStateMixin {
                                 } else {
                                   getUserSignUp(
                                     email.text.trim(),
-
                                     pass.text.trim(),
                                   );
 
-                                  addUser(fname.text.trim(), email.text.trim());
+                                  await FirestoreMethods().createUser(
+                                    context,
+                                    FirebaseAuth.instance.currentUser!.uid,
+                                    fname.text.trim(),
+                                    email.text.trim(),
+                                  );
 
                                   Navigator.pushReplacement(
                                     context,
