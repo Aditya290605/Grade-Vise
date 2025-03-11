@@ -102,8 +102,8 @@ class _SignUpState extends State<SignUp> with TickerProviderStateMixin {
       ).signUpUser(context, email, pass);
     }
 
-    void addUser(String fname, String email) {
-      FirestoreMethods().createUser(
+    void addUser(String fname, String email) async {
+      await FirestoreMethods().createUser(
         context,
         FirebaseAuth.instance.currentUser!.uid,
         fname,
@@ -218,7 +218,7 @@ class _SignUpState extends State<SignUp> with TickerProviderStateMixin {
                             const SizedBox(height: 40),
                             CustomButton(
                               isLoading: isLoading,
-                              onPressed: () {
+                              onPressed: () async {
                                 setState(() {
                                   isLoading = true;
                                 });
@@ -282,7 +282,7 @@ class _SignUpState extends State<SignUp> with TickerProviderStateMixin {
                             const SizedBox(height: 20),
 
                             InkWell(
-                              onTap: () {
+                              onTap: () async {
                                 handleSignIn();
                                 Navigator.of(context).pushReplacement(
                                   MaterialPageRoute(
