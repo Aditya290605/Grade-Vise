@@ -5,7 +5,7 @@ import 'package:grade_vise/pages/sign_up.dart';
 
 import 'package:grade_vise/student/student_home.dart';
 import 'package:grade_vise/teacher/home_screen.dart';
-import 'package:grade_vise/teacher/landing_page.dart';
+
 import 'package:provider/provider.dart';
 
 class MobileScreen extends StatelessWidget {
