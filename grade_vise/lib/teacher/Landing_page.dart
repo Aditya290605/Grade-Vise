@@ -1,21 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:grade_vise/utils/colors.dart';
+import 'package:grade_vise/teacher/Classroom_Page.dart';
+import 'package:grade_vise/utils/cardColor.dart';
+import 'package:grade_vise/utils/colors.dart'; // Import the utility file
 import 'package:grade_vise/widgets/classroom_container.dart';
 
 class LandingPage extends StatelessWidget {
   const LandingPage({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(primarySwatch: Colors.blue, fontFamily: 'Roboto'),
-      home: const HomePage(),
-    );
-  }
-}
-
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +69,7 @@ class HomePage extends StatelessWidget {
                         height: 60,
                         decoration: BoxDecoration(
                           color: Colors.grey.shade300,
-                          image: DecorationImage(
+                          image: const DecorationImage(
                             fit: BoxFit.cover,
                             image: NetworkImage(
                               "https://i.pinimg.com/474x/66/a3/89/66a389d6c88a66e5d6fc1a5a83c7930c.jpg",
@@ -114,17 +104,28 @@ class HomePage extends StatelessWidget {
                         padding: const EdgeInsets.only(top: 20),
                         itemCount: 4,
                         itemBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 15,
-                              vertical: 8,
-                            ),
-                            child: ClassroomContainer(
-                              classroomName: 'Data Mining',
-                              room: 'aditya magar',
-                              section: 'A',
-                              subject: 'DM',
-                              color: containerColor,
+                          return InkWell(
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => ClassroomPage(),
+                                ),
+                              );
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 15,
+                                vertical: 8,
+                              ),
+                              child: ClassroomContainer(
+                                classroomName: 'Data Mining',
+                                room: 'Aditya Magar',
+                                section: 'A',
+                                subject: 'DM',
+                                color:
+                                    AppColors.cardColors[index %
+                                        AppColors.cardColors.length],
+                              ),
                             ),
                           );
                         },
