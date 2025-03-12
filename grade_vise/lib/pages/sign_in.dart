@@ -248,7 +248,15 @@ class _SignUpState extends State<SignIn> with TickerProviderStateMixin {
 
                             InkWell(
                               onTap: () {
+                                setState(() {
+                                  isLoading = true;
+                                });
+
                                 handleSignIn();
+
+                                setState(() {
+                                  isLoading = false;
+                                });
                               },
                               child: Container(
                                 decoration: BoxDecoration(
@@ -270,15 +278,20 @@ class _SignUpState extends State<SignIn> with TickerProviderStateMixin {
                                   children: [
                                     Image.asset('assets/images/google.png'),
                                     const SizedBox(width: 15),
-                                    Text(
-                                      "Continue to Google",
-                                      style: Theme.of(
-                                        context,
-                                      ).textTheme.bodyMedium!.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        fontFamily: sourceSans,
-                                      ),
-                                    ),
+
+                                    isLoading
+                                        ? const Center(
+                                          child: CircularProgressIndicator(),
+                                        )
+                                        : Text(
+                                          "Continue to Google",
+                                          style: Theme.of(
+                                            context,
+                                          ).textTheme.bodyMedium!.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                            fontFamily: sourceSans,
+                                          ),
+                                        ),
                                   ],
                                 ),
                               ),

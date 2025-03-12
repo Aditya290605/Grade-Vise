@@ -5,6 +5,7 @@ import 'package:grade_vise/utils/colors.dart';
 import 'package:grade_vise/utils/fonts.dart';
 import 'package:grade_vise/widgets/bottom_sheet.dart';
 import 'package:grade_vise/widgets/classroom_container.dart';
+import 'package:intl/intl.dart';
 
 class LandingPage extends StatelessWidget {
   const LandingPage({super.key});
@@ -100,10 +101,11 @@ class HomePage extends StatelessWidget {
                                       color: Colors.white,
                                       borderRadius: BorderRadius.circular(20),
                                     ),
-                                    child: const Text(
-                                      '2020-2021',
+                                    child: Text(
+                                      '${int.parse(DateFormat('yyyy').format(DateTime.now()))}-${int.parse(DateFormat('yyyy').format(DateTime.now())) + 1}',
                                       style: TextStyle(
                                         fontSize: 16,
+                                        fontWeight: FontWeight.bold,
                                         color: Colors.black54,
                                       ),
                                     ),

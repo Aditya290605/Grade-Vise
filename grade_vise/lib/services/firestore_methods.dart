@@ -42,15 +42,18 @@ class FirestoreMethods {
     try {
       String classroomId = Uuid().v1();
 
-      await FirebaseFirestore.instance.collection('classrooms').doc().set({
-        'uid': FirebaseAuth.instance.currentUser!.uid,
-        'name': name,
-        'section': section,
-        'subject': subject,
-        'room': room,
-        'classroomId': classroomId,
-        'createdAt': DateTime.now(),
-      });
+      await FirebaseFirestore.instance
+          .collection('classrooms')
+          .doc(classroomId)
+          .set({
+            'uid': FirebaseAuth.instance.currentUser!.uid,
+            'name': name,
+            'section': section,
+            'subject': subject,
+            'room': room,
+            'classroomId': classroomId,
+            'createdAt': DateTime.now(),
+          });
     } catch (e) {
       debugPrint(e.toString());
     }

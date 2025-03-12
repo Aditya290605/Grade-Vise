@@ -1,11 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:grade_vise/screens/mobile_screen.dart';
 import 'package:grade_vise/services/firebase_auth_methods.dart';
 import 'package:grade_vise/teacher/landing_page.dart';
 import 'package:grade_vise/utils/colors.dart';
 import 'package:grade_vise/utils/fonts.dart';
 import 'package:grade_vise/widgets/bottom_sheet.dart';
+import 'package:intl/intl.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -68,6 +70,12 @@ class HomeScreen extends StatelessWidget {
                                   FirebaseAuthMethods(
                                     FirebaseAuth.instance,
                                   ).signOut();
+
+                                  Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                      builder: (context) => MobileScreen(),
+                                    ),
+                                  );
                                 },
                                 child: CircleAvatar(
                                   backgroundImage: NetworkImage(
@@ -79,6 +87,27 @@ class HomeScreen extends StatelessWidget {
                                 ),
                               ),
                             ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 15),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              '${int.parse(DateFormat('yyyy').format(DateTime.now()))}-${int.parse(DateFormat('yyyy').format(DateTime.now())) + 1}',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black54,
+                              ),
+                            ),
                           ),
                         ),
                         SizedBox(
