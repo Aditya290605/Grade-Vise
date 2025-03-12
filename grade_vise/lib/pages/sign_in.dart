@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:grade_vise/pages/sign_up.dart';
+import 'package:grade_vise/screens/mobile_screen.dart';
 import 'package:grade_vise/services/firebase_auth_methods.dart';
-import 'package:grade_vise/teacher/home_screen.dart';
 
 import 'package:grade_vise/utils/colors.dart';
 import 'package:grade_vise/utils/fonts.dart';
@@ -27,6 +27,9 @@ class _SignUpState extends State<SignIn> with TickerProviderStateMixin {
   late Animation<Offset> _textSlideAnimation;
   late Animation<Offset> _drawerSlideAnimation;
   late Animation<double> _contentOpacityAnimation;
+
+  final TextEditingController email = TextEditingController();
+  final TextEditingController password = TextEditingController();
 
   @override
   void initState() {
@@ -93,8 +96,25 @@ class _SignUpState extends State<SignIn> with TickerProviderStateMixin {
       // Only navigate after sign-in is complete
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => HomeScreen()),
+        MaterialPageRoute(builder: (context) => MobileScreen()),
       );
+    } else {
+      debugPrint("Sign-in failed!");
+    }
+  }
+
+  void handleSignIn() async {
+    User? user =
+        await FirebaseAuthMethods(FirebaseAuth.instance).signInWithGoogle();
+
+    if (user != null) {
+      // Only navigate after sign-in is complete
+      if (context.mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => MobileScreen()),
+        );
+      }
     } else {
       debugPrint("Sign-in failed!");
     }
@@ -104,9 +124,6 @@ class _SignUpState extends State<SignIn> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final TextEditingController email = TextEditingController();
-    final TextEditingController password = TextEditingController();
-
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: bgColor,
@@ -228,35 +245,42 @@ class _SignUpState extends State<SignIn> with TickerProviderStateMixin {
                               ],
                             ),
                             const SizedBox(height: 20),
-                            Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(14),
-                                border: Border.all(
-                                  color: const Color.fromARGB(
-                                    221,
-                                    190,
-                                    186,
-                                    186,
-                                  ),
-                                ),
-                              ),
-                              height: MediaQuery.of(context).size.height * 0.06,
-                              width: double.infinity,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Image.asset('assets/images/google.png'),
-                                  const SizedBox(width: 15),
-                                  Text(
-                                    "Continue to Google",
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.bodyMedium!.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: sourceSans,
+
+                            InkWell(
+                              onTap: () {
+                                handleSignIn();
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(14),
+                                  border: Border.all(
+                                    color: const Color.fromARGB(
+                                      221,
+                                      190,
+                                      186,
+                                      186,
                                     ),
                                   ),
-                                ],
+                                ),
+                                height:
+                                    MediaQuery.of(context).size.height * 0.06,
+                                width: double.infinity,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Image.asset('assets/images/google.png'),
+                                    const SizedBox(width: 15),
+                                    Text(
+                                      "Continue to Google",
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.bodyMedium!.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: sourceSans,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
 

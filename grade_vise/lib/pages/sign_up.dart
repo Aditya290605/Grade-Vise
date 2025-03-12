@@ -1,10 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:grade_vise/screens/mobile_screen.dart';
 import 'package:grade_vise/screens/starter_screen.dart';
 import 'package:grade_vise/pages/sign_in.dart';
 import 'package:grade_vise/services/firebase_auth_methods.dart';
 import 'package:grade_vise/services/firestore_methods.dart';
-import 'package:grade_vise/teacher/home_screen.dart';
+
 import 'package:grade_vise/utils/colors.dart';
 import 'package:grade_vise/utils/fonts.dart';
 import 'package:grade_vise/utils/show_error.dart';
@@ -88,36 +89,69 @@ class _SignUpState extends State<SignUp> with TickerProviderStateMixin {
 
   bool isLoading = false;
   final TextEditingController fname = TextEditingController();
-
+  String res = "";
   final TextEditingController email = TextEditingController();
   final TextEditingController pass = TextEditingController();
   final TextEditingController confrimPass = TextEditingController();
 
-  @override
-  Widget build(BuildContext context) {
-    void getUserSignUp(String email, String pass) async {
-      await FirebaseAuthMethods(
+  void getUserSignUp(String email_, String pass, BuildContext context) async {
+    if (!mounted) return; // Check if the widget is still mounted
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      String uid = await FirebaseAuthMethods(
         FirebaseAuth.instance,
-      ).signUpUser(context, email, pass);
-    }
+      ).signUpUser(context, email_, pass);
 
-    void handleSignIn() async {
-      User? user =
-          await FirebaseAuthMethods(FirebaseAuth.instance).signInWithGoogle();
-
-      if (user != null) {
-        // Only navigate after sign-in is complete
-        if (context.mounted) {
+      if (uid.isNotEmpty) {
+        res = await FirestoreMethods().createUser(
+          context,
+          uid,
+          fname.text.trim(),
+          email.text.trim(),
+        );
+        if (res == 'success' && context.mounted) {
+          debugPrint("Navigating to HomePage");
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => HomeScreen()),
+            MaterialPageRoute(builder: (context) => HomePage()),
           );
         }
       } else {
-        debugPrint("Sign-in failed!");
+        showSnakbar(context, "Sign up failed");
+      }
+    } catch (e) {
+      showSnakbar(context, "Error: ${e.toString()}");
+    } finally {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
       }
     }
+  }
 
+  void handleSignIn() async {
+    User? user =
+        await FirebaseAuthMethods(FirebaseAuth.instance).signInWithGoogle();
+
+    if (user != null) {
+      // Only navigate after sign-in is complete
+      if (context.mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => MobileScreen()),
+        );
+      }
+    } else {
+      debugPrint("Sign-in failed!");
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: bgColor,
@@ -209,10 +243,6 @@ class _SignUpState extends State<SignUp> with TickerProviderStateMixin {
                             CustomButton(
                               isLoading: isLoading,
                               onPressed: () async {
-                                setState(() {
-                                  isLoading = true;
-                                });
-
                                 if (fname.text.isEmpty ||
                                     email.text.isEmpty ||
                                     pass.text.isEmpty ||
@@ -230,26 +260,9 @@ class _SignUpState extends State<SignUp> with TickerProviderStateMixin {
                                   getUserSignUp(
                                     email.text.trim(),
                                     pass.text.trim(),
-                                  );
-
-                                  await FirestoreMethods().createUser(
                                     context,
-                                    FirebaseAuth.instance.currentUser!.uid,
-                                    fname.text.trim(),
-                                    email.text.trim(),
-                                  );
-
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => HomePage(),
-                                    ),
                                   );
                                 }
-
-                                setState(() {
-                                  isLoading = false;
-                                });
                               },
                               text: "Sign Up",
                               color: bgColor,
@@ -276,13 +289,8 @@ class _SignUpState extends State<SignUp> with TickerProviderStateMixin {
                             const SizedBox(height: 20),
 
                             InkWell(
-                              onTap: () async {
+                              onTap: () {
                                 handleSignIn();
-                                Navigator.of(context).pushReplacement(
-                                  MaterialPageRoute(
-                                    builder: (context) => HomePage(),
-                                  ),
-                                );
                               },
                               child: Container(
                                 decoration: BoxDecoration(

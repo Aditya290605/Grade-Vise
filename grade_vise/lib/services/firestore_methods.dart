@@ -7,12 +7,13 @@ import 'package:uuid/uuid.dart';
 class FirestoreMethods {
   final _firestore = FirebaseFirestore.instance;
 
-  Future<void> createUser(
+  Future<String> createUser(
     BuildContext context,
     String uid,
     String fname,
     String email,
   ) async {
+    String res = "";
     try {
       await _firestore.collection('users').doc(uid).set({
         "uid": uid,
@@ -22,11 +23,14 @@ class FirestoreMethods {
         'createdAt': DateTime.now(),
         'role': "",
       });
+      res = "success";
     } catch (e) {
       if (context.mounted) {
+        res = e.toString();
         showSnakbar(context, e.toString());
       }
     }
+    return res;
   }
 
   Future<void> createClassroom(

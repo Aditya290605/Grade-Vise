@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:grade_vise/student/student_home.dart';
 import 'package:grade_vise/teacher/home_screen.dart';
 
 import 'package:grade_vise/utils/fonts.dart';
@@ -83,8 +84,10 @@ class _HomePageState extends State<HomePage> {
 
                     if (res == 'Success') {
                       if (context.mounted) {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(builder: (context) => HomeScreen()),
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(
+                            builder: (context) => StudentHome(),
+                          ),
                         );
                       }
                     }
@@ -112,7 +115,7 @@ class _HomePageState extends State<HomePage> {
 
                     if (res == 'Success') {
                       if (context.mounted) {
-                        Navigator.of(context).push(
+                        Navigator.of(context).pushReplacement(
                           MaterialPageRoute(builder: (context) => HomeScreen()),
                         );
                       }

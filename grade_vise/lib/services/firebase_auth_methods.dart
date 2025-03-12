@@ -11,24 +11,28 @@ class FirebaseAuthMethods {
 
   Stream<User?> get authState => _auth.authStateChanges();
 
-  Future<void> signUpUser(
+  Future<String> signUpUser(
     BuildContext context,
     String email,
     String password,
   ) async {
+    String res = "";
     try {
-      await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
+      UserCredential userCredential = await _auth
+          .createUserWithEmailAndPassword(email: email, password: password);
       if (context.mounted) {
         showSnakbar(context, 'User signed up successfully');
       }
+
+      res = userCredential.user!.uid;
+      return res;
     } catch (e) {
       if (context.mounted) {
+        res = e.toString();
         showSnakbar(context, e.toString());
       }
     }
+    return res;
   }
 
   Future<void> singInUser(

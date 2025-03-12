@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:grade_vise/pages/sign_up.dart';
+import 'package:grade_vise/screens/starter_screen.dart';
 
 import 'package:grade_vise/student/student_home.dart';
 import 'package:grade_vise/teacher/home_screen.dart';
@@ -53,8 +54,12 @@ class MobileScreen extends StatelessWidget {
 
         if (role == 'Teacher') {
           return const HomeScreen();
-        } else if (role == 'Student') {
+        }
+        if (role == 'Student') {
           return const StudentHome();
+        }
+        if (role == '') {
+          return const HomePage();
         }
 
         return const SignUp();
