@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:grade_vise/teacher/screens/assignments.dart';
-
 import 'package:grade_vise/teacher/screens/classroom_details.dart';
 import 'package:grade_vise/teacher/screens/meet.dart';
 import 'package:grade_vise/teacher/screens/uses_list.dart';
@@ -31,47 +30,65 @@ class _MainPageState extends State<MainPage> {
             classroomId: widget.classroomId,
             photoUrl: widget.userPhoto,
           ),
-
           Assignments(),
           Meet(),
           UsesList(),
         ],
       ),
-      bottomNavigationBar: ClipRRect(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(50),
-          topRight: Radius.circular(50),
-        ),
-        child: Theme(
-          data: Theme.of(context).copyWith(
-            splashFactory: NoSplash.splashFactory, // Removes splash effect
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topRight: Radius.circular(50),
+            topLeft: Radius.circular(50),
           ),
-          child: BottomNavigationBar(
-            currentIndex: index1,
-            selectedFontSize: 0,
-            unselectedFontSize: 0,
-            elevation: 0,
-            type: BottomNavigationBarType.fixed,
-            backgroundColor: Colors.white,
-            selectedItemColor: bgColor,
-            unselectedItemColor: Colors.grey,
-
-            iconSize: 30,
-            onTap: (index) {
-              setState(() {
-                index1 = index;
-              });
-            },
-            items: [
-              BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
-              BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
-              BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.verified_user),
-                label: '',
-              ),
+          boxShadow: [
+            BoxShadow(
+              color: const Color.fromARGB(255, 0, 0, 0).withOpacity(0.6),
+              blurRadius: 80,
+              spreadRadius: 0,
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildNavItem(0, Icons.home_outlined),
+              _buildNavItem(1, Icons.show_chart),
+              _buildNavItem(2, Icons.videocam_outlined),
+              _buildNavItem(3, Icons.person_outline),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavItem(int itemIndex, IconData iconData) {
+    final bool isSelected = index1 == itemIndex;
+
+    return InkWell(
+      onTap: () {
+        setState(() {
+          index1 = itemIndex;
+        });
+      },
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: EdgeInsets.all(12),
+        decoration:
+            isSelected
+                ? BoxDecoration(
+                  color: Colors.black,
+                  borderRadius: BorderRadius.circular(16),
+                )
+                : null,
+        child: Icon(
+          iconData,
+          size: 28,
+          color: isSelected ? Colors.white : Colors.black54,
         ),
       ),
     );
