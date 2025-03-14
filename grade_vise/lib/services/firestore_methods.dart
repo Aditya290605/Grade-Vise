@@ -22,6 +22,7 @@ class FirestoreMethods {
         "photoURL": "",
         'createdAt': DateTime.now(),
         'role': "",
+        'classrooms': [],
       });
       res = "success";
     } catch (e) {
@@ -53,6 +54,7 @@ class FirestoreMethods {
             'room': room,
             'classroomId': classroomId,
             'createdAt': DateTime.now(),
+            'students': [],
           });
     } catch (e) {
       debugPrint(e.toString());

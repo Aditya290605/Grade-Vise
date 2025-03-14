@@ -7,65 +7,61 @@ class ClassroomService {
   final FirebaseAuth _auth = FirebaseConfig.auth;
 
   // Check if classroom exists and join it
-  Future<Map<String, dynamic>?> joinClassroom(String classCode) async {
+  Future<String> joinClassroom(String classCode, String uid) async {
+    String result = '';
     try {
       // Check if the user is authenticated
       if (_auth.currentUser == null) {
         throw Exception('User not authenticated');
       }
 
-      // Query Firestore to find classroom with the given code
-      final QuerySnapshot classroomQuery = await _firestore
-          .collection('classrooms')
-          .where('classCode', isEqualTo: classCode)
-          .limit(1)
-          .get();
+      var classroom =
+          await FirebaseFirestore.instance
+              .collection('classrooms')
+              .where('room', isEqualTo: classCode)
+              .get();
 
-      // If no classroom found with the given code
-      if (classroomQuery.docs.isEmpty) {
-        return null;
+      var users =
+          await FirebaseFirestore.instance
+              .collection('users')
+              .where('uid', isEqualTo: uid)
+              .get();
+
+      if (classroom.docs.isEmpty) {
+        result = 'Classroom not found';
+        return result;
       }
 
-      // Get classroom data
-      final classroomDoc = classroomQuery.docs.first;
-      final classroomData = classroomDoc.data() as Map<String, dynamic>;
-      final classroomId = classroomDoc.id;
+      if (!classroom.docs[0]['users'].contains(uid)) {
+        await FirebaseFirestore.instance
+            .collection('classrooms')
+            .doc(classroom.docs[0]['classroomId'])
+            .update({
+              'users': FieldValue.arrayUnion([uid]),
+            });
+      } else {
+        result = 'Already joined';
+      }
 
-      // Add user to classroom members collection
-      await _firestore
-          .collection('classrooms')
-          .doc(classroomId)
-          .collection('members')
-          .doc(_auth.currentUser!.uid)
-          .set({
-        'userId': _auth.currentUser!.uid,
-        'email': _auth.currentUser!.email,
-        'displayName': _auth.currentUser!.displayName,
-        'role': 'student',
-        'joinedAt': FieldValue.serverTimestamp(),
-      });
+      if (!users.docs[0]['classrooms'].contains(
+        classroom.docs[0]['classroomId'],
+      )) {
+        await FirebaseFirestore.instance.collection('users').doc(uid).update({
+          'classrooms': FieldValue.arrayUnion([
+            classroom.docs[0]['classroomId'],
+          ]),
+        });
+      } else {
+        result = 'Already joined';
+      }
 
-      // Add classroom to user's joined classrooms
-      await _firestore
-          .collection('users')
-          .doc(_auth.currentUser!.uid)
-          .collection('classrooms')
-          .doc(classroomId)
-          .set({
-        'classroomId': classroomId,
-        'classroomName': classroomData['name'],
-        'joinedAt': FieldValue.serverTimestamp(),
-        'role': 'student',
-      });
+      result = 'success';
 
       // Return classroom data
-      return {
-        'id': classroomId,
-        ...classroomData,
-      };
+      return result;
     } catch (e) {
-      print('Error joining classroom: $e');
-      throw e;
+      result = e.toString();
+      return result;
     }
   }
 
@@ -76,12 +72,13 @@ class ClassroomService {
         throw Exception('User not authenticated');
       }
 
-      final QuerySnapshot userClassroomsQuery = await _firestore
-          .collection('users')
-          .doc(_auth.currentUser!.uid)
-          .collection('classrooms')
-          .orderBy('joinedAt', descending: true)
-          .get();
+      final QuerySnapshot userClassroomsQuery =
+          await _firestore
+              .collection('users')
+              .doc(_auth.currentUser!.uid)
+              .collection('classrooms')
+              .orderBy('joinedAt', descending: true)
+              .get();
 
       List<Map<String, dynamic>> classrooms = [];
 
@@ -90,8 +87,9 @@ class ClassroomService {
         final classroomId = data['classroomId'];
 
         // Get full classroom details
-        final classroomDoc = await _firestore.collection('classrooms').doc(classroomId).get();
-        
+        final classroomDoc =
+            await _firestore.collection('classrooms').doc(classroomId).get();
+
         if (classroomDoc.exists) {
           final classroomData = classroomDoc.data() as Map<String, dynamic>;
           classrooms.add({
@@ -118,18 +116,13 @@ class ClassroomService {
 
       // This is a simplified implementation
       // In a real app, you would filter by day, user's enrolled courses, etc.
-      
-      final QuerySnapshot scheduleQuery = await _firestore
-          .collection('schedules')
-          .orderBy('startTime')
-          .get();
+
+      final QuerySnapshot scheduleQuery =
+          await _firestore.collection('schedules').orderBy('startTime').get();
 
       return scheduleQuery.docs.map((doc) {
         final data = doc.data() as Map<String, dynamic>;
-        return {
-          'id': doc.id,
-          ...data,
-        };
+        return {'id': doc.id, ...data};
       }).toList();
     } catch (e) {
       print('Error getting schedule: $e');

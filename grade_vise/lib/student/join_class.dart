@@ -1,7 +1,12 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:grade_vise/student/join_class_dialog.dart';
+import 'package:grade_vise/utils/colors.dart';
+import 'package:grade_vise/widgets/classroom_details/classroom_contianer.dart';
+
 import 'package:intl/intl.dart';
 
 class JoinClassScreen extends StatefulWidget {
@@ -21,14 +26,13 @@ class _JoinClassScreenState extends State<JoinClassScreen> {
     super.dispose();
   }
 
-  void _joinClass() async {
+  void _joinClass(String uid) async {
     // Show the dialog to enter class code
     final result = await showDialog(
       context: context,
-      builder: (BuildContext context) => const JoinClassDialog(),
+      builder: (BuildContext context) => JoinClassDialog(uid: uid),
     );
 
-    // If the user entered a class code and pressed Join
     if (result != null && result is String) {
       setState(() {
         _isJoining = true;
@@ -53,20 +57,24 @@ class _JoinClassScreenState extends State<JoinClassScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
+    return StreamBuilder<DocumentSnapshot>(
       stream:
           FirebaseFirestore.instance
               .collection('users')
               .doc(FirebaseAuth.instance.currentUser!.uid)
               .snapshots(),
       builder: (context, snapshot) {
-        if (snapshot.data == null) {
-          return const Center(child: CircularProgressIndicator());
+        if (!snapshot.hasData) {
+          return const Scaffold(
+            backgroundColor: Color(0xFF1F2937),
+            body: Center(child: CircularProgressIndicator()),
+          );
         }
+
+        final userData = snapshot.data!.data() as Map<String, dynamic>;
 
         return Scaffold(
           backgroundColor: const Color(0xFF1F2937),
-
           body: SafeArea(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -81,8 +89,8 @@ class _JoinClassScreenState extends State<JoinClassScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Hi ${snapshot.data!['name']}',
-                            style: TextStyle(
+                            'Hi ${userData['name']}',
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 32,
                               fontWeight: FontWeight.bold,
@@ -100,7 +108,7 @@ class _JoinClassScreenState extends State<JoinClassScreen> {
                             ),
                             child: Text(
                               '${int.parse(DateFormat('yyyy').format(DateTime.now()))}-${int.parse(DateFormat('yyyy').format(DateTime.now())) + 1}',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 color: Colors.black54,
                                 fontSize: 14,
                               ),
@@ -112,68 +120,125 @@ class _JoinClassScreenState extends State<JoinClassScreen> {
                         radius: 30,
                         backgroundColor: Colors.grey,
                         backgroundImage: NetworkImage(
-                          snapshot.data!['photoURL'].isEmpty
+                          userData['photoURL'] == null ||
+                                  userData['photoURL'].isEmpty
                               ? "https://i.pinimg.com/474x/59/af/9c/59af9cd100daf9aa154cc753dd58316d.jpg"
-                              : snapshot.data!['photoURL'],
+                              : userData['photoURL'],
                         ),
-                        // You can replace this with actual profile image
-                        // backgroundImage: AssetImage('assets/images/profile.png'),
                       ),
                     ],
                   ),
                 ),
-                const Spacer(),
 
-                Center(
-                  child: Image.asset(
-                    'assets/images/community_illustration.png',
-                    // If you don't have this image, you can replace it with a placeholder
-                    // or another image you have
-                    errorBuilder: (context, error, stackTrace) {
-                      return const Icon(
-                        Icons.people,
-                        size: 100,
-                        color: Colors.white54,
-                      );
-                    },
-                  ),
-                ),
+                const SizedBox(height: 50),
 
-                // Join button
-                Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Center(
-                    child: SizedBox(
-                      width: 240,
-                      height: 56,
-                      child: ElevatedButton.icon(
-                        onPressed: _isJoining ? null : _joinClass,
-                        icon: const Icon(Icons.add),
-                        label:
-                            _isJoining
-                                ? const CircularProgressIndicator(
-                                  color: Colors.white,
-                                )
-                                : const Text(
-                                  'Let\'s Start',
-                                  style: TextStyle(fontSize: 18),
-                                ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: Colors.black,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                        ),
+                Expanded(
+                  child: Container(
+                    width: double.infinity,
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(45),
+                        topRight: Radius.circular(45),
                       ),
                     ),
+                    child:
+                        userData.containsKey('classrooms') &&
+                                userData['classrooms'] is List &&
+                                (userData['classrooms'] as List).isNotEmpty
+                            ? StreamBuilder<QuerySnapshot>(
+                              stream:
+                                  FirebaseFirestore.instance
+                                      .collection('classrooms')
+                                      .where(
+                                        'classroomId',
+                                        whereIn: List<String>.from(
+                                          userData['classrooms'],
+                                        ),
+                                      )
+                                      .snapshots(),
+                              builder: (context, classSnapshot) {
+                                if (!classSnapshot.hasData) {
+                                  return const Center(
+                                    child: CircularProgressIndicator(),
+                                  );
+                                }
+
+                                return ListView.builder(
+                                  itemCount: classSnapshot.data!.docs.length,
+                                  itemBuilder: (context, index) {
+                                    final classData =
+                                        classSnapshot.data!.docs[index].data()
+                                            as Map<String, dynamic>;
+                                    return Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 15,
+                                        vertical: 20,
+                                      ),
+                                      child: ClassroomContianer(
+                                        classname: classData['name'],
+                                        startTime: '09:00 AM',
+                                        endTime: '10:00 AM',
+                                        teacher: classData['name'],
+                                        color:
+                                            colors[Random().nextInt(
+                                              colors.length,
+                                            )],
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                            )
+                            : Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.people, size: 100, color: bgColor),
+                                Padding(
+                                  padding: const EdgeInsets.all(24.0),
+                                  child: Center(
+                                    child: SizedBox(
+                                      width: 240,
+                                      height: 56,
+                                      child: ElevatedButton.icon(
+                                        onPressed:
+                                            () => _joinClass(userData['uid']),
+                                        icon: const Icon(
+                                          Icons.add,
+                                          color: Colors.white,
+                                          size: 30,
+                                        ),
+                                        label:
+                                            _isJoining
+                                                ? const CircularProgressIndicator(
+                                                  color: Colors.white,
+                                                )
+                                                : const Text(
+                                                  'Let\'s Start',
+                                                  style: TextStyle(
+                                                    fontSize: 18,
+                                                  ),
+                                                ),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: bgColor,
+                                          foregroundColor: Colors.white,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              30,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                   ),
                 ),
-                const Spacer(),
               ],
             ),
           ),
-          // Add bottom navigation here if needed
         );
       },
     );
