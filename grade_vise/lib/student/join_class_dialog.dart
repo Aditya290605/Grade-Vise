@@ -24,12 +24,13 @@ class _JoinClassDialogState extends State<JoinClassDialog> {
   Future<bool> _verifyClassCode(String code) async {
     try {
       // Query the classrooms collection to check if the code exists
-      final querySnapshot = await _firestore
-          .collection('classrooms')
-          .where('room', isEqualTo: code)
-          .limit(1)
-          .get();
-      
+      final querySnapshot =
+          await _firestore
+              .collection('classrooms')
+              .where('room', isEqualTo: code)
+              .limit(1)
+              .get();
+
       // If we have a document, the class code is valid
       return querySnapshot.docs.isNotEmpty;
     } catch (e) {
@@ -49,12 +50,13 @@ class _JoinClassDialogState extends State<JoinClassDialog> {
 
       if (isValidCode) {
         // Get the classroom document
-        final querySnapshot = await _firestore
-            .collection('classrooms')
-            .where('room', isEqualTo: code)
-            .limit(1)
-            .get();
-        
+        final querySnapshot =
+            await _firestore
+                .collection('classrooms')
+                .where('room', isEqualTo: code)
+                .limit(1)
+                .get();
+
         final classroomDoc = querySnapshot.docs.first;
         final classroomData = classroomDoc.data();
         final classroomId = classroomDoc.id;
@@ -64,10 +66,11 @@ class _JoinClassDialogState extends State<JoinClassDialog> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ClassroomDetailScreen(
-              classroomId: classroomId,
-              classroomData: classroomData,
-            ),
+            builder:
+                (context) => ClassroomDetailScreen(
+                  classroomId: classroomId,
+                  classroomData: classroomData,
+                ),
           ),
         );
       } else {
@@ -97,9 +100,7 @@ class _JoinClassDialogState extends State<JoinClassDialog> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       elevation: 0,
       backgroundColor: Colors.transparent,
       child: contentBox(context),
@@ -119,10 +120,7 @@ class _JoinClassDialogState extends State<JoinClassDialog> {
         children: [
           const Text(
             'Join Class',
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 20),
           TextField(
@@ -147,30 +145,35 @@ class _JoinClassDialogState extends State<JoinClassDialog> {
               ),
               const SizedBox(width: 10),
               ElevatedButton(
-                onPressed: _isLoading
-                    ? null
-                    : () async {
-                        if (_classCodeController.text.isEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Please enter a class code'),
-                            ),
-                          );
-                          return;
-                        }
+                onPressed:
+                    _isLoading
+                        ? null
+                        : () async {
+                          if (_classCodeController.text.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Please enter a class code'),
+                              ),
+                            );
+                            return;
+                          }
 
-                        await _joinClassroom(context, _classCodeController.text);
-                      },
-                child: _isLoading
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 2,
-                        ),
-                      )
-                    : const Text('Join'),
+                          await _joinClassroom(
+                            context,
+                            _classCodeController.text,
+                          );
+                        },
+                child:
+                    _isLoading
+                        ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                        : const Text('Join'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF1F2937),
                   foregroundColor: Colors.white,
@@ -187,14 +190,6 @@ class _JoinClassDialogState extends State<JoinClassDialog> {
     );
   }
 }
-
-
-
-
-
-
-
-
 
 class ClassroomDetailScreen extends StatefulWidget {
   final String classroomId;
@@ -230,7 +225,8 @@ class _ClassroomDetailScreenState extends State<ClassroomDetailScreen> {
   Future<void> _fetchUserDetails() async {
     if (_currentUser != null) {
       try {
-        final userDoc = await _firestore.collection('users').doc(_currentUser.uid).get();
+        final userDoc =
+            await _firestore.collection('users').doc(_currentUser.uid).get();
         if (userDoc.exists) {
           setState(() {
             _userName = userDoc.data()?['firstName'] ?? 'Student';
@@ -306,86 +302,89 @@ class _ClassroomDetailScreenState extends State<ClassroomDetailScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFF1F2937),
       body: SafeArea(
-        child: _isLoading
-            ? const Center(child: CircularProgressIndicator(color: Colors.white))
-            : Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Header section
-                  Padding(
-                    padding: const EdgeInsets.all(24.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Hi $_userName',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 32,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 8,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                              child: Text(
-                                _academicYear,
+        child:
+            _isLoading
+                ? const Center(
+                  child: CircularProgressIndicator(color: Colors.white),
+                )
+                : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Header section
+                    Padding(
+                      padding: const EdgeInsets.all(24.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Hi $_userName',
                                 style: const TextStyle(
-                                  color: Colors.black54,
-                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white,
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                        // Profile avatar
-                        CircleAvatar(
-                          radius: 30,
-                          backgroundColor: Colors.grey.shade300,
-                          // You can add a profile image here
-                          // backgroundImage: NetworkImage('https://your-image-url.com'),
-                        ),
-                      ],
-                    ),
-                  ),
-                  // Class schedule
-                  Expanded(
-                    child: Container(
-                      width: double.infinity,
-                      margin: const EdgeInsets.only(top: 16),
-                      padding: const EdgeInsets.only(
-                        top: 20,
-                        left: 20,
-                        right: 20,
-                      ),
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(30),
-                          topRight: Radius.circular(30),
-                        ),
-                      ),
-                      child: ListView.builder(
-                        itemCount: _classes.length,
-                        itemBuilder: (context, index) {
-                          final classItem = _classes[index];
-                          return _buildClassCard(classItem);
-                        },
+                              const SizedBox(height: 8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 8,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                                child: Text(
+                                  _academicYear,
+                                  style: const TextStyle(
+                                    color: Colors.black54,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          // Profile avatar
+                          CircleAvatar(
+                            radius: 30,
+                            backgroundColor: Colors.grey.shade300,
+                            // You can add a profile image here
+                            // backgroundImage: NetworkImage('https://your-image-url.com'),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                ],
-              ),
+                    // Class schedule
+                    Expanded(
+                      child: Container(
+                        width: double.infinity,
+                        margin: const EdgeInsets.only(top: 16),
+                        padding: const EdgeInsets.only(
+                          top: 20,
+                          left: 20,
+                          right: 20,
+                        ),
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(30),
+                            topRight: Radius.circular(30),
+                          ),
+                        ),
+                        child: ListView.builder(
+                          itemCount: _classes.length,
+                          itemBuilder: (context, index) {
+                            final classItem = _classes[index];
+                            return _buildClassCard(classItem);
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -411,27 +410,18 @@ class _ClassroomDetailScreenState extends State<ClassroomDetailScreen> {
           children: [
             Text(
               classItem['name'],
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Text(
               '${classItem['startTime']} - ${classItem['endTime']}',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey.shade700,
-              ),
+              style: TextStyle(fontSize: 16, color: Colors.grey.shade700),
             ),
             const SizedBox(height: 8),
             if (classItem['teacher'].isNotEmpty)
               Text(
                 classItem['teacher'],
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey.shade700,
-                ),
+                style: TextStyle(fontSize: 16, color: Colors.grey.shade700),
               ),
             const SizedBox(height: 8),
             Row(

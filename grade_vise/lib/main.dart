@@ -34,6 +34,12 @@ class MyApp extends StatelessWidget {
         title: 'GradeVise',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
+          splashFactory: NoSplash.splashFactory,
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+          bottomNavigationBarTheme: BottomNavigationBarThemeData(
+            enableFeedback: false,
+          ),
           textTheme: TextTheme(
             titleLarge: TextStyle(fontSize: 34, fontWeight: FontWeight.bold),
             titleMedium: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),

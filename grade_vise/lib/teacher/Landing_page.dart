@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:grade_vise/teacher/classroom_details.dart';
+import 'package:grade_vise/screens/mobile_screen.dart';
+import 'package:grade_vise/teacher/main_page.dart';
+
 import 'package:grade_vise/utils/colors.dart';
 import 'package:grade_vise/utils/fonts.dart';
 import 'package:grade_vise/widgets/bottom_sheet.dart';
@@ -113,20 +115,30 @@ class HomePage extends StatelessWidget {
                                   ),
                                 ],
                               ),
-                              Container(
-                                width: 60,
-                                height: 60,
-                                decoration: BoxDecoration(
-                                  color: Colors.grey.shade300,
-                                  image: DecorationImage(
-                                    fit: BoxFit.cover,
-                                    image: NetworkImage(
-                                      userData['photoURL'].isEmpty
-                                          ? "https://i.pinimg.com/474x/59/af/9c/59af9cd100daf9aa154cc753dd58316d.jpg"
-                                          : userData['photoURL'],
+                              InkWell(
+                                onTap: () async {
+                                  await FirebaseAuth.instance.signOut();
+                                  Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                      builder: (context) => MobileScreen(),
                                     ),
+                                  );
+                                },
+                                child: Container(
+                                  width: 60,
+                                  height: 60,
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey.shade300,
+                                    image: DecorationImage(
+                                      fit: BoxFit.cover,
+                                      image: NetworkImage(
+                                        userData['photoURL'].isEmpty
+                                            ? "https://i.pinimg.com/474x/59/af/9c/59af9cd100daf9aa154cc753dd58316d.jpg"
+                                            : userData['photoURL'],
+                                      ),
+                                    ),
+                                    shape: BoxShape.circle,
                                   ),
-                                  shape: BoxShape.circle,
                                 ),
                               ),
                             ],
@@ -166,7 +178,14 @@ class HomePage extends StatelessWidget {
                                         Navigator.of(context).push(
                                           MaterialPageRoute(
                                             builder:
-                                                (context) => ClassroomDetails(),
+                                                (context) => MainPage(
+                                                  userPhoto:
+                                                      userData['photoURL'],
+                                                  classroomId:
+                                                      snapshot
+                                                          .data!
+                                                          .docs[index]['classroomId'],
+                                                ),
                                           ),
                                         );
                                       },
