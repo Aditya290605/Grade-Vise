@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:grade_vise/student/student_home.dart';
 import 'package:grade_vise/teacher/home_screen.dart';
-
+import 'package:grade_vise/student/join_class.dart';
 import 'package:grade_vise/utils/fonts.dart';
 
 class HomePage extends StatefulWidget {
@@ -86,7 +86,7 @@ class _HomePageState extends State<HomePage> {
                       if (context.mounted) {
                         Navigator.of(context).pushReplacement(
                           MaterialPageRoute(
-                            builder: (context) => StudentHome(),
+                            builder: (context) => JoinClassScreen(),
                           ),
                         );
                       }
