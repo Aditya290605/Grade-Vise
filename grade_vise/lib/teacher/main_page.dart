@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:grade_vise/teacher/screens/assignments.dart';
+import 'package:grade_vise/teacher/screens/Grading.dart';
 import 'package:grade_vise/teacher/screens/classroom_details.dart';
 import 'package:grade_vise/teacher/screens/meet.dart';
 import 'package:grade_vise/teacher/screens/uses_list.dart';
@@ -30,14 +30,16 @@ class _MainPageState extends State<MainPage> {
             classroomId: widget.classroomId,
             photoUrl: widget.userPhoto,
           ),
-          Assignments(),
+          Grading(),
           Meet(),
           UsesList(),
         ],
       ),
       bottomNavigationBar: Container(
+        height: 85,
         decoration: BoxDecoration(
           color: Colors.white,
+
           borderRadius: BorderRadius.only(
             topRight: Radius.circular(50),
             topLeft: Radius.circular(50),
