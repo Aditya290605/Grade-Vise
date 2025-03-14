@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:grade_vise/teacher/classroom_details.dart';
 import 'package:grade_vise/utils/colors.dart';
 import 'package:grade_vise/utils/fonts.dart';
 import 'package:grade_vise/widgets/bottom_sheet.dart';
@@ -159,15 +160,31 @@ class HomePage extends StatelessWidget {
                                       horizontal: 15,
                                       vertical: 8,
                                     ),
-                                    child: ClassroomContainer(
-                                      classroomName:
-                                          snapshot.data!.docs[index]['name'],
-                                      room: snapshot.data!.docs[index]['room'],
-                                      section:
-                                          snapshot.data!.docs[index]['section'],
-                                      subject:
-                                          snapshot.data!.docs[index]['subject'],
-                                      color: containerColor,
+                                    child: InkWell(
+                                      splashColor: Colors.grey,
+                                      onTap: () {
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder:
+                                                (context) => ClassroomDetails(),
+                                          ),
+                                        );
+                                      },
+                                      child: ClassroomContainer(
+                                        classroomName:
+                                            snapshot.data!.docs[index]['name'],
+                                        room:
+                                            snapshot.data!.docs[index]['room'],
+                                        section:
+                                            snapshot
+                                                .data!
+                                                .docs[index]['section'],
+                                        subject:
+                                            snapshot
+                                                .data!
+                                                .docs[index]['subject'],
+                                        color: containerColor,
+                                      ),
                                     ),
                                   );
                                 },
