@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:grade_vise/teacher/Assignments/assignment.dart';
 import 'package:grade_vise/utils/colors.dart';
 import 'package:grade_vise/widgets/classroom_details/announcement.dart';
 import 'package:grade_vise/widgets/classroom_details/components.dart';
@@ -93,18 +94,42 @@ class _ClassroomDetailsState extends State<ClassroomDetails> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Components(
+                        ontap:
+                            () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => AssignmentsPage(),
+                              ),
+                            ),
                         imgpath: 'assets/images/teacher/tasks/assignment.png',
                         title: "Assignments",
                       ),
                       Components(
+                        ontap:
+                            () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => AssignmentsPage(),
+                              ),
+                            ),
                         imgpath: 'assets/images/teacher/tasks/feedback.png',
                         title: "Feedback",
                       ),
                       Components(
+                        ontap:
+                            () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => AssignmentsPage(),
+                              ),
+                            ),
                         imgpath: 'assets/images/teacher/tasks/time_table.png',
                         title: "Time table",
                       ),
                       Components(
+                        ontap:
+                            () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => AssignmentsPage(),
+                              ),
+                            ),
                         imgpath: 'assets/images/teacher/tasks/submision.png',
                         title: "Submissions",
                       ),
