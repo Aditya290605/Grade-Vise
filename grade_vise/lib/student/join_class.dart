@@ -3,9 +3,11 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:grade_vise/screens/mobile_screen.dart';
+import 'package:grade_vise/services/firebase_auth_methods.dart';
 import 'package:grade_vise/student/join_class_dialog.dart';
 import 'package:grade_vise/utils/colors.dart';
-import 'package:grade_vise/widgets/classroom_details/classroom_contianer.dart';
+import 'package:grade_vise/widgets/classroom_container.dart';
 
 import 'package:intl/intl.dart';
 
@@ -79,6 +81,7 @@ class _JoinClassScreenState extends State<JoinClassScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                SizedBox(height: MediaQuery.of(context).size.height * 0.03),
                 // Header with profile picture
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -89,7 +92,7 @@ class _JoinClassScreenState extends State<JoinClassScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Hi ${userData['name']}',
+                            'Hi ${userData['name'].split(" ")[0]}',
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 32,
@@ -116,14 +119,24 @@ class _JoinClassScreenState extends State<JoinClassScreen> {
                           ),
                         ],
                       ),
-                      CircleAvatar(
-                        radius: 30,
-                        backgroundColor: Colors.grey,
-                        backgroundImage: NetworkImage(
-                          userData['photoURL'] == null ||
-                                  userData['photoURL'].isEmpty
-                              ? "https://i.pinimg.com/474x/59/af/9c/59af9cd100daf9aa154cc753dd58316d.jpg"
-                              : userData['photoURL'],
+                      InkWell(
+                        onTap: () {
+                          FirebaseAuthMethods(FirebaseAuth.instance).signOut();
+                          Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(
+                              builder: (context) => MobileScreen(),
+                            ),
+                          );
+                        },
+                        child: CircleAvatar(
+                          radius: 30,
+                          backgroundColor: Colors.grey,
+                          backgroundImage: NetworkImage(
+                            userData['photoURL'] == null ||
+                                    userData['photoURL'].isEmpty
+                                ? "https://i.pinimg.com/474x/59/af/9c/59af9cd100daf9aa154cc753dd58316d.jpg"
+                                : userData['photoURL'],
+                          ),
                         ),
                       ),
                     ],
@@ -175,11 +188,13 @@ class _JoinClassScreenState extends State<JoinClassScreen> {
                                         horizontal: 15,
                                         vertical: 20,
                                       ),
-                                      child: ClassroomContianer(
-                                        classname: classData['name'],
-                                        startTime: '09:00 AM',
-                                        endTime: '10:00 AM',
-                                        teacher: classData['name'],
+                                      child: ClassroomContainer(
+                                        classroomName:
+                                            classData['classroomName'],
+                                        room: classData['room'],
+                                        section: classData['section'],
+                                        subject: classData['subject'],
+
                                         color:
                                             colors[Random().nextInt(
                                               colors.length,

@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:grade_vise/student/student_home.dart';
+
 import 'package:grade_vise/teacher/home_screen.dart';
 import 'package:grade_vise/student/join_class.dart';
 import 'package:grade_vise/utils/fonts.dart';

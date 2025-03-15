@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:grade_vise/pages/sign_up.dart';
 import 'package:grade_vise/screens/starter_screen.dart';
 import 'package:grade_vise/student/join_class.dart';
-import 'package:grade_vise/student/student_home.dart';
 import 'package:grade_vise/teacher/home_screen.dart';
 
 import 'package:provider/provider.dart';

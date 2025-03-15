@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:grade_vise/widgets/classroom_details/custom_navigation.dart';
 
 class AssignmentsPage extends StatelessWidget {
-  const AssignmentsPage({Key? key}) : super(key: key);
+  final String photUrl;
+  const AssignmentsPage({super.key, required this.photUrl});
 
   // Modified function to handle checking submissions
   void _checkSubmissions(
@@ -41,53 +43,72 @@ class AssignmentsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF1F2937),
-      appBar: AppBar(
+    return SafeArea(
+      child: Scaffold(
         backgroundColor: const Color(0xFF1F2937),
-        elevation: 0,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
+        body: Column(
           children: [
-            IconButton(
-              icon: const Icon(Icons.menu, color: Colors.white),
-              onPressed: () {},
-            ),
+            const SizedBox(height: 10),
             Row(
               children: [
-                IconButton(
-                  icon: const Icon(Icons.search, color: Colors.white),
-                  onPressed: () {},
+                Expanded(
+                  child: IconButton(
+                    onPressed: () {},
+                    icon: Image.asset(
+                      "assets/images/teacher/components/more_options.png",
+                    ),
+                  ),
                 ),
-                const SizedBox(width: 10),
-                const CircleAvatar(
-                  backgroundColor: Color(0xFFD9D9D9),
-                  radius: 20,
+
+                IconButton(
+                  padding: EdgeInsets.only(
+                    left: MediaQuery.of(context).size.width * 0.5,
+                  ),
+                  onPressed: () {},
+                  icon: Image.asset(
+                    "assets/images/teacher/components/search.png",
+                  ),
+                ),
+
+                Padding(
+                  padding: EdgeInsets.only(left: 20, right: 20),
+                  child: CircleAvatar(
+                    radius: 25,
+                    backgroundImage: NetworkImage(
+                      photUrl.isEmpty
+                          ? "https://i.pinimg.com/474x/59/af/9c/59af9cd100daf9aa154cc753dd58316d.jpg"
+                          : photUrl,
+                    ),
+                  ),
                 ),
               ],
+            ),
+            _buildAssignmentHeader(),
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                children: [
+                  _buildAssignmentCard(
+                    context,
+                    'Mathematics',
+                    'Surface Areas and Volumes',
+                  ),
+                  _buildAssignmentCard(context, 'Physics', 'Force and Motion'),
+                ],
+              ),
+            ),
+            CustomNavigation(
+              icons: [
+                Icons.home_outlined,
+                Icons.show_chart,
+                Icons.videocam_outlined,
+                Icons.person_outline,
+              ],
+              selectedIndex: 0,
             ),
           ],
         ),
-        automaticallyImplyLeading: false,
-      ),
-      body: Column(
-        children: [
-          _buildAssignmentHeader(),
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              children: [
-                _buildAssignmentCard(
-                  context,
-                  'Mathematics',
-                  'Surface Areas and Volumes',
-                ),
-                _buildAssignmentCard(context, 'Physics', 'Force and Motion'),
-              ],
-            ),
-          ),
-          _buildBottomNavigation(),
-        ],
       ),
     );
   }
@@ -289,7 +310,6 @@ class AssignmentsPage extends StatelessWidget {
   }
 }
 
-// New animated submission sheet widget
 class AnimatedSubmissionSheet extends StatefulWidget {
   final String subject;
   final String assignment;

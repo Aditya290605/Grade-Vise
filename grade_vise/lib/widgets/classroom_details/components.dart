@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:grade_vise/utils/fonts.dart';
 
 class Components extends StatelessWidget {
   final String title;
@@ -20,8 +21,8 @@ class Components extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 70,
-            height: 70,
+            width: 60,
+            height: 60,
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(20),
@@ -44,7 +45,7 @@ class Components extends StatelessWidget {
             style: Theme.of(context).textTheme.bodyMedium!.copyWith(
               color: Colors.grey,
               fontWeight: FontWeight.bold,
-              fontFamily: 'Poppins',
+              fontFamily: sourceSans,
             ),
           ),
         ],

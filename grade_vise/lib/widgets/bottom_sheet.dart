@@ -33,11 +33,11 @@ Widget _buildTextField(
 }
 
 class BottomDailog {
+  TextEditingController classRoom = TextEditingController();
+  TextEditingController section = TextEditingController();
+  TextEditingController subject = TextEditingController();
+  TextEditingController room = TextEditingController();
   void showCreateDailog(BuildContext context) {
-    TextEditingController classRoom = TextEditingController();
-    TextEditingController section = TextEditingController();
-    TextEditingController subject = TextEditingController();
-    TextEditingController room = TextEditingController();
     showModalBottomSheet(
       context: context,
       isScrollControlled: true, // Full-screen effect

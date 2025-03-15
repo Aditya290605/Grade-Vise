@@ -54,7 +54,7 @@ class FirestoreMethods {
             'room': room,
             'classroomId': classroomId,
             'createdAt': DateTime.now(),
-            'students': [],
+            'users': [],
           });
     } catch (e) {
       debugPrint(e.toString());

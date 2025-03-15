@@ -96,6 +96,7 @@ class FirebaseAuthMethods {
               "photoURL": user.photoURL,
               "createdAt": DateTime.now(),
               'role': '',
+              'classrooms': [],
             });
       }
 
