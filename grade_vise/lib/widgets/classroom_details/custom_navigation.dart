@@ -26,7 +26,7 @@ class _CustomNavigationState extends State<CustomNavigation> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withOpacity(0.8),
             blurRadius: 10,
             spreadRadius: 2,
           ),

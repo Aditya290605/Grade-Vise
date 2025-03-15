@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:grade_vise/teacher/Assignments/addAssignment.dart';
 import 'package:grade_vise/widgets/classroom_details/custom_navigation.dart';
 
 class AssignmentsPage extends StatelessWidget {
@@ -11,7 +12,6 @@ class AssignmentsPage extends StatelessWidget {
     String subject,
     String assignment,
   ) {
-    // Show a loading indicator
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -61,9 +61,25 @@ class AssignmentsPage extends StatelessWidget {
                   ),
                 ),
 
+                /// + Button added before the search icon
+                IconButton(
+                  onPressed:
+                      () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AssignmentCreationPage(),
+                        ),
+                      ),
+                  icon: Icon(
+                    Icons.add,
+                    size: 28,
+                    color: const Color.fromARGB(255, 255, 255, 255),
+                  ), // "+" icon
+                ),
+
                 IconButton(
                   padding: EdgeInsets.only(
-                    left: MediaQuery.of(context).size.width * 0.5,
+                    left: MediaQuery.of(context).size.width * 0.4,
                   ),
                   onPressed: () {},
                   icon: Image.asset(
@@ -84,6 +100,7 @@ class AssignmentsPage extends StatelessWidget {
                 ),
               ],
             ),
+
             _buildAssignmentHeader(),
             Expanded(
               child: ListView(
