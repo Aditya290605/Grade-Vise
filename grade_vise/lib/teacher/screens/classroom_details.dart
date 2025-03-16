@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:grade_vise/teacher/Submissions/Submission.dart';
 import 'package:grade_vise/teacher/assignments/assignment.dart';
 import 'package:grade_vise/utils/colors.dart';
 import 'package:grade_vise/widgets/classroom_details/announcement.dart';
@@ -83,7 +84,12 @@ class _ClassroomDetailsState extends State<ClassroomDetails> {
                           title: "Time table",
                         ),
                         Components(
-                          ontap: () {},
+                          ontap:
+                              () => Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => SubmissionsPage(),
+                                ),
+                              ),
                           imgpath: 'assets/images/teacher/tasks/submision.png',
                           title: "Submissions",
                         ),
