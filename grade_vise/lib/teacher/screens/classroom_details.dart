@@ -104,8 +104,10 @@ class _ClassroomDetailsState extends State<ClassroomDetails> {
                       horizontal: 10,
                       vertical: 10,
                     ),
+
                     child: CustomTextFieldWidget(
-                      hintText: 'Announce something to your class',
+                      hintText: 'Announce something Here',
+
                       icon: Icons.announcement_outlined,
                     ),
                   ),
