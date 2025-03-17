@@ -35,21 +35,25 @@ class FirebaseAuthMethods {
     return res;
   }
 
-  Future<void> singInUser(
+  Future<String> singInUser(
     BuildContext context,
     String username,
     String password,
   ) async {
+    String res = '';
     try {
       await _auth.signInWithEmailAndPassword(
         email: username,
         password: password,
       );
+      res = 'success';
     } catch (e) {
+      res = e.toString();
       if (context.mounted) {
         showSnakbar(context, e.toString());
       }
     }
+    return res;
   }
 
   Future<void> signOut() async {

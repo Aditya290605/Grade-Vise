@@ -50,40 +50,7 @@ class AssignmentsPage extends StatelessWidget {
         body: Column(
           children: [
             const SizedBox(height: 10),
-            Row(
-              children: [
-                Expanded(
-                  child: IconButton(
-                    onPressed: () {},
-                    icon: Image.asset(
-                      "assets/images/teacher/components/more_options.png",
-                    ),
-                  ),
-                ),
 
-                IconButton(
-                  padding: EdgeInsets.only(
-                    left: MediaQuery.of(context).size.width * 0.5,
-                  ),
-                  onPressed: () {},
-                  icon: Image.asset(
-                    "assets/images/teacher/components/search.png",
-                  ),
-                ),
-
-                Padding(
-                  padding: EdgeInsets.only(left: 20, right: 20),
-                  child: CircleAvatar(
-                    radius: 25,
-                    backgroundImage: NetworkImage(
-                      photUrl.isEmpty
-                          ? "https://i.pinimg.com/474x/59/af/9c/59af9cd100daf9aa154cc753dd58316d.jpg"
-                          : photUrl,
-                    ),
-                  ),
-                ),
-              ],
-            ),
             _buildAssignmentHeader(),
             Expanded(
               child: ListView(
@@ -97,15 +64,6 @@ class AssignmentsPage extends StatelessWidget {
                   _buildAssignmentCard(context, 'Physics', 'Force and Motion'),
                 ],
               ),
-            ),
-            CustomNavigation(
-              icons: [
-                Icons.home_outlined,
-                Icons.show_chart,
-                Icons.videocam_outlined,
-                Icons.person_outline,
-              ],
-              selectedIndex: 0,
             ),
           ],
         ),

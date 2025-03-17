@@ -46,7 +46,7 @@ class ClassroomContainer extends StatelessWidget {
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
-                      fontFamily: poppins,
+                      fontFamily: sourceSans,
                     ),
                   ),
                 ),
@@ -87,8 +87,8 @@ class InfoRow extends StatelessWidget {
             "$label: ",
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
               color: Colors.black,
-              fontWeight: FontWeight.w500,
-              fontFamily: poppins,
+              fontWeight: FontWeight.bold,
+              fontFamily: sourceSans,
             ),
           ),
           Expanded(
@@ -97,7 +97,7 @@ class InfoRow extends StatelessWidget {
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 color: Colors.black,
                 fontWeight: FontWeight.w600,
-                fontFamily: poppins,
+                fontFamily: sourceSans,
               ),
               overflow: TextOverflow.ellipsis,
             ),
