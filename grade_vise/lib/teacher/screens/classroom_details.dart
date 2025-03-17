@@ -67,6 +67,9 @@ class _ClassroomDetailsState extends State<ClassroomDetails> {
                                   builder:
                                       (context) => AssignmentsPage(
                                         photUrl: widget.photoUrl,
+                                        uid: snapshot.data!['uid'],
+                                        classroomId:
+                                            snapshot.data!['classroomId'],
                                       ),
                                 ),
                               ),

@@ -28,11 +28,7 @@ class _CustomNavigationState extends State<CustomNavigation> {
           topLeft: Radius.circular(50),
         ),
         boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.8),
-            blurRadius: 10,
-            spreadRadius: 2,
-          ),
+          BoxShadow(color: Colors.black, blurRadius: 10, spreadRadius: 2),
         ],
       ),
       child: Stack(
