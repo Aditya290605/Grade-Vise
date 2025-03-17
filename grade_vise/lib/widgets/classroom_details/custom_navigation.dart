@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 class CustomNavigation extends StatefulWidget {
@@ -18,6 +20,7 @@ class _CustomNavigationState extends State<CustomNavigation> {
   Widget build(BuildContext context) {
     return Container(
       height: 75,
+      width: max(360, 0),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.only(
@@ -25,11 +28,7 @@ class _CustomNavigationState extends State<CustomNavigation> {
           topLeft: Radius.circular(50),
         ),
         boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.8),
-            blurRadius: 10,
-            spreadRadius: 2,
-          ),
+          BoxShadow(color: Colors.black, blurRadius: 10, spreadRadius: 2),
         ],
       ),
       child: Stack(

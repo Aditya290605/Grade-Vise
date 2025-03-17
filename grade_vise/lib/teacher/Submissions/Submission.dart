@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:grade_vise/teacher/Submissions/CheckEachSubmission.dart';
 
 // Note: Since we're using a placeholder for the custom navigation import,
 // I'll include the CustomNavigation class directly in this file
@@ -222,7 +223,14 @@ class SubmissionCard extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           ElevatedButton.icon(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const Checkeachsubmission(),
+                ),
+              );
+            },
             icon: const Icon(Icons.check_circle_outline, color: Colors.white),
             label: const Text(
               'Check Submissions',

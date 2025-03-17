@@ -67,6 +67,9 @@ class _ClassroomDetailsState extends State<ClassroomDetails> {
                                   builder:
                                       (context) => AssignmentsPage(
                                         photUrl: widget.photoUrl,
+                                        uid: snapshot.data!['uid'],
+                                        classroomId:
+                                            snapshot.data!['classroomId'],
                                       ),
                                 ),
                               ),
@@ -104,8 +107,10 @@ class _ClassroomDetailsState extends State<ClassroomDetails> {
                       horizontal: 10,
                       vertical: 10,
                     ),
+
                     child: CustomTextFieldWidget(
-                      hintText: 'Announce something to your class',
+                      hintText: 'Announce something Here',
+
                       icon: Icons.announcement_outlined,
                     ),
                   ),

@@ -32,6 +32,11 @@ class ClassroomService {
         return result;
       }
 
+      if (classroom.docs[0]['users'].contains(uid)) {
+        result = 'Aready Joined';
+        return result;
+      }
+
       if (!classroom.docs[0]['users'].contains(uid)) {
         await FirebaseFirestore.instance
             .collection('classrooms')

@@ -34,6 +34,10 @@ class _JoinClassDialogState extends State<JoinClassDialog> {
       String res = await ClassroomService().joinClassroom(code, uid);
       debugPrint(res);
       showSnakbar(context, res);
+
+      if (res == 'Aready Joined') {
+        showSnakbar(context, res);
+      }
       setState(() {
         _isLoading = false;
       });
@@ -117,6 +121,7 @@ class _JoinClassDialogState extends State<JoinClassDialog> {
 
                             widget.uid,
                           );
+                          Navigator.pop(context);
                         },
                 child:
                     _isLoading

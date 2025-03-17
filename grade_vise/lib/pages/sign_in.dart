@@ -88,11 +88,12 @@ class _SignUpState extends State<SignIn> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  void _handleSignIn() async {
-    User? user =
-        await FirebaseAuthMethods(FirebaseAuth.instance).signInWithGoogle();
+  void _handleSignIn(BuildContext context, String email, String pass) async {
+    String user = await FirebaseAuthMethods(
+      FirebaseAuth.instance,
+    ).singInUser(context, email, pass);
 
-    if (user != null) {
+    if (user == 'success') {
       // Only navigate after sign-in is complete
       Navigator.pushReplacement(
         context,
@@ -213,7 +214,11 @@ class _SignUpState extends State<SignIn> with TickerProviderStateMixin {
                                     isLoading = true;
                                   });
 
-                                  _handleSignIn();
+                                  _handleSignIn(
+                                    context,
+                                    email.text.trim(),
+                                    password.text.trim(),
+                                  );
 
                                   setState(() {
                                     isLoading = false;

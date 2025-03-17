@@ -12,7 +12,7 @@ import 'package:grade_vise/widgets/classroom_container.dart';
 import 'package:intl/intl.dart';
 
 class JoinClassScreen extends StatefulWidget {
-  const JoinClassScreen({Key? key}) : super(key: key);
+  const JoinClassScreen({super.key});
 
   @override
   _JoinClassScreenState createState() => _JoinClassScreenState();
@@ -78,177 +78,204 @@ class _JoinClassScreenState extends State<JoinClassScreen> {
         return Scaffold(
           backgroundColor: const Color(0xFF1F2937),
           body: SafeArea(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Stack(
               children: [
-                SizedBox(height: MediaQuery.of(context).size.height * 0.03),
-                // Header with profile picture
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: MediaQuery.of(context).size.height * 0.03),
+                    // Header with profile picture
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            'Hi ${userData['name'].split(" ")[0]}',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Hi ${userData['name'].split(" ")[0]}',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 8,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Text(
+                                  '${int.parse(DateFormat('yyyy').format(DateTime.now()))}-${int.parse(DateFormat('yyyy').format(DateTime.now())) + 1}',
+                                  style: const TextStyle(
+                                    color: Colors.black54,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: 10),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Text(
-                              '${int.parse(DateFormat('yyyy').format(DateTime.now()))}-${int.parse(DateFormat('yyyy').format(DateTime.now())) + 1}',
-                              style: const TextStyle(
-                                color: Colors.black54,
-                                fontSize: 14,
+                          InkWell(
+                            onTap: () {
+                              FirebaseAuthMethods(
+                                FirebaseAuth.instance,
+                              ).signOut();
+                              Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(
+                                  builder: (context) => MobileScreen(),
+                                ),
+                              );
+                            },
+                            child: CircleAvatar(
+                              radius: 30,
+                              backgroundColor: Colors.grey,
+                              backgroundImage: NetworkImage(
+                                userData['photoURL'] == null ||
+                                        userData['photoURL'].isEmpty
+                                    ? "https://i.pinimg.com/474x/59/af/9c/59af9cd100daf9aa154cc753dd58316d.jpg"
+                                    : userData['photoURL'],
                               ),
                             ),
                           ),
                         ],
                       ),
-                      InkWell(
-                        onTap: () {
-                          FirebaseAuthMethods(FirebaseAuth.instance).signOut();
-                          Navigator.of(context).pushReplacement(
-                            MaterialPageRoute(
-                              builder: (context) => MobileScreen(),
-                            ),
-                          );
-                        },
-                        child: CircleAvatar(
-                          radius: 30,
-                          backgroundColor: Colors.grey,
-                          backgroundImage: NetworkImage(
-                            userData['photoURL'] == null ||
-                                    userData['photoURL'].isEmpty
-                                ? "https://i.pinimg.com/474x/59/af/9c/59af9cd100daf9aa154cc753dd58316d.jpg"
-                                : userData['photoURL'],
+                    ),
+
+                    const SizedBox(height: 50),
+
+                    Expanded(
+                      child: Container(
+                        width: double.infinity,
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(45),
+                            topRight: Radius.circular(45),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
+                        child:
+                            userData.containsKey('classrooms') &&
+                                    userData['classrooms'] is List &&
+                                    (userData['classrooms'] as List).isNotEmpty
+                                ? StreamBuilder<QuerySnapshot>(
+                                  stream:
+                                      FirebaseFirestore.instance
+                                          .collection('classrooms')
+                                          .where(
+                                            'classroomId',
+                                            whereIn: List<String>.from(
+                                              userData['classrooms'],
+                                            ),
+                                          )
+                                          .snapshots(),
+                                  builder: (context, classSnapshot) {
+                                    if (!classSnapshot.hasData) {
+                                      return const Center(
+                                        child: CircularProgressIndicator(),
+                                      );
+                                    }
 
-                const SizedBox(height: 50),
+                                    return ListView.builder(
+                                      itemCount:
+                                          classSnapshot.data!.docs.length,
+                                      itemBuilder: (context, index) {
+                                        final classData =
+                                            classSnapshot.data!.docs[index]
+                                                    .data()
+                                                as Map<String, dynamic>;
+                                        return Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 15,
+                                            vertical: 20,
+                                          ),
+                                          child: ClassroomContainer(
+                                            classroomName: classData['name'],
+                                            room: classData['room'],
+                                            section: classData['section'],
+                                            subject: classData['subject'],
 
-                Expanded(
-                  child: Container(
-                    width: double.infinity,
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(45),
-                        topRight: Radius.circular(45),
-                      ),
-                    ),
-                    child:
-                        userData.containsKey('classrooms') &&
-                                userData['classrooms'] is List &&
-                                (userData['classrooms'] as List).isNotEmpty
-                            ? StreamBuilder<QuerySnapshot>(
-                              stream:
-                                  FirebaseFirestore.instance
-                                      .collection('classrooms')
-                                      .where(
-                                        'classroomId',
-                                        whereIn: List<String>.from(
-                                          userData['classrooms'],
-                                        ),
-                                      )
-                                      .snapshots(),
-                              builder: (context, classSnapshot) {
-                                if (!classSnapshot.hasData) {
-                                  return const Center(
-                                    child: CircularProgressIndicator(),
-                                  );
-                                }
-
-                                return ListView.builder(
-                                  itemCount: classSnapshot.data!.docs.length,
-                                  itemBuilder: (context, index) {
-                                    final classData =
-                                        classSnapshot.data!.docs[index].data()
-                                            as Map<String, dynamic>;
-                                    return Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 15,
-                                        vertical: 20,
-                                      ),
-                                      child: ClassroomContainer(
-                                        classroomName:
-                                            classData['name'],
-                                        room: classData['room'],
-                                        section: classData['section'],
-                                        subject: classData['subject'],
-
-                                        color:
-                                            colors[Random().nextInt(
-                                              colors.length,
-                                            )],
-                                      ),
+                                            color:
+                                                colors[Random().nextInt(
+                                                  colors.length,
+                                                )],
+                                          ),
+                                        );
+                                      },
                                     );
                                   },
-                                );
-                              },
-                            )
-                            : Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.people, size: 100, color: bgColor),
-                                Padding(
-                                  padding: const EdgeInsets.all(24.0),
-                                  child: Center(
-                                    child: SizedBox(
-                                      width: 240,
-                                      height: 56,
-                                      child: ElevatedButton.icon(
-                                        onPressed:
-                                            () => _joinClass(userData['uid']),
-                                        icon: const Icon(
-                                          Icons.add,
-                                          color: Colors.white,
-                                          size: 30,
-                                        ),
-                                        label:
-                                            _isJoining
-                                                ? const CircularProgressIndicator(
-                                                  color: Colors.white,
-                                                )
-                                                : const Text(
-                                                  'Let\'s Start',
-                                                  style: TextStyle(
-                                                    fontSize: 18,
-                                                  ),
-                                                ),
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: bgColor,
-                                          foregroundColor: Colors.white,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              30,
+                                )
+                                : Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.people,
+                                      size: 100,
+                                      color: bgColor,
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(24.0),
+                                      child: Center(
+                                        child: SizedBox(
+                                          width: 240,
+                                          height: 56,
+                                          child: ElevatedButton.icon(
+                                            onPressed:
+                                                () =>
+                                                    _joinClass(userData['uid']),
+                                            icon: const Icon(
+                                              Icons.add,
+                                              color: Colors.white,
+                                              size: 30,
+                                            ),
+                                            label:
+                                                _isJoining
+                                                    ? const CircularProgressIndicator(
+                                                      color: Colors.white,
+                                                    )
+                                                    : const Text(
+                                                      'Let\'s Start',
+                                                      style: TextStyle(
+                                                        fontSize: 18,
+                                                      ),
+                                                    ),
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: bgColor,
+                                              foregroundColor: Colors.white,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(30),
+                                              ),
                                             ),
                                           ),
                                         ),
                                       ),
                                     ),
-                                  ),
+                                  ],
                                 ),
-                              ],
-                            ),
+                      ),
+                    ),
+                  ],
+                ),
+                Positioned(
+                  bottom: 20,
+                  right: 20,
+                  child: InkWell(
+                    onTap: () => _joinClass(userData['uid']),
+                    child: Container(
+                      height: 60,
+                      width: 65,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        color: Colors.black,
+                      ),
+                      child: Icon(Icons.add, color: Colors.white, size: 34),
+                    ),
                   ),
                 ),
               ],

@@ -1,12 +1,21 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:grade_vise/teacher/Assignments/addAssignment.dart';
-import 'package:grade_vise/widgets/classroom_details/custom_navigation.dart';
+import 'package:grade_vise/teacher/Assignments/animated_submission_sheet.dart';
+import 'package:grade_vise/utils/colors.dart';
 
 class AssignmentsPage extends StatelessWidget {
   final String photUrl;
-  const AssignmentsPage({super.key, required this.photUrl});
+  final String uid;
+  final String classroomId;
+  const AssignmentsPage({
+    super.key,
+    required this.photUrl,
+    required this.classroomId,
+    required this.uid,
+  });
 
-  // Modified function to handle checking submissions
+  // Function to handle checking submissions
   void _checkSubmissions(
     BuildContext context,
     String subject,
@@ -44,93 +53,129 @@ class AssignmentsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Scaffold(
-        backgroundColor: const Color(0xFF1F2937),
-
-        body: Column(
-          children: [
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                Expanded(
-                  child: IconButton(
-                    onPressed: () {},
-                    icon: Image.asset(
-                      "assets/images/teacher/components/more_options.png",
-                    ),
-                  ),
-                ),
-
-                /// + Button added before the search icon
-                IconButton(
-                  onPressed:
-                      () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => AssignmentCreationPage(),
-                        ),
-                      ),
-                  icon: Icon(
-                    Icons.add,
-                    size: 28,
-                    color: const Color.fromARGB(255, 255, 255, 255),
-                  ), // "+" icon
-                ),
-
-                IconButton(
-                  padding: EdgeInsets.only(
-                    left: MediaQuery.of(context).size.width * 0.4,
-                  ),
-                  onPressed: () {},
-                  icon: Image.asset(
-                    "assets/images/teacher/components/search.png",
-                  ),
-                ),
-
-                Padding(
-                  padding: EdgeInsets.only(left: 20, right: 20),
-                  child: CircleAvatar(
-                    radius: 25,
-                    backgroundImage: NetworkImage(
-                      photUrl.isEmpty
-                          ? "https://i.pinimg.com/474x/59/af/9c/59af9cd100daf9aa154cc753dd58316d.jpg"
-                          : photUrl,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-
-            _buildAssignmentHeader(),
-            Expanded(
-              child: ListView(
-                padding: const EdgeInsets.symmetric(vertical: 10),
+      child: StreamBuilder(
+        stream:
+            FirebaseFirestore.instance
+                .collection('assignments')
+                .where("classroomId", isEqualTo: classroomId)
+                .snapshots(),
+        builder: (context, snap) {
+          if (snap.data != null) {
+            return Scaffold(
+              backgroundColor: bgColor,
+              body: Column(
                 children: [
-                  _buildAssignmentCard(
-                    context,
-                    'Mathematics',
-                    'Surface Areas and Volumes',
+                  _buildAppBar(context),
+                  buildAssignmentHeader(),
+                  Expanded(
+                    child:
+                        snap.data!.docs.isEmpty
+                            ? Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Image.asset(
+                                  "assets/images/teacher/assignment.png",
+                                ),
+
+                                Text(
+                                  "No asssingments uploaded yet",
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.titleLarge!.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            )
+                            : ListView.builder(
+                              itemCount: snap.data!.docs.length,
+                              itemBuilder: (context, index) {
+                                return _buildAssignmentCard(
+                                  context,
+                                  snap.data!.docs[index]['title'],
+                                  snap.data!.docs[index]['description'],
+                                  snap.data!.docs[index]['dueDate'],
+                                );
+                              },
+                              padding: const EdgeInsets.symmetric(vertical: 10),
+                            ),
                   ),
-                  _buildAssignmentCard(context, 'Physics', 'Force and Motion'),
                 ],
               ),
-            ),
-            CustomNavigation(
-              icons: [
-                Icons.home_outlined,
-                Icons.show_chart,
-                Icons.videocam_outlined,
-                Icons.person_outline,
-              ],
-              selectedIndex: 0,
-            ),
-          ],
-        ),
+              floatingActionButton: FloatingActionButton(
+                onPressed:
+                    () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder:
+                            (context) => AssignmentCreationPage(
+                              uid: uid,
+                              classroomId: classroomId,
+                            ),
+                      ),
+                    ),
+                backgroundColor: const Color(0xFFE3D1EF),
+                child: const Icon(
+                  Icons.add,
+                  color: Color(0xFF1F2937),
+                  size: 30,
+                ),
+                tooltip: 'Create Assignment',
+              ),
+            );
+          }
+
+          return Center(child: CircularProgressIndicator());
+        },
       ),
     );
   }
 
-  Widget _buildAssignmentHeader() {
+  Widget _buildAppBar(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+      child: Row(
+        children: [
+          // Profile Picture
+          CircleAvatar(
+            radius: 22,
+            backgroundImage: NetworkImage(
+              photUrl.isEmpty
+                  ? "https://i.pinimg.com/474x/59/af/9c/59af9cd100daf9aa154cc753dd58316d.jpg"
+                  : photUrl,
+            ),
+          ),
+          const SizedBox(width: 15),
+          // Search Field
+          Expanded(
+            child: Container(
+              height: 45,
+              decoration: BoxDecoration(
+                color: const Color(0xFF2D3748),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: TextField(
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  hintText: 'Search assignments...',
+                  hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+                  prefixIcon: Icon(
+                    Icons.search,
+                    color: Colors.white.withOpacity(0.7),
+                  ),
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildAssignmentHeader() {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
@@ -138,11 +183,18 @@ class AssignmentsPage extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFFE3D1EF),
         borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Stack(
         children: [
           Positioned(
-            right: 0,
+            right: -20,
             top: -20,
             child: Container(
               width: 100,
@@ -156,13 +208,23 @@ class AssignmentsPage extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'Assignment',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF333333),
-                ),
+              const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Assignments',
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF333333),
+                    ),
+                  ),
+                  SizedBox(height: 5),
+                  Text(
+                    'Manage your class assignments',
+                    style: TextStyle(fontSize: 14, color: Color(0xFF666666)),
+                  ),
+                ],
               ),
               Container(
                 width: 12,
@@ -183,6 +245,7 @@ class AssignmentsPage extends StatelessWidget {
     BuildContext context,
     String subject,
     String title,
+    String date,
   ) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -202,50 +265,88 @@ class AssignmentsPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-              decoration: BoxDecoration(
-                color: const Color(0xFFE3EAFC),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
-                subject,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: Color(0xFF333333),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 15,
+                    vertical: 5,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE3EAFC),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    subject,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xFF333333),
+                    ),
+                  ),
                 ),
-              ),
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF5F5F5),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(
+                    Icons.more_vert,
+                    color: Color(0xFF666666),
+                    size: 20,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 15),
             Text(
               title,
               style: const TextStyle(
-                fontSize: 18,
+                fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF333333),
               ),
             ),
             const SizedBox(height: 15),
-            const Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            // Progress Bar
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Total Students Submitted',
-                  style: TextStyle(fontSize: 14, color: Color(0xFF666666)),
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Submissions',
+                      style: TextStyle(fontSize: 14, color: Color(0xFF666666)),
+                    ),
+                    Text(
+                      '0/0',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF333333),
+                      ),
+                    ),
+                  ],
                 ),
-                Text(
-                  '107/140',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF333333),
+                const SizedBox(height: 8),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: LinearProgressIndicator(
+                    value: 0,
+                    backgroundColor: Colors.grey[200],
+                    valueColor: const AlwaysStoppedAnimation<Color>(
+                      Color(0xFF1F2937),
+                    ),
+                    minHeight: 8,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 8),
-            const Row(
+            const SizedBox(height: 15),
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
@@ -253,7 +354,7 @@ class AssignmentsPage extends StatelessWidget {
                   style: TextStyle(fontSize: 14, color: Color(0xFF666666)),
                 ),
                 Text(
-                  '10 Dec 20',
+                  date,
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
@@ -274,288 +375,21 @@ class AssignmentsPage extends StatelessWidget {
                 ),
                 minimumSize: const Size(double.infinity, 48),
               ),
-              child: const Text(
-                'Check Submissions',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.fact_check_outlined),
+                  SizedBox(width: 10),
+                  Text(
+                    'Check Submissions',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  ),
+                ],
               ),
             ),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildBottomNavigation() {
-    return Container(
-      height: 70,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          IconButton(
-            icon: const Icon(Icons.home, color: Color(0xFF1F2937)),
-            onPressed: () {},
-          ),
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: const Color(0xFF1F2937),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: IconButton(
-              icon: const Icon(Icons.bar_chart, color: Colors.white),
-              onPressed: () {},
-            ),
-          ),
-          IconButton(
-            icon: const Icon(Icons.video_call, color: Color(0xFF1F2937)),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: const Icon(Icons.person, color: Color(0xFF1F2937)),
-            onPressed: () {},
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class AnimatedSubmissionSheet extends StatefulWidget {
-  final String subject;
-  final String assignment;
-
-  const AnimatedSubmissionSheet({
-    Key? key,
-    required this.subject,
-    required this.assignment,
-  }) : super(key: key);
-
-  @override
-  State<AnimatedSubmissionSheet> createState() =>
-      _AnimatedSubmissionSheetState();
-}
-
-class _AnimatedSubmissionSheetState extends State<AnimatedSubmissionSheet>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _animation;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 500),
-      vsync: this,
-    );
-    _animation = Tween<double>(
-      begin: 0.0,
-      end: 0.6,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
-    _controller.forward();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _animation,
-      builder: (context, child) {
-        return DraggableScrollableSheet(
-          initialChildSize: _animation.value,
-          minChildSize: 0.3,
-          maxChildSize: 0.9,
-          expand: false,
-          builder: (context, scrollController) {
-            return Container(
-              padding: const EdgeInsets.all(16),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Container(
-                      width: 40,
-                      height: 5,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[300],
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    '${widget.subject} - ${widget.assignment}',
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  // Summary information
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[100],
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              'Total Students:',
-                              style: TextStyle(fontWeight: FontWeight.w500),
-                            ),
-                            const Text(
-                              '140',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              'Submitted:',
-                              style: TextStyle(fontWeight: FontWeight.w500),
-                            ),
-                            Text(
-                              '107 (${(107 / 140 * 100).toStringAsFixed(1)}%)',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.green,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              'Not Submitted:',
-                              style: TextStyle(fontWeight: FontWeight.w500),
-                            ),
-                            Text(
-                              '33 (${(33 / 140 * 100).toStringAsFixed(1)}%)',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.red,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  const Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Student Name',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        'Status',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                  const Divider(),
-                  Expanded(
-                    child: ListView.builder(
-                      controller: scrollController,
-                      itemCount: 140,
-                      itemBuilder: (context, index) {
-                        final bool isSubmitted =
-                            index < 107; // First 107 students submitted
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  CircleAvatar(
-                                    backgroundColor:
-                                        isSubmitted
-                                            ? Colors.green[100]
-                                            : Colors.grey[200],
-                                    radius: 15,
-                                    child: Text(
-                                      '${index + 1}',
-                                      style: TextStyle(
-                                        color:
-                                            isSubmitted
-                                                ? Colors.green[800]
-                                                : Colors.grey[800],
-                                        fontSize: 12,
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Text(
-                                    'Student ${index + 1}',
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 6,
-                                ),
-                                decoration: BoxDecoration(
-                                  color:
-                                      isSubmitted
-                                          ? Colors.green[100]
-                                          : Colors.red[100],
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Text(
-                                  isSubmitted ? 'Submitted' : 'Not Submitted',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color:
-                                        isSubmitted
-                                            ? Colors.green[800]
-                                            : Colors.red[800],
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
     );
   }
 }
