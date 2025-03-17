@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:grade_vise/teacher/Assignments/addAssignment.dart';
 import 'package:grade_vise/teacher/Assignments/animated_submission_sheet.dart';
-import 'package:grade_vise/widgets/classroom_details/custom_navigation.dart'; // Import the new file
 
 class AssignmentsPage extends StatelessWidget {
   final String photUrl;
@@ -52,50 +51,44 @@ class AssignmentsPage extends StatelessWidget {
           children: [
             const SizedBox(height: 10),
 
-<<<<<<< HEAD
-=======
-                /// + Button added before the search icon
-                IconButton(
-                  onPressed:
-                      () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => AssignmentCreationPage(),
-                        ),
-                      ),
-                  icon: Icon(
-                    Icons.add,
-                    size: 28,
-                    color: const Color.fromARGB(255, 255, 255, 255),
-                  ), // "+" icon
-                ),
-
-                IconButton(
-                  padding: EdgeInsets.only(
-                    left: MediaQuery.of(context).size.width * 0.4,
-                  ),
-                  onPressed: () {},
-                  icon: Image.asset(
-                    "assets/images/teacher/components/search.png",
-                  ),
-                ),
-
-                Padding(
-                  padding: EdgeInsets.only(left: 20, right: 20),
-                  child: CircleAvatar(
-                    radius: 25,
-                    backgroundImage: NetworkImage(
-                      photUrl.isEmpty
-                          ? "https://i.pinimg.com/474x/59/af/9c/59af9cd100daf9aa154cc753dd58316d.jpg"
-                          : photUrl,
+            /// + Button added before the search icon
+            IconButton(
+              onPressed:
+                  () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AssignmentCreationPage(),
                     ),
                   ),
-                ),
-              ],
+              icon: Icon(
+                Icons.add,
+                size: 28,
+                color: const Color.fromARGB(255, 255, 255, 255),
+              ), // "+" icon
             ),
 
->>>>>>> 3d3a566a815cba6587f7a7114f20f44f96be3972
-            _buildAssignmentHeader(),
+            IconButton(
+              padding: EdgeInsets.only(
+                left: MediaQuery.of(context).size.width * 0.4,
+              ),
+              onPressed: () {},
+              icon: Image.asset("assets/images/teacher/components/search.png"),
+            ),
+
+            Padding(
+              padding: EdgeInsets.only(left: 20, right: 20),
+              child: CircleAvatar(
+                radius: 25,
+                backgroundImage: NetworkImage(
+                  photUrl.isEmpty
+                      ? "https://i.pinimg.com/474x/59/af/9c/59af9cd100daf9aa154cc753dd58316d.jpg"
+                      : photUrl,
+                ),
+              ),
+            ),
+
+            buildAssignmentHeader(),
+
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.symmetric(vertical: 10),
@@ -115,7 +108,7 @@ class AssignmentsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildAssignmentHeader() {
+  Widget buildAssignmentHeader() {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
