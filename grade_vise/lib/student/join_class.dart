@@ -190,7 +190,7 @@ class _JoinClassScreenState extends State<JoinClassScreen> {
                                       ),
                                       child: ClassroomContainer(
                                         classroomName:
-                                            classData['classroomName'],
+                                            classData['name'],
                                         room: classData['room'],
                                         section: classData['section'],
                                         subject: classData['subject'],

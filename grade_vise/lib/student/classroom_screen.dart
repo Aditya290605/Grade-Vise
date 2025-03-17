@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:grade_vise/student/assignment_page.dart';
 
 class ClassroomScreen extends StatefulWidget {
   final Map<String, dynamic> classData;
   final String classroomId;
 
   const ClassroomScreen({
-    Key? key, 
-    required this.classData, 
-    required this.classroomId
+    Key? key,
+    required this.classData,
+    required this.classroomId,
   }) : super(key: key);
 
   @override
@@ -33,9 +34,7 @@ class _ClassroomScreenState extends State<ClassroomScreen> {
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: CircleAvatar(
-              backgroundColor: Colors.grey.shade300,
-            ),
+            child: CircleAvatar(backgroundColor: Colors.grey.shade300),
           ),
         ],
       ),
@@ -44,7 +43,10 @@ class _ClassroomScreenState extends State<ClassroomScreen> {
           // Course banner with gradient background
           Container(
             width: double.infinity,
-            margin: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+            margin: const EdgeInsets.symmetric(
+              horizontal: 24.0,
+              vertical: 16.0,
+            ),
             height: 120,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
@@ -91,7 +93,8 @@ class _ClassroomScreenState extends State<ClassroomScreen> {
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        widget.classData['name'] ?? 'Graphic Fundamentals - ART101',
+                        widget.classData['name'] ??
+                            'Graphic Fundamentals - ART101',
                         style: const TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
@@ -104,7 +107,7 @@ class _ClassroomScreenState extends State<ClassroomScreen> {
               ],
             ),
           ),
-          
+
           // Menu buttons
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -116,8 +119,16 @@ class _ClassroomScreenState extends State<ClassroomScreen> {
                   iconColor: Colors.white,
                   backgroundColor: Color(0xFF2AB7CA),
                   label: 'Assignments',
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => AssignmentPage(assignments: getSampleAssignments()),
+                      ),
+                    );
+                  },
                 ),
+
                 _buildRoundMenuButton(
                   icon: Icons.check_circle,
                   iconColor: Colors.white,
@@ -142,7 +153,7 @@ class _ClassroomScreenState extends State<ClassroomScreen> {
               ],
             ),
           ),
-          
+
           // Announcement input
           Padding(
             padding: const EdgeInsets.all(24.0),
@@ -160,10 +171,7 @@ class _ClassroomScreenState extends State<ClassroomScreen> {
                       padding: EdgeInsets.only(left: 24.0),
                       child: Text(
                         'Announce something to your class',
-                        style: TextStyle(
-                          color: Colors.white70,
-                          fontSize: 16,
-                        ),
+                        style: TextStyle(color: Colors.white70, fontSize: 16),
                       ),
                     ),
                   ),
@@ -175,16 +183,13 @@ class _ClassroomScreenState extends State<ClassroomScreen> {
                       shape: BoxShape.circle,
                       color: Colors.grey.withOpacity(0.2),
                     ),
-                    child: const Icon(
-                      Icons.mic,
-                      color: Colors.white,
-                    ),
+                    child: const Icon(Icons.mic, color: Colors.white),
                   ),
                 ],
               ),
             ),
           ),
-          
+
           // Announcement card
           Expanded(
             child: Container(
@@ -231,7 +236,7 @@ class _ClassroomScreenState extends State<ClassroomScreen> {
                       ],
                     ),
                   ),
-                  
+
                   // Announcement content
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -240,7 +245,7 @@ class _ClassroomScreenState extends State<ClassroomScreen> {
                       style: const TextStyle(fontSize: 16),
                     ),
                   ),
-                  
+
                   // Link button
                   Padding(
                     padding: const EdgeInsets.all(16.0),
@@ -258,9 +263,7 @@ class _ClassroomScreenState extends State<ClassroomScreen> {
                           SizedBox(width: 8),
                           Text(
                             'Link: Assignment for Graphic AI Lesson',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                            ),
+                            style: TextStyle(fontWeight: FontWeight.w500),
                           ),
                         ],
                       ),
@@ -270,7 +273,7 @@ class _ClassroomScreenState extends State<ClassroomScreen> {
               ),
             ),
           ),
-          
+
           // Bottom navigation
           Container(
             height: 70,
@@ -295,7 +298,7 @@ class _ClassroomScreenState extends State<ClassroomScreen> {
       ),
     );
   }
-  
+
   Widget _buildRoundMenuButton({
     required IconData icon,
     required Color backgroundColor,
@@ -322,11 +325,7 @@ class _ClassroomScreenState extends State<ClassroomScreen> {
                   color: backgroundColor,
                   shape: BoxShape.circle,
                 ),
-                child: Icon(
-                  icon,
-                  color: iconColor,
-                  size: 24,
-                ),
+                child: Icon(icon, color: iconColor, size: 24),
               ),
             ),
           ),
@@ -335,15 +334,12 @@ class _ClassroomScreenState extends State<ClassroomScreen> {
         Text(
           label,
           textAlign: TextAlign.center,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 12,
-          ),
+          style: const TextStyle(color: Colors.white, fontSize: 12),
         ),
       ],
     );
   }
-  
+
   Widget _buildNavButton(IconData icon, {required bool isSelected}) {
     return Container(
       width: 50,
@@ -352,10 +348,7 @@ class _ClassroomScreenState extends State<ClassroomScreen> {
         color: isSelected ? const Color(0xFF2D3748) : Colors.transparent,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Icon(
-        icon,
-        color: isSelected ? Colors.white : Colors.black54,
-      ),
+      child: Icon(icon, color: isSelected ? Colors.white : Colors.black54),
     );
   }
 }
