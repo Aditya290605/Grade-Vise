@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:grade_vise/student/classroom_screen.dart';
+
 import 'package:grade_vise/utils/fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
@@ -16,69 +16,52 @@ class ClassroomContainer extends StatelessWidget {
     required this.room,
     required this.section,
     required this.subject,
-    required this.color, 
+    required this.color,
   });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-  onTap: () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ClassroomScreen(
-          classData: {
-            "section": section,
-            "subject": subject,
-            "room": room,
-          },
-          classroomId: classroomName, // You can modify this based on your ID logic
+    return Card(
+      elevation: 6,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+          gradient: LinearGradient(
+            colors: [color.withOpacity(0.8), color.withOpacity(1.0)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(LucideIcons.school, color: Colors.black, size: 28),
+                SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    classroomName,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: sourceSans,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            InfoRow(icon: LucideIcons.users, label: "Section", value: section),
+            InfoRow(icon: LucideIcons.book, label: "Subject", value: subject),
+            InfoRow(icon: LucideIcons.doorOpen, label: "Room", value: room),
+          ],
         ),
       ),
     );
-  },
-  child: Card(
-    elevation: 6,
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-    child: Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
-        gradient: LinearGradient(
-          colors: [color.withOpacity(0.8), color.withOpacity(1.0)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(LucideIcons.school, color: Colors.black, size: 28),
-              SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  classroomName,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: poppins,
-                      ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          InfoRow(icon: LucideIcons.users, label: "Section", value: section),
-          InfoRow(icon: LucideIcons.book, label: "Subject", value: subject),
-          InfoRow(icon: LucideIcons.doorOpen, label: "Room", value: room),
-        ],
-      ),
-    ),
-  ),
-);
-}
+  }
 }
 
 class InfoRow extends StatelessWidget {
@@ -103,7 +86,7 @@ class InfoRow extends StatelessWidget {
           SizedBox(width: 10),
           Text(
             "$label: ",
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+            style: Theme.of(context).textTheme.bodyLarge!.copyWith(
               color: Colors.black,
               fontWeight: FontWeight.bold,
               fontFamily: sourceSans,

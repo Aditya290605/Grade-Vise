@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:grade_vise/student/assignment_page.dart';
 
-class ClassroomScreen extends StatefulWidget {
+class ClassroomStudentScreen extends StatefulWidget {
   final Map<String, dynamic> classData;
+  final String photoUrl;
   final String classroomId;
 
-  const ClassroomScreen({
-    Key? key,
+  const ClassroomStudentScreen({
+    super.key,
     required this.classData,
     required this.classroomId,
-  }) : super(key: key);
+    required this.photoUrl,
+  });
 
   @override
-  State<ClassroomScreen> createState() => _ClassroomScreenState();
+  State<ClassroomStudentScreen> createState() => _ClassroomScreenState();
 }
 
-class _ClassroomScreenState extends State<ClassroomScreen> {
+class _ClassroomScreenState extends State<ClassroomStudentScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,7 +36,11 @@ class _ClassroomScreenState extends State<ClassroomScreen> {
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: CircleAvatar(backgroundColor: Colors.grey.shade300),
+            child: CircleAvatar(
+              radius: 22,
+              backgroundImage: NetworkImage(widget.photoUrl),
+              backgroundColor: Colors.grey.shade300,
+            ),
           ),
         ],
       ),
@@ -93,8 +99,7 @@ class _ClassroomScreenState extends State<ClassroomScreen> {
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        widget.classData['name'] ??
-                            'Graphic Fundamentals - ART101',
+                        widget.classData['name'],
                         style: const TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
@@ -110,7 +115,7 @@ class _ClassroomScreenState extends State<ClassroomScreen> {
 
           // Menu buttons
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -123,7 +128,10 @@ class _ClassroomScreenState extends State<ClassroomScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => AssignmentPage(assignments: getSampleAssignments()),
+                        builder:
+                            (context) => AssignmentPage(
+                              classroomId: widget.classData['classroomId'],
+                            ),
                       ),
                     );
                   },
@@ -191,10 +199,9 @@ class _ClassroomScreenState extends State<ClassroomScreen> {
           ),
 
           // Announcement card
-          Expanded(
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Container(
-              width: double.infinity,
-              margin: const EdgeInsets.symmetric(horizontal: 24.0),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
@@ -231,8 +238,6 @@ class _ClassroomScreenState extends State<ClassroomScreen> {
                             ),
                           ],
                         ),
-                        const Spacer(),
-                        const Icon(Icons.more_vert),
                       ],
                     ),
                   ),
@@ -250,8 +255,6 @@ class _ClassroomScreenState extends State<ClassroomScreen> {
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Container(
-                      width: double.infinity,
-                      height: 50,
                       decoration: BoxDecoration(
                         border: Border.all(color: Colors.grey.shade300),
                         borderRadius: BorderRadius.circular(30),
@@ -262,7 +265,7 @@ class _ClassroomScreenState extends State<ClassroomScreen> {
                           Icon(Icons.link),
                           SizedBox(width: 8),
                           Text(
-                            'Link: Assignment for Graphic AI Lesson',
+                            '',
                             style: TextStyle(fontWeight: FontWeight.w500),
                           ),
                         ],
@@ -275,26 +278,30 @@ class _ClassroomScreenState extends State<ClassroomScreen> {
           ),
 
           // Bottom navigation
-          Container(
-            height: 70,
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(16),
-                topRight: Radius.circular(16),
-              ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildNavButton(Icons.home, isSelected: false),
-                _buildNavButton(Icons.trending_up, isSelected: true),
-                _buildNavButton(Icons.video_call, isSelected: false),
-                _buildNavButton(Icons.person, isSelected: false),
-              ],
+        ],
+      ),
+
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.only(bottom: 10),
+        child: Container(
+          height: 70,
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(16),
+              topRight: Radius.circular(16),
             ),
           ),
-        ],
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildNavButton(Icons.home, isSelected: false),
+              _buildNavButton(Icons.trending_up, isSelected: true),
+              _buildNavButton(Icons.video_call, isSelected: false),
+              _buildNavButton(Icons.person, isSelected: false),
+            ],
+          ),
+        ),
       ),
     );
   }

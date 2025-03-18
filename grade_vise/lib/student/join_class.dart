@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:grade_vise/screens/mobile_screen.dart';
 import 'package:grade_vise/services/firebase_auth_methods.dart';
+import 'package:grade_vise/student/classroom_screen.dart';
 import 'package:grade_vise/student/join_class_dialog.dart';
 import 'package:grade_vise/utils/colors.dart';
 import 'package:grade_vise/widgets/classroom_container.dart';
@@ -194,16 +195,39 @@ class _JoinClassScreenState extends State<JoinClassScreen> {
                                             horizontal: 15,
                                             vertical: 20,
                                           ),
-                                          child: ClassroomContainer(
-                                            classroomName: classData['name'],
-                                            room: classData['room'],
-                                            section: classData['section'],
-                                            subject: classData['subject'],
+                                          child: InkWell(
+                                            onTap: () {
+                                              Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                  builder:
+                                                      (
+                                                        context,
+                                                      ) => ClassroomStudentScreen(
+                                                        classData: classData,
+                                                        photoUrl:
+                                                            userData['photoURL'] ==
+                                                                        null ||
+                                                                    userData['photoURL']
+                                                                        .isEmpty
+                                                                ? "https://i.pinimg.com/474x/59/af/9c/59af9cd100daf9aa154cc753dd58316d.jpg"
+                                                                : userData['photoURL'],
+                                                        classroomId:
+                                                            classData['classroomId'],
+                                                      ),
+                                                ),
+                                              );
+                                            },
+                                            child: ClassroomContainer(
+                                              classroomName: classData['name'],
+                                              room: classData['room'],
+                                              section: classData['section'],
+                                              subject: classData['subject'],
 
-                                            color:
-                                                colors[Random().nextInt(
-                                                  colors.length,
-                                                )],
+                                              color:
+                                                  colors[Random().nextInt(
+                                                    colors.length,
+                                                  )],
+                                            ),
                                           ),
                                         );
                                       },
