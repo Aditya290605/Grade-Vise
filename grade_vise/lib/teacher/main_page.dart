@@ -80,7 +80,7 @@ class _MainPageState extends State<MainPage> {
                   ),
                   Grading(),
                   Meet(),
-                  UsesList(),
+                  PeoplePage(),
                 ],
               ),
             ),
