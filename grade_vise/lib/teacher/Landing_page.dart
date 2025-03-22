@@ -181,6 +181,7 @@ class HomePage extends StatelessWidget {
                                           MaterialPageRoute(
                                             builder:
                                                 (context) => MainPage(
+                                                  username: userData['name'],
                                                   userPhoto:
                                                       userData['photoURL'],
                                                   classroomId:

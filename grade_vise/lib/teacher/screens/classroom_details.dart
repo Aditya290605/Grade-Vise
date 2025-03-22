@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:grade_vise/teacher/Submissions/Submission.dart';
+import 'package:grade_vise/teacher/submissions/submission.dart';
 import 'package:grade_vise/teacher/assignments/assignment.dart';
 import 'package:grade_vise/utils/colors.dart';
 import 'package:grade_vise/widgets/classroom_details/announcement.dart';
@@ -43,7 +43,6 @@ class _ClassroomDetailsState extends State<ClassroomDetails> {
               child: Column(
                 children: [
                   SizedBox(height: 20),
-
                   Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 15,
@@ -90,7 +89,12 @@ class _ClassroomDetailsState extends State<ClassroomDetails> {
                           ontap:
                               () => Navigator.of(context).push(
                                 MaterialPageRoute(
-                                  builder: (context) => SubmissionsPage(),
+                                  builder:
+                                      (context) => SubmissionsPage(
+                                        photo: widget.photoUrl,
+                                        classroomId:
+                                            snapshot.data!['classroomId'],
+                                      ),
                                 ),
                               ),
                           imgpath: 'assets/images/teacher/tasks/submision.png',
