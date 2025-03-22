@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:grade_vise/student/assignment_page.dart';
+import 'package:grade_vise/student/timetables.dart';
 import 'package:grade_vise/teacher/screens/meet.dart';
 
 class ClassroomStudentScreen extends StatefulWidget {
@@ -150,7 +151,15 @@ class _ClassroomScreenState extends State<ClassroomStudentScreen> {
                   iconColor: Colors.white,
                   backgroundColor: Color(0xFF667080),
                   label: 'TimeTable',
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SchedulePage(),
+                      ),
+                    );
+                  },
+                  
                 ),
                 _buildRoundMenuButton(
                   icon: Icons.bar_chart,
