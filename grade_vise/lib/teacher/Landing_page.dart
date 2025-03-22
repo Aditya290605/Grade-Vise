@@ -5,7 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:grade_vise/screens/mobile_screen.dart';
 import 'package:grade_vise/teacher/main_page.dart';
-
 import 'package:grade_vise/utils/colors.dart';
 import 'package:grade_vise/utils/fonts.dart';
 import 'package:grade_vise/widgets/bottom_sheet.dart';
@@ -181,6 +180,7 @@ class HomePage extends StatelessWidget {
                                           MaterialPageRoute(
                                             builder:
                                                 (context) => MainPage(
+                                                  username: userData['name'],
                                                   userPhoto:
                                                       userData['photoURL'],
                                                   classroomId:

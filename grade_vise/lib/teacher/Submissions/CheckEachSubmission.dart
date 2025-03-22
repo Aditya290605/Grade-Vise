@@ -1,8 +1,18 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:grade_vise/widgets/classroom_details/custom_navigation.dart';
 
 class Checkeachsubmission extends StatelessWidget {
-  const Checkeachsubmission({super.key});
+  final String title;
+  final DocumentSnapshot<Map<String, dynamic>> snap;
+  final DocumentSnapshot<Map<String, dynamic>> snap1;
+  final String subject;
+  const Checkeachsubmission({
+    super.key,
+    required this.snap1,
+    required this.title,
+    required this.subject,
+    required this.snap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +40,7 @@ class Checkeachsubmission extends StatelessWidget {
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
+                  color: Colors.black,
                   spreadRadius: 1,
                   blurRadius: 3,
                   offset: const Offset(0, 1),
@@ -59,7 +69,7 @@ class Checkeachsubmission extends StatelessWidget {
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
+                  color: Colors.black,
                   spreadRadius: 1,
                   blurRadius: 10,
                   offset: const Offset(0, 4),
@@ -103,8 +113,8 @@ class Checkeachsubmission extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text(
-                        'Surface Areas and Volumes',
+                      Text(
+                        title,
                         style: TextStyle(
                           fontSize: 26,
                           fontWeight: FontWeight.bold,
@@ -149,7 +159,7 @@ class Checkeachsubmission extends StatelessWidget {
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
+                      color: Colors.black,
                       spreadRadius: 1,
                       blurRadius: 4,
                       offset: const Offset(0, 2),
@@ -157,8 +167,8 @@ class Checkeachsubmission extends StatelessWidget {
                   ],
                 ),
                 child: Chip(
-                  label: const Text(
-                    'Mathematics',
+                  label: Text(
+                    subject,
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.black,
@@ -188,7 +198,7 @@ class Checkeachsubmission extends StatelessWidget {
                 Expanded(
                   flex: 3,
                   child: Text(
-                    'Exam Name',
+                    'Student Name',
                     style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -214,7 +224,7 @@ class Checkeachsubmission extends StatelessWidget {
                       Container(
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Colors.white.withOpacity(0.2),
+                          color: Colors.white,
                         ),
                         padding: const EdgeInsets.all(2),
                         child: Icon(
@@ -247,64 +257,40 @@ class Checkeachsubmission extends StatelessWidget {
           // Divider
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Divider(color: Colors.white.withOpacity(0.2), height: 1),
+            child: Divider(color: Colors.white, height: 1),
           ),
 
           // Exam list with enhanced styling
           Expanded(
-            child: ListView(
-              padding: const EdgeInsets.only(top: 8),
-              children: const [
-                ExamListItem(
-                  title: 'Graphic Design Fundamentals',
-                  status: 'Incomplete',
-                  statusColor: Color(0xFFB5E8A9),
-                  marks: '0',
-                  shade: true,
-                ),
-                ExamListItem(
-                  title: 'UX/UI Design Principles',
-                  status: 'Completed',
-                  statusColor: Color(0xFF8ED17A),
-                  marks: '0',
-                  shade: false,
-                ),
-                ExamListItem(
-                  title: 'Sanika Chavan',
-                  status: 'Upcoming',
-                  statusColor: Color(0xFFA9D9EA),
-                  marks: '0',
-                  shade: true,
-                ),
-                ExamListItem(
-                  title: 'Product Design Prototype',
-                  status: 'Upcoming',
-                  statusColor: Color(0xFFA9D9EA),
-                  marks: '0',
-                  shade: false,
-                ),
-                ExamListItem(
-                  title: 'Kshitija Magar',
-                  status: 'Upcoming',
-                  statusColor: Color(0xFFA9D9EA),
-                  marks: '0',
-                  shade: true,
-                ),
-                ExamListItem(
-                  title: 'Visual Communication Design',
-                  status: 'Upcoming',
-                  statusColor: Color(0xFFA9D9EA),
-                  marks: '0',
-                  shade: false,
-                ),
-                ExamListItem(
-                  title: 'Visual Communication Design',
-                  status: 'Upcoming',
-                  statusColor: Color(0xFFA9D9EA),
-                  marks: '0',
-                  shade: true,
-                ),
-              ],
+            child: ListView.builder(
+              itemCount: snap['users'].length,
+              itemBuilder: (context, index) {
+                return StreamBuilder(
+                  stream:
+                      FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(snap['users'][index])
+                          .snapshots(),
+                  builder: (context, snapshot) {
+                    if (snapshot.data == null) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    return ExamListItem(
+                      title: snapshot.data!['name'],
+                      status:
+                          snap1['submissions'].contains(snapshot.data!['uid'])
+                              ? "completed"
+                              : 'pending',
+                      statusColor:
+                          snap1['submissions'].contains(snapshot.data!['uid'])
+                              ? Colors.green
+                              : Colors.red,
+                      marks: '0',
+                      shade: true,
+                    );
+                  },
+                );
+              },
             ),
           ),
 
@@ -323,11 +309,11 @@ class Checkeachsubmission extends StatelessWidget {
                       gradient: LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
-                        colors: [Colors.white, Colors.white.withOpacity(0.9)],
+                        colors: [Colors.white, Colors.white],
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
+                          color: Colors.black,
                           offset: const Offset(0, 3),
                           blurRadius: 8,
                           spreadRadius: 0,
@@ -452,41 +438,8 @@ class Checkeachsubmission extends StatelessWidget {
               ],
             ),
           ),
+
           // Bottom navigation with enhanced styling
-          Container(
-            height: 70,
-            decoration: BoxDecoration(
-              color: const Color(0xFF1F2839),
-              border: Border(
-                top: BorderSide(
-                  color: Colors.grey.withOpacity(0.3),
-                  width: 0.5,
-                ),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
-                  spreadRadius: 0,
-                  blurRadius: 10,
-                  offset: const Offset(0, -2),
-                ),
-              ],
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                CustomNavigation(
-                  icons: [
-                    Icons.home_outlined,
-                    Icons.show_chart,
-                    Icons.videocam_outlined,
-                    Icons.person_outline,
-                  ],
-                  selectedIndex: 0,
-                ),
-              ],
-            ),
-          ),
         ],
       ),
     );

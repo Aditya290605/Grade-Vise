@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:grade_vise/student/assignment_page.dart';
+import 'package:grade_vise/teacher/screens/meet.dart';
 
 class ClassroomStudentScreen extends StatefulWidget {
   final Map<String, dynamic> classData;
@@ -156,7 +157,12 @@ class _ClassroomScreenState extends State<ClassroomStudentScreen> {
                   iconColor: Colors.white,
                   backgroundColor: Color(0xFF5CB85C),
                   label: 'Submissions',
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const Meet()),
+                    );
+                  },
                 ),
               ],
             ),
@@ -276,7 +282,6 @@ class _ClassroomScreenState extends State<ClassroomStudentScreen> {
               ),
             ),
           ),
-
           // Bottom navigation
         ],
       ),
