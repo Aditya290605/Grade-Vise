@@ -1,33 +1,17 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:grade_vise/teacher/Submissions/CheckEachSubmission.dart';
-
-// Note: Since we're using a placeholder for the custom navigation import,
-// I'll include the CustomNavigation class directly in this file
-// In your actual implementation, use the import statement:
+import 'package:grade_vise/utils/colors.dart';
 import 'package:grade_vise/widgets/classroom_details/custom_navigation.dart';
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        fontFamily: 'SF Pro Display',
-      ),
-      home: const SubmissionsPage(),
-    );
-  }
-}
-
 class SubmissionsPage extends StatelessWidget {
-  const SubmissionsPage({super.key});
+  final String classroomId;
+  final String photo;
+  const SubmissionsPage({
+    super.key,
+    required this.classroomId,
+    required this.photo,
+  });
 
   Widget _buildAssignmentHeader() {
     return Container(
@@ -46,7 +30,7 @@ class SubmissionsPage extends StatelessWidget {
             child: Container(
               width: 100,
               height: 100,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 color: Color(0xFFF8D7A4),
                 shape: BoxShape.circle,
               ),
@@ -81,9 +65,9 @@ class SubmissionsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: bgColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: bgColor,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.menu, color: Color(0xFF2D3142), size: 30),
@@ -97,6 +81,11 @@ class SubmissionsPage extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: CircleAvatar(
+              backgroundImage: NetworkImage(
+                photo.isEmpty
+                    ? "https://i.pinimg.com/474x/59/af/9c/59af9cd100daf9aa154cc753dd58316d.jpg"
+                    : photo,
+              ),
               backgroundColor: const Color(0xFFD9D9D9),
               radius: 20,
               child: Container(),
@@ -104,39 +93,64 @@ class SubmissionsPage extends StatelessWidget {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            _buildAssignmentHeader(),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              child: Column(
-                children: [
-                  SubmissionCard(
-                    subject: 'Mathematics',
-                    title: 'Surface Areas and Volumes',
-                    submitted: '107',
-                    total: '140',
+      body: Column(
+        children: [
+          _buildAssignmentHeader(),
+          const SizedBox(height: 20),
+
+          StreamBuilder(
+            stream:
+                FirebaseFirestore.instance
+                    .collection('classrooms')
+                    .doc(classroomId)
+                    .snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.data != null) {
+                return Expanded(
+                  child: ListView.builder(
+                    itemCount: snapshot.data!['assignments'].length,
+                    itemBuilder: (context, index) {
+                      return StreamBuilder(
+                        stream:
+                            FirebaseFirestore.instance
+                                .collection('assignments')
+                                .where(
+                                  'fileId',
+                                  isEqualTo:
+                                      snapshot.data!['assignments'][index],
+                                )
+                                .snapshots(),
+                        builder: (context, snap) {
+                          if (snap.data == null) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 15.0,
+                            ),
+                            child: SubmissionCard(
+                              snap: snapshot.data!,
+                              snap1: snap.data!.docs[index],
+                              subject: snapshot.data!['subject'],
+                              title: snap.data!.docs[index]['title'],
+                              submitted:
+                                  snap.data!.docs[index]['submissions'].length,
+                              total:
+                                  '${snap.data!.docs[index]['submissions'].length}',
+                            ),
+                          );
+                        },
+                      );
+                    },
                   ),
-                  const SizedBox(height: 16),
-                  SubmissionCard(
-                    subject: 'Science',
-                    title: 'Structure of Atoms',
-                    submitted: '203',
-                    total: '276',
-                  ),
-                  const SizedBox(height: 16),
-                  SubmissionCard(
-                    subject: 'English',
-                    title: 'My Bestfriend Essay',
-                    submitted: '67',
-                    total: '70',
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+                );
+              }
+              return const Center(child: CircularProgressIndicator());
+            },
+          ),
+        ],
       ),
       bottomNavigationBar: CustomNavigation(
         icons: [
@@ -156,8 +170,11 @@ class SubmissionsPage extends StatelessWidget {
 class SubmissionCard extends StatelessWidget {
   final String subject;
   final String title;
-  final String submitted;
+  final int submitted;
   final String total;
+  final DocumentSnapshot<Map<String, dynamic>> snap1;
+
+  final DocumentSnapshot<Map<String, dynamic>> snap;
 
   const SubmissionCard({
     super.key,
@@ -165,6 +182,8 @@ class SubmissionCard extends StatelessWidget {
     required this.title,
     required this.submitted,
     required this.total,
+    required this.snap1,
+    required this.snap,
   });
 
   @override
@@ -227,7 +246,13 @@ class SubmissionCard extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const Checkeachsubmission(),
+                  builder:
+                      (context) => Checkeachsubmission(
+                        title: title,
+                        subject: subject,
+                        snap: snap,
+                        snap1: snap1,
+                      ),
                 ),
               );
             },

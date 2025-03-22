@@ -169,9 +169,7 @@ class _ClassroomScreenState extends State<ClassroomStudentScreen> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => const TimetablePage(),
-                      ),
+                      MaterialPageRoute(builder: (context) => const Meet()),
                     );
                   },
                 ),

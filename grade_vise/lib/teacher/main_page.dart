@@ -8,11 +8,13 @@ import 'package:grade_vise/utils/colors.dart';
 class MainPage extends StatefulWidget {
   final String classroomId;
   final String userPhoto;
+  final String username;
 
   const MainPage({
     super.key,
     required this.classroomId,
     required this.userPhoto,
+    required this.username,
   });
 
   @override
@@ -79,8 +81,12 @@ class _MainPageState extends State<MainPage> {
                     photoUrl: widget.userPhoto,
                   ),
                   Grading(),
-                  TimetablePage(),
-                  PeoplePage(),
+                  Meet(),
+                  PeoplePage(
+                    classroomId: widget.classroomId,
+                    name: widget.username,
+                    photoUrl: widget.userPhoto,
+                  ),
                 ],
               ),
             ),
