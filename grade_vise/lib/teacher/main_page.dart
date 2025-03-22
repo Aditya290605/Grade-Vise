@@ -81,7 +81,7 @@ class _MainPageState extends State<MainPage> {
                     photoUrl: widget.userPhoto,
                   ),
                   Grading(),
-                  Meet(),
+                  TimetablePage(),
                   PeoplePage(
                     classroomId: widget.classroomId,
                     name: widget.username,
