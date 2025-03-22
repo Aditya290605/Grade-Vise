@@ -79,7 +79,7 @@ class _MainPageState extends State<MainPage> {
                     photoUrl: widget.userPhoto,
                   ),
                   Grading(),
-                  Meet(),
+                  TimetablePage(),
                   PeoplePage(),
                 ],
               ),
