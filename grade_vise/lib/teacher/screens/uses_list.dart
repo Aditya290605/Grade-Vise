@@ -138,7 +138,7 @@ class _PeoplePageState extends State<PeoplePage> {
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 16.0),
               decoration: BoxDecoration(
-                color: const Color(0xFFE6F0FF),
+                color: const Color.fromARGB(255, 255, 255, 255),
                 borderRadius: BorderRadius.circular(16),
               ),
               padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
@@ -202,7 +202,7 @@ class _PeoplePageState extends State<PeoplePage> {
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 16.0),
               decoration: BoxDecoration(
-                color: const Color(0xFFE6F0FF),
+                color: const Color.fromARGB(255, 255, 255, 255),
                 borderRadius: BorderRadius.circular(16),
               ),
               padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),

@@ -91,7 +91,7 @@ class _SignUpState extends State<SignIn> with TickerProviderStateMixin {
   void _handleSignIn(BuildContext context, String email, String pass) async {
     String user = await FirebaseAuthMethods(
       FirebaseAuth.instance,
-    ).singInUser(context, email, pass);
+    ).signInUser(context, email, pass);
 
     if (user == 'success') {
       // Only navigate after sign-in is complete
