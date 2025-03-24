@@ -199,6 +199,7 @@ Widget _buildAssignmentCard(
                           fileUrl: fileUrl,
                           fileType: fileType,
                           classroomId: classroomId,
+                          isTeacher: true,
                         ),
                   ),
                 );

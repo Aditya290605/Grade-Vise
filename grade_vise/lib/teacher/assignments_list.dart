@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:grade_vise/student/assignment_details.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -104,18 +105,43 @@ class SubmissionsOverviewScreen extends StatelessWidget {
                             if (snap.data == null) {
                               const Center(child: CircularProgressIndicator());
                             }
-                            return _buildSubmissionCard(
-                              context,
-                              name: snap.data!['name'] ?? 'Unknown',
-                              email: snap.data!['email'] ?? 'No email',
-                              submissionTime:
-                                  data['uploadedAt'] != null
-                                      ? (data['uploadedAt'] as Timestamp)
-                                          .toDate()
-                                      : DateTime.now(),
-                              assignmentTitle:
-                                  data['title'] ?? 'Unknown Assignment',
-                              fileType: data['fileType'] ?? 'unknown',
+                            return InkWell(
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder:
+                                        (context) => AssignmentDetailScreen(
+                                          title: snap.data!['name'],
+                                          dueDate:
+                                              (data['uploadedAt'] as Timestamp)
+                                                  .toDate()
+                                                  .toString(),
+                                          content:
+                                              snap.data!['email'] ?? 'No email',
+                                          fileUrl: data['fileUrl'],
+                                          fileType: data['fileType'],
+                                          bgColor: bgColor,
+                                          assignmentId: data['assignmentId'],
+                                          classroomId: classroomId,
+                                          isTeacher: false,
+                                          uid: data['userId'],
+                                        ),
+                                  ),
+                                );
+                              },
+                              child: _buildSubmissionCard(
+                                context,
+                                name: snap.data!['name'] ?? 'Unknown',
+                                email: snap.data!['email'] ?? 'No email',
+                                submissionTime:
+                                    data['uploadedAt'] != null
+                                        ? (data['uploadedAt'] as Timestamp)
+                                            .toDate()
+                                        : DateTime.now(),
+                                assignmentTitle:
+                                    data['title'] ?? 'Unknown Assignment',
+                                fileType: data['fileType'] ?? 'unknown',
+                              ),
                             );
                           },
                         );

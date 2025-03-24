@@ -11,6 +11,7 @@ class AssignmentDetailScreen extends StatefulWidget {
   final String assignmentId;
   final String uid;
   final String classroomId;
+  final bool isTeacher;
   final Color bgColor;
 
   const AssignmentDetailScreen({
@@ -23,6 +24,7 @@ class AssignmentDetailScreen extends StatefulWidget {
     required this.bgColor,
     required this.assignmentId,
     required this.classroomId,
+    required this.isTeacher,
     required this.uid,
   });
 
@@ -150,88 +152,55 @@ class _AssignmentDetailScreenState extends State<AssignmentDetailScreen> {
             const SizedBox(height: 24),
 
             // Upload Section
-            Card(
-              elevation: 2,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Submit Your Assignment',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
+            widget.isTeacher
+                ? Card(
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Submit Your Assignment',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder:
+                                      (context) => UploadeSubmisson(
+                                        assignmentId: widget.assignmentId,
+                                        uid: widget.uid,
+                                        classroomId: widget.classroomId,
+                                      ),
+                                ),
+                              );
+                            },
+                            icon: Icon(Icons.upload_file),
+                            label: Text('Upload Assignment'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Theme.of(context).primaryColor,
+                              foregroundColor: Colors.white,
+                              padding: EdgeInsets.symmetric(vertical: 12),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 16),
-
-                    if (uploadedFileName != null)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 16.0),
-                        child: Row(
-                          children: [
-                            Icon(Icons.check_circle, color: Colors.green),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                'Uploaded: $uploadedFileName',
-                                style: TextStyle(color: Colors.green),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                    if (isUploading)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Uploading...'),
-                            const SizedBox(height: 8),
-                            LinearProgressIndicator(value: uploadProgress),
-                            const SizedBox(height: 4),
-                            Text(
-                              '${(uploadProgress * 100).toStringAsFixed(1)}%',
-                              style: TextStyle(fontSize: 12),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder:
-                                  (context) => UploadeSubmisson(
-                                    assignmentId: widget.assignmentId,
-                                    uid: widget.uid,
-                                    classroomId: widget.classroomId,
-                                  ),
-                            ),
-                          );
-                        },
-                        icon: Icon(Icons.upload_file),
-                        label: Text('Upload Assignment'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Theme.of(context).primaryColor,
-                          foregroundColor: Colors.white,
-                          padding: EdgeInsets.symmetric(vertical: 12),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+                  ),
+                )
+                : Container(),
           ],
         ),
       ),
