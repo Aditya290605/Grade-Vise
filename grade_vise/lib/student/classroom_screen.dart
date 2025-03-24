@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:grade_vise/student/assignment_page.dart';
 import 'package:grade_vise/student/timetables.dart';
 import 'package:grade_vise/teacher/screens/meet.dart';
+import 'package:grade_vise/student/Student_meet.dart';
 
 class ClassroomStudentScreen extends StatefulWidget {
   final Map<String, dynamic> classData;
@@ -169,7 +170,7 @@ class _ClassroomScreenState extends State<ClassroomStudentScreen> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const Meet()),
+                      MaterialPageRoute(builder: (context) => const TimetablePage()),
                     );
                   },
                 ),
