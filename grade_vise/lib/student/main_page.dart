@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:grade_vise/student/Student_meet.dart';
 import 'package:grade_vise/student/classroom_screen.dart';
 import 'package:grade_vise/student/my_grades.dart';
 import 'package:grade_vise/teacher/screens/meet.dart';
@@ -79,7 +80,7 @@ class _MainPageScreenState extends State<MainPageScreen> {
                     photoUrl: widget.photoUrl,
                   ),
                   MyGrades(),
-                  Meet(),
+                  Student_Meet(),
                   PeoplePage(
                     classroomId: widget.classroomId,
                     name: widget.classData['name'],
