@@ -110,6 +110,16 @@ class SubmissionsPage extends StatelessWidget {
                   child: ListView.builder(
                     itemCount: snapshot.data!['assignments'].length,
                     itemBuilder: (context, index) {
+                      var assignments = snapshot.data!['assignments'];
+
+                      if (assignments.isEmpty) {
+                        return Center(
+                          child: Image.network(
+                            "https://i.pinimg.com/736x/a8/1e/3d/a81e3d8e4abb9b68c624e9738d61b7f4.jpg",
+                          ),
+                        );
+                      }
+
                       return StreamBuilder(
                         stream:
                             FirebaseFirestore.instance
