@@ -97,6 +97,13 @@ class AssignmentsPage extends StatelessWidget {
                                   subject:
                                       snap.data!.docs[index]['description'],
                                   date: snap.data!.docs[index]['dueDate'],
+                                  classroomId: classroomId,
+                                  isTeacher: true,
+                                  assignmentId: '',
+                                  des: '',
+                                  uid: '',
+                                  fileType: '',
+                                  fileUrl: '',
                                 );
                               },
                               padding: const EdgeInsets.symmetric(vertical: 10),
