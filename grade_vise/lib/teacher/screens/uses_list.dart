@@ -6,11 +6,13 @@ class PeoplePage extends StatefulWidget {
   final String classroomId;
   final String name;
   final String photoUrl;
+  final String teacherPhoto;
   const PeoplePage({
     super.key,
     required this.classroomId,
     required this.name,
     required this.photoUrl,
+    required this.teacherPhoto,
   });
 
   @override
@@ -18,34 +20,27 @@ class PeoplePage extends StatefulWidget {
 }
 
 class _PeoplePageState extends State<PeoplePage> {
-  // Static data for now, later will come from Firebase
-
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
+    return StreamBuilder<DocumentSnapshot>(
       stream:
           FirebaseFirestore.instance
               .collection('classrooms')
               .doc(widget.classroomId)
               .snapshots(),
       builder: (context, snapshot) {
-        if (snapshot.data == null) {
-          return Center(child: CircularProgressIndicator());
+        if (!snapshot.hasData || snapshot.data?.data() == null) {
+          return const Center(child: CircularProgressIndicator());
         }
 
+        final data = snapshot.data!.data() as Map<String, dynamic>;
+        final users = data['users'] as List<dynamic>? ?? [];
+
         return Scaffold(
-          backgroundColor: bgColor, // Dark navy background
+          backgroundColor: bgColor,
           body: SafeArea(
             child: Column(
               children: [
-                // App Bar
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0,
-                    vertical: 16.0,
-                  ),
-                ),
-
                 const SizedBox(height: 30),
 
                 // Teacher Section
@@ -61,8 +56,8 @@ class _PeoplePageState extends State<PeoplePage> {
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
+                    children: const [
+                      Text(
                         'Teacher',
                         style: TextStyle(
                           fontSize: 18,
@@ -70,7 +65,7 @@ class _PeoplePageState extends State<PeoplePage> {
                           color: Color(0xFF2D3142),
                         ),
                       ),
-                      const Icon(
+                      Icon(
                         Icons.person_add_alt,
                         color: Color(0xFF2D3142),
                         size: 22,
@@ -79,14 +74,12 @@ class _PeoplePageState extends State<PeoplePage> {
                   ),
                 ),
 
-                // Divider
                 Container(
                   height: 1,
                   color: Colors.grey[700],
                   margin: const EdgeInsets.only(top: 10),
                 ),
 
-                // Teacher List Item
                 Container(
                   padding: const EdgeInsets.symmetric(
                     vertical: 24.0,
@@ -94,21 +87,18 @@ class _PeoplePageState extends State<PeoplePage> {
                   ),
                   child: Row(
                     children: [
-                      Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: NetworkImage(widget.photoUrl),
-                          ),
-                          color: Color(0xFFD3D3D3),
-                          shape: BoxShape.circle,
+                      CircleAvatar(
+                        backgroundImage: NetworkImage(
+                          widget.teacherPhoto.isEmpty
+                              ? 'https://i.pinimg.com/474x/59/af/9c/59af9cd100daf9aa154cc753dd58316d.jpg'
+                              : widget.teacherPhoto,
                         ),
+                        radius: 22,
                       ),
                       const SizedBox(width: 16),
                       Text(
                         widget.name,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.w500,
                           color: Colors.white,
@@ -143,7 +133,7 @@ class _PeoplePageState extends State<PeoplePage> {
                       Row(
                         children: [
                           Text(
-                            '${snapshot.data!['users'].length} Student',
+                            '${users.length} Student',
                             style: const TextStyle(
                               fontSize: 14,
                               color: Colors.grey,
@@ -167,7 +157,6 @@ class _PeoplePageState extends State<PeoplePage> {
                   ),
                 ),
 
-                // Divider
                 Container(
                   height: 1,
                   color: Colors.grey[700],
@@ -176,70 +165,65 @@ class _PeoplePageState extends State<PeoplePage> {
 
                 const SizedBox(height: 12),
 
-                // Filter Button with Selection Indicator
-
                 // Student List
                 Expanded(
                   child: ListView.builder(
-                    itemCount: snapshot.data!['users'].length,
+                    itemCount: users.length,
                     itemBuilder: (context, index) {
-                      // Calculate different background colors for alternating items
-                      Color backgroundColor;
-                      if (index % 2 == 0) {
-                        backgroundColor = const Color(
-                          0xFF3A4553,
-                        ); // Lighter gray
-                      } else {
-                        backgroundColor = const Color(0xFF1E2530); // Dark navy
-                      }
+                      final userId = users[index];
 
-                      return StreamBuilder(
+                      return StreamBuilder<DocumentSnapshot>(
                         stream:
                             FirebaseFirestore.instance
                                 .collection('users')
-                                .where(
-                                  'uid',
-                                  isEqualTo: snapshot.data!['users'][index],
-                                )
+                                .doc(userId)
                                 .snapshots(),
                         builder: (context, snap) {
-                          if (snap.data == null) {
-                            return Center(child: CircularProgressIndicator());
+                          if (!snap.hasData || snap.data?.data() == null) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
                           }
-                          return InkWell(
-                            onTap: () {},
-                            child: Container(
-                              decoration: BoxDecoration(color: backgroundColor),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 16.0,
-                                  horizontal: 16.0,
-                                ),
-                                child: Row(
-                                  children: [
-                                    CircleAvatar(
-                                      backgroundImage: NetworkImage(
-                                        snap.data!.docs[index]['photoURL'] == ''
-                                            ? "https://i.pinimg.com/474x/59/af/9c/59af9cd100daf9aa154cc753dd58316d.jpg"
-                                            : snap
-                                                .data!
-                                                .docs[index]['photoURL'],
+
+                          final userData =
+                              snap.data!.data() as Map<String, dynamic>;
+                          final photoURL =
+                              userData['photoURL'] == ""
+                                  ? 'https://i.pinimg.com/474x/59/af/9c/59af9cd100daf9aa154cc753dd58316d.jpg'
+                                  : userData['photoURL'];
+                          final email = userData['email'] ?? 'No email';
+
+                          return Container(
+                            color:
+                                index % 2 == 0
+                                    ? const Color(0xFF3A4553)
+                                    : const Color(0xFF1E2530),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 16.0,
+                                horizontal: 16.0,
+                              ),
+                              child: Row(
+                                children: [
+                                  CircleAvatar(
+                                    backgroundImage: NetworkImage(photoURL),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: Text(
+                                      email,
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.white,
                                       ),
                                     ),
-                                    const SizedBox(width: 16),
-                                    Expanded(
-                                      child: Text(
-                                        snap.data!.docs[index]['email'],
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w500,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ),
-                                    Icon(Icons.more_vert_outlined),
-                                  ],
-                                ),
+                                  ),
+                                  const Icon(
+                                    Icons.more_vert_outlined,
+                                    color: Colors.white,
+                                  ),
+                                ],
                               ),
                             ),
                           );

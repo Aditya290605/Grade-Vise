@@ -197,7 +197,13 @@ class _JoinClassScreenState extends State<JoinClassScreen> {
                                             vertical: 20,
                                           ),
                                           child: InkWell(
-                                            onTap: () {
+                                            onTap: () async {
+                                              final snap =
+                                                  await FirebaseFirestore
+                                                      .instance
+                                                      .collection('users')
+                                                      .doc(classData['uid'])
+                                                      .get();
                                               Navigator.of(context).push(
                                                 MaterialPageRoute(
                                                   builder:
@@ -205,6 +211,10 @@ class _JoinClassScreenState extends State<JoinClassScreen> {
                                                         context,
                                                       ) => MainPageScreen(
                                                         classData: classData,
+                                                        teacherPhoto:
+                                                            snap.data()!['photoURL'],
+                                                        name:
+                                                            snap.data()!['name'],
                                                         photoUrl:
                                                             userData['photoURL'] ==
                                                                         null ||

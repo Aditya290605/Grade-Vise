@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:grade_vise/student/uploade_submisson.dart';
+import 'package:grade_vise/widgets/pdf_viewer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AssignmentDetailScreen extends StatefulWidget {
@@ -134,7 +135,17 @@ class _AssignmentDetailScreenState extends State<AssignmentDetailScreen> {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           ElevatedButton.icon(
-                            onPressed: () => _openFile(widget.fileUrl, context),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (context) => PdfViewerScreen(
+                                        pdfUrl: widget.fileUrl,
+                                      ),
+                                ),
+                              );
+                            },
                             icon: Icon(Icons.open_in_new),
                             label: Text('Open File'),
                             style: ElevatedButton.styleFrom(
@@ -300,24 +311,6 @@ class _AssignmentDetailScreenState extends State<AssignmentDetailScreen> {
           ],
         ),
       );
-    }
-  }
-
-  Future<void> _openFile(String url, BuildContext context) async {
-    try {
-      final Uri uri = Uri.parse(Uri.encodeFull(url));
-
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
-      } else {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Could not open file')));
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error: $e')));
     }
   }
 

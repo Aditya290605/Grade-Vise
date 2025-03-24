@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:grade_vise/student/assignment_details.dart';
 import 'package:intl/intl.dart';
@@ -95,29 +96,55 @@ class SubmissionsOverviewScreen extends StatelessWidget {
                         var data =
                             snapshot.data!.docs[index].data()
                                 as Map<String, dynamic>;
-                        return StreamBuilder(
+
+                        return StreamBuilder<DocumentSnapshot>(
                           stream:
                               FirebaseFirestore.instance
                                   .collection('users')
                                   .doc(data['userId'])
                                   .snapshots(),
                           builder: (context, snap) {
-                            if (snap.data == null) {
-                              const Center(child: CircularProgressIndicator());
+                            if (snap.connectionState ==
+                                ConnectionState.waiting) {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
                             }
+
+                            if (snap.hasError) {
+                              return Center(
+                                child: Text(
+                                  'Error loading user data',
+                                  style: TextStyle(color: Colors.red),
+                                ),
+                              );
+                            }
+
+                            if (!snap.hasData ||
+                                snap.data == null ||
+                                !snap.data!.exists) {
+                              return ListTile(
+                                title: Text('User data not available'),
+                                subtitle: Text('User ID: ${data['userId']}'),
+                              );
+                            }
+
+                            var userData =
+                                snap.data!.data() as Map<String, dynamic>;
+
                             return InkWell(
                               onTap: () {
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
                                     builder:
                                         (context) => AssignmentDetailScreen(
-                                          title: snap.data!['name'],
+                                          title: userData['name'] ?? 'Unknown',
                                           dueDate:
                                               (data['uploadedAt'] as Timestamp)
                                                   .toDate()
                                                   .toString(),
                                           content:
-                                              snap.data!['email'] ?? 'No email',
+                                              userData['email'] ?? 'No email',
                                           fileUrl: data['fileUrl'],
                                           fileType: data['fileType'],
                                           bgColor: bgColor,
@@ -131,8 +158,8 @@ class SubmissionsOverviewScreen extends StatelessWidget {
                               },
                               child: _buildSubmissionCard(
                                 context,
-                                name: snap.data!['name'] ?? 'Unknown',
-                                email: snap.data!['email'] ?? 'No email',
+                                name: userData['name'] ?? 'Unknown',
+                                email: userData['email'] ?? 'No email',
                                 submissionTime:
                                     data['uploadedAt'] != null
                                         ? (data['uploadedAt'] as Timestamp)
@@ -159,7 +186,11 @@ class SubmissionsOverviewScreen extends StatelessWidget {
 
   Widget _buildSummaryCard(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection('submissions').snapshots(),
+      stream:
+          FirebaseFirestore.instance
+              .collection('submissions')
+              .where('classroomId', isEqualTo: classroomId)
+              .snapshots(),
       builder: (context, snapshot) {
         int totalSubmissions =
             snapshot.hasData ? snapshot.data!.docs.length : 0;
