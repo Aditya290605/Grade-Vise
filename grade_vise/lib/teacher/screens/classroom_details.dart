@@ -8,6 +8,7 @@ import 'package:grade_vise/widgets/classroom_details/announcement.dart';
 import 'package:grade_vise/widgets/classroom_details/components.dart';
 import 'package:grade_vise/widgets/classroom_details/custom_textfeild.dart';
 import 'package:grade_vise/widgets/classroom_details/subject_container.dart';
+import 'package:intl/intl.dart';
 
 class ClassroomDetails extends StatefulWidget {
   final String username;
@@ -142,6 +143,7 @@ class _ClassroomDetailsState extends State<ClassroomDetails> {
                         FirebaseFirestore.instance
                             .collection('announcements')
                             .where('classroomId', isEqualTo: widget.classroomId)
+                            .orderBy('time', descending: true)
                             .snapshots(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
@@ -168,8 +170,18 @@ class _ClassroomDetailsState extends State<ClassroomDetails> {
                           return Padding(
                             padding: const EdgeInsets.all(10.0),
                             child: PostContainerWidget(
-                              userName: 'Aditya',
-                              date: 'yesterday',
+                              uploadTime:
+                                  DateFormat('h:mm a')
+                                      .format(
+                                        (docs[index]['time'] as Timestamp)
+                                            .toDate(),
+                                      )
+                                      .toString(),
+                              image: docs[index]['profilePic'],
+                              userName: docs[index]['announcedBy'],
+                              date: DateFormat('dd-MM-yyyy').format(
+                                (docs[index]['time'] as Timestamp).toDate(),
+                              ),
                               message:
                                   docs[index]['message'] ??
                                   'No message available.',

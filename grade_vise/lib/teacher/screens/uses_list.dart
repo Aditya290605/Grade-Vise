@@ -7,12 +7,14 @@ class PeoplePage extends StatefulWidget {
   final String name;
   final String photoUrl;
   final String teacherPhoto;
+  final String teachername;
   const PeoplePage({
     super.key,
     required this.classroomId,
     required this.name,
     required this.photoUrl,
     required this.teacherPhoto,
+    required this.teachername,
   });
 
   @override
@@ -97,7 +99,7 @@ class _PeoplePageState extends State<PeoplePage> {
                       ),
                       const SizedBox(width: 16),
                       Text(
-                        widget.name,
+                        widget.teachername,
                         style: const TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.w500,

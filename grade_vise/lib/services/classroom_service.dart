@@ -4,7 +4,7 @@ import 'firebase_config.dart';
 
 class ClassroomService {
   final FirebaseFirestore _firestore = FirebaseConfig.firestore;
-  final FirebaseAuth _auth = FirebaseConfig.auth;
+  final FirebaseAuth _auth = FirebaseConfig.authh;
 
   // Check if classroom exists and join it
   Future<String> joinClassroom(String classCode, String uid) async {

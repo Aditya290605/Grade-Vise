@@ -211,10 +211,11 @@ class _JoinClassScreenState extends State<JoinClassScreen> {
                                                         context,
                                                       ) => MainPageScreen(
                                                         classData: classData,
+                                                        teahername:
+                                                            snap.data()!['name'],
                                                         teacherPhoto:
                                                             snap.data()!['photoURL'],
-                                                        name:
-                                                            snap.data()!['name'],
+                                                        name: userData['name'],
                                                         photoUrl:
                                                             userData['photoURL'] ==
                                                                         null ||

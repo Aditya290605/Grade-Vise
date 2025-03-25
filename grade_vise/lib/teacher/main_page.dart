@@ -90,6 +90,7 @@ class _MainPageState extends State<MainPage> {
                     name: widget.username,
                     photoUrl: widget.userPhoto,
                     teacherPhoto: widget.teacherPhoto,
+                    teachername: widget.username,
                   ),
                 ],
               ),

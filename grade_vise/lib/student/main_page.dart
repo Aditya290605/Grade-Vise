@@ -10,12 +10,14 @@ class MainPageScreen extends StatefulWidget {
   final String photoUrl;
   final String classroomId;
   final String name;
+  final String teahername;
   final String teacherPhoto;
   final Map<String, dynamic> classData;
 
   const MainPageScreen({
     super.key,
     required this.photoUrl,
+    required this.teahername,
     required this.classData,
     required this.teacherPhoto,
     required this.name,
@@ -82,12 +84,14 @@ class _MainPageScreenState extends State<MainPageScreen> {
                     classData: widget.classData,
                     classroomId: widget.classroomId,
                     photoUrl: widget.photoUrl,
+                    name: widget.name,
                   ),
                   MyGrades(),
                   Student_Meet(),
                   PeoplePage(
                     classroomId: widget.classroomId,
                     name: widget.name,
+                    teachername: widget.teahername,
                     photoUrl: widget.photoUrl,
                     teacherPhoto: widget.teacherPhoto,
                   ),

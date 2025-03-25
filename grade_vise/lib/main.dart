@@ -51,6 +51,8 @@ class _MyAppState extends State<MyApp> {
       sound: true,
     );
 
+    User? user = FirebaseAuth.instance.currentUser;
+
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
       print("Notifications permission granted!");
 
@@ -59,13 +61,19 @@ class _MyAppState extends State<MyApp> {
       print("FCM Token: $token");
 
       // Save token to Firestore
-      User? user = FirebaseAuth.instance.currentUser;
+
       if (user != null && token != null) {
         FirebaseFirestore.instance.collection('users').doc(user.uid).update({
           'fcmToken': token,
         });
       }
     }
+
+    FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
+      FirebaseFirestore.instance.collection('users').doc(user!.uid).update({
+        'fcmToken': newToken,
+      });
+    });
 
     // Listen for foreground messages
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
