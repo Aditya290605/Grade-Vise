@@ -68,12 +68,23 @@ class FirebaseConfig {
               .collection('users')
               .where('classrooms', arrayContains: classroomId)
               .get();
+
       List<String> tokens =
           tokensSnapshot.docs.map((doc) => doc['fcmToken'].toString()).toList();
+
+      if (tokens.isEmpty) {
+        debugPrint('No tokens found for classroom $classroomId');
+        return;
+      }
+
       final accessToken = await getAccessToken();
+      if (accessToken.isEmpty) {
+        debugPrint('Failed to get access token');
+        return;
+      }
 
       for (String token in tokens) {
-        await http.post(
+        final response = await http.post(
           Uri.parse(
             'https://fcm.googleapis.com/v1/projects/gradevise-e5c0d/messages:send',
           ),
@@ -85,13 +96,27 @@ class FirebaseConfig {
             "message": {
               "token": token,
               "notification": {"title": "New Announcement", "body": message},
+              "android": {"priority": "high"},
+              "apns": {
+                "headers": {"apns-priority": "10"},
+              },
             },
           }),
         );
-        debugPrint('success');
+
+        if (response.statusCode == 200) {
+          debugPrint('Notification sent to token: $token');
+        } else {
+          debugPrint('Failed to send notification to token: $token');
+          debugPrint('Error: ${response.body}');
+        }
       }
-    } catch (e) {
-      debugPrint(e.toString());
+      debugPrint(
+        'Notification sent to ${tokens.length} users in classroom $classroomId',
+      );
+    } catch (e, stackTrace) {
+      debugPrint('Error sending notifications: $e');
+      debugPrint('Stack trace: $stackTrace');
     }
   }
 }

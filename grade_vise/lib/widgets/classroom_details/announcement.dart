@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+
 import 'package:grade_vise/utils/fonts.dart';
 
 class PostContainerWidget extends StatelessWidget {
@@ -9,6 +11,7 @@ class PostContainerWidget extends StatelessWidget {
   final String linkText;
   final IconData linkIcon;
   final String image;
+  final String docId;
 
   const PostContainerWidget({
     super.key,
@@ -19,7 +22,51 @@ class PostContainerWidget extends StatelessWidget {
     required this.linkText,
     required this.image,
     required this.linkIcon,
+    required this.docId,
   });
+
+  void _showPopupMenu(BuildContext context, Offset position) async {
+    final result = await showMenu<String>(
+      color: Colors.black,
+      context: context,
+      position: RelativeRect.fromLTRB(
+        position.dx,
+        position.dy,
+        position.dx + 1,
+        position.dy + 1,
+      ),
+      items: [
+        PopupMenuItem<String>(
+          value: 'delete',
+          child: Container(
+            color: Colors.black,
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+            width: 180, // Adjust width
+            child: Row(
+              children: [
+                const Icon(Icons.delete, color: Colors.red),
+                const SizedBox(width: 15),
+                const Text(
+                  'Delete',
+                  style: TextStyle(color: Colors.white, fontSize: 16),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+
+    if (result == 'delete') {
+      FirebaseFirestore.instance
+          .collection('announcements')
+          .doc(docId)
+          .delete();
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Item deleted')));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -100,11 +147,11 @@ class PostContainerWidget extends StatelessWidget {
                     ],
                   ),
                 ),
-                IconButton(
-                  icon: Icon(Icons.more_vert, color: Colors.black54),
-                  onPressed: () {
-                    // Add more options functionality
+                GestureDetector(
+                  onTapDown: (TapDownDetails details) {
+                    _showPopupMenu(context, details.globalPosition);
                   },
+                  child: Icon(Icons.more_vert, color: Colors.black54),
                 ),
               ],
             ),

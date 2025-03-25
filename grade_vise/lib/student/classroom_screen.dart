@@ -249,6 +249,7 @@ class _ClassroomScreenState extends State<ClassroomStudentScreen> {
                     return Padding(
                       padding: const EdgeInsets.all(10.0),
                       child: PostContainerWidget(
+                        docId: docs[index]['announcementId'],
                         uploadTime:
                             DateFormat('h:mm a')
                                 .format(

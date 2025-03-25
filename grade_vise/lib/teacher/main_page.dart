@@ -10,6 +10,7 @@ class MainPage extends StatefulWidget {
   final String userPhoto;
   final String username;
   final String teacherPhoto;
+  final String uid;
 
   const MainPage({
     super.key,
@@ -17,6 +18,7 @@ class MainPage extends StatefulWidget {
     required this.userPhoto,
     required this.username,
     required this.teacherPhoto,
+    required this.uid,
   });
 
   @override
@@ -84,7 +86,12 @@ class _MainPageState extends State<MainPage> {
                     username: widget.username,
                   ),
                   Grading(),
-                  Meet(),
+                  Meet(
+                    uid: widget.uid,
+                    classroomId: widget.classroomId,
+                    name: widget.username,
+                    profilePic: widget.teacherPhoto,
+                  ),
                   PeoplePage(
                     classroomId: widget.classroomId,
                     name: widget.username,

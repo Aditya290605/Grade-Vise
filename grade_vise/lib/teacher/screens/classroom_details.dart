@@ -170,6 +170,7 @@ class _ClassroomDetailsState extends State<ClassroomDetails> {
                           return Padding(
                             padding: const EdgeInsets.all(10.0),
                             child: PostContainerWidget(
+                              docId: docs[index]['announcementId'],
                               uploadTime:
                                   DateFormat('h:mm a')
                                       .format(
