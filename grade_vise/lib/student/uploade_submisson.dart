@@ -1,24 +1,26 @@
+import 'dart:io';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:grade_vise/services/storage_methods.dart';
 import 'package:grade_vise/utils/show_error.dart';
-import 'dart:io';
-import 'package:intl/intl.dart';
 
-class AssignmentCreationPage extends StatefulWidget {
+class UploadeSubmisson extends StatefulWidget {
+  final String assignmentId;
   final String uid;
   final String classroomId;
-  const AssignmentCreationPage({
+  const UploadeSubmisson({
     super.key,
-    required this.classroomId,
+    required this.assignmentId,
     required this.uid,
+    required this.classroomId,
   });
 
   @override
-  State<AssignmentCreationPage> createState() => _AssignmentCreationPageState();
+  State<UploadeSubmisson> createState() => _UploadeSubmissonState();
 }
 
-class _AssignmentCreationPageState extends State<AssignmentCreationPage> {
+class _UploadeSubmissonState extends State<UploadeSubmisson> {
   String fileType = '';
   final TextEditingController titleController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
@@ -41,55 +43,27 @@ class _AssignmentCreationPageState extends State<AssignmentCreationPage> {
     }
   }
 
-  Future<void> _selectDate() async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now().add(const Duration(days: 7)),
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(const Duration(days: 365)),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: Color(0xFF1F2937),
-              onPrimary: Colors.white,
-              onSurface: Colors.black,
-            ),
-          ),
-          child: child!,
-        );
-      },
-    );
-
-    if (picked != null) {
-      setState(() {
-        dueDateController.text = DateFormat('dd MMM yyyy').format(picked);
-      });
-    }
-  }
-
   Future<void> submit(
     FilePickerResult result,
-    String chilname,
+    String childname,
     String title,
     String date,
     String description,
-    String classroomId,
+    String assignmentId,
     String uid,
-    String fileType,
   ) async {
     setState(() {
       isLoading = true;
     });
-    String res = await StorageMethods().uploadFiles(
+    String res = await StorageMethods().uploadSubmisson(
       result,
-      chilname,
+      childname,
       title,
-      date,
       description,
-      classroomId,
+      assignmentId,
       uid,
       fileType,
+      widget.classroomId,
     );
     setState(() {
       isLoading = false;
@@ -165,7 +139,7 @@ class _AssignmentCreationPageState extends State<AssignmentCreationPage> {
                   ),
                   const SizedBox(width: 16),
                   const Text(
-                    'Create Assignment',
+                    'Upload Assignment',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 24,
@@ -199,7 +173,7 @@ class _AssignmentCreationPageState extends State<AssignmentCreationPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Title Field
-                        _buildSectionTitle('Assignment Title'),
+                        _buildSectionTitle('Solution title'),
                         _buildTextField(
                           controller: titleController,
                           hintText: 'Enter assignment title',
@@ -208,17 +182,6 @@ class _AssignmentCreationPageState extends State<AssignmentCreationPage> {
                         const SizedBox(height: 24),
 
                         // Subject Dropdown
-
-                        // Due Date Field
-                        _buildSectionTitle('Due Date'),
-                        _buildTextField(
-                          controller: dueDateController,
-                          hintText: 'Select due date',
-                          prefixIcon: Icons.calendar_today,
-                          readOnly: true,
-                          onTap: _selectDate,
-                        ),
-                        const SizedBox(height: 24),
 
                         // Description Field
                         _buildSectionTitle('Description'),
@@ -231,7 +194,7 @@ class _AssignmentCreationPageState extends State<AssignmentCreationPage> {
                             controller: descriptionController,
                             maxLines: 5,
                             decoration: InputDecoration(
-                              hintText: 'Enter assignment description',
+                              hintText: 'Write any description',
                               border: InputBorder.none,
                               contentPadding: const EdgeInsets.all(16),
                               hintStyle: TextStyle(color: Colors.grey.shade400),
@@ -268,7 +231,7 @@ class _AssignmentCreationPageState extends State<AssignmentCreationPage> {
                                           ),
                                           const SizedBox(height: 12),
                                           Text(
-                                            'Upload files',
+                                            'Upload your solution',
                                             style: TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600,
@@ -304,14 +267,13 @@ class _AssignmentCreationPageState extends State<AssignmentCreationPage> {
                   if (_file != null) {
                     submit(
                       _file!,
-                      "assignment",
+                      "submissions",
                       titleController.text,
 
                       dueDateController.text,
                       descriptionController.text,
-                      widget.classroomId,
+                      widget.assignmentId,
                       widget.uid,
-                      fileType,
                     );
                   } else {
                     // Show a snackbar or dialog for missing file

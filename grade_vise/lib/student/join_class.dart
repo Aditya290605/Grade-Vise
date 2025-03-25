@@ -5,8 +5,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:grade_vise/screens/mobile_screen.dart';
 import 'package:grade_vise/services/firebase_auth_methods.dart';
-import 'package:grade_vise/student/classroom_screen.dart';
+
 import 'package:grade_vise/student/join_class_dialog.dart';
+import 'package:grade_vise/student/main_page.dart';
 import 'package:grade_vise/utils/colors.dart';
 import 'package:grade_vise/widgets/classroom_container.dart';
 
@@ -202,7 +203,7 @@ class _JoinClassScreenState extends State<JoinClassScreen> {
                                                   builder:
                                                       (
                                                         context,
-                                                      ) => ClassroomStudentScreen(
+                                                      ) => MainPageScreen(
                                                         classData: classData,
                                                         photoUrl:
                                                             userData['photoURL'] ==

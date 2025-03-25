@@ -57,7 +57,14 @@ class AssignmentPage extends StatelessWidget {
               return AssignmentCard(
                 title: snapshot.data!.docs[index]['title'],
                 subject: snapshot.data!.docs[index]['description'],
+                classroomId: classroomId,
                 date: snapshot.data!.docs[index]['dueDate'],
+                isTeacher: false,
+                assignmentId: snapshot.data!.docs[index]['fileId'],
+                uid: snapshot.data!.docs[index]['userId'],
+                fileUrl: snapshot.data!.docs[index]['fileUrl'],
+                des: snapshot.data!.docs[index]['description'],
+                fileType: snapshot.data!.docs[index]['fileType'],
               );
             },
           );

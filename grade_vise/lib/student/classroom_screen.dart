@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:grade_vise/student/assignment_page.dart';
 import 'package:grade_vise/student/timetables.dart';
 import 'package:grade_vise/teacher/screens/meet.dart';
+import 'package:grade_vise/utils/colors.dart';
 import 'package:grade_vise/student/Student_meet.dart';
 
 class ClassroomStudentScreen extends StatefulWidget {
@@ -24,29 +25,8 @@ class _ClassroomScreenState extends State<ClassroomStudentScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1F2937),
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.menu, color: Colors.white),
-          onPressed: () {},
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search, color: Colors.white),
-            onPressed: () {},
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: CircleAvatar(
-              radius: 22,
-              backgroundImage: NetworkImage(widget.photoUrl),
-              backgroundColor: Colors.grey.shade300,
-            ),
-          ),
-        ],
-      ),
+      backgroundColor: bgColor,
+
       body: Column(
         children: [
           // Course banner with gradient background
@@ -160,7 +140,6 @@ class _ClassroomScreenState extends State<ClassroomStudentScreen> {
                       ),
                     );
                   },
-                  
                 ),
                 _buildRoundMenuButton(
                   icon: Icons.bar_chart,
@@ -239,7 +218,7 @@ class _ClassroomScreenState extends State<ClassroomStudentScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: const [
                             Text(
-                              'Akshay',
+                              'Aksha',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 18,
@@ -295,29 +274,6 @@ class _ClassroomScreenState extends State<ClassroomStudentScreen> {
           // Bottom navigation
         ],
       ),
-
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.only(bottom: 10),
-        child: Container(
-          height: 70,
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(16),
-              topRight: Radius.circular(16),
-            ),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildNavButton(Icons.home, isSelected: false),
-              _buildNavButton(Icons.trending_up, isSelected: true),
-              _buildNavButton(Icons.video_call, isSelected: false),
-              _buildNavButton(Icons.person, isSelected: false),
-            ],
-          ),
-        ),
-      ),
     );
   }
 
@@ -359,18 +315,6 @@ class _ClassroomScreenState extends State<ClassroomStudentScreen> {
           style: const TextStyle(color: Colors.white, fontSize: 12),
         ),
       ],
-    );
-  }
-
-  Widget _buildNavButton(IconData icon, {required bool isSelected}) {
-    return Container(
-      width: 50,
-      height: 50,
-      decoration: BoxDecoration(
-        color: isSelected ? const Color(0xFF2D3748) : Colors.transparent,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Icon(icon, color: isSelected ? Colors.white : Colors.black54),
     );
   }
 }

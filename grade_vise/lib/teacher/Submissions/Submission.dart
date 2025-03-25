@@ -152,15 +152,6 @@ class SubmissionsPage extends StatelessWidget {
           ),
         ],
       ),
-      bottomNavigationBar: CustomNavigation(
-        icons: [
-          Icons.home_outlined,
-          Icons.show_chart,
-          Icons.videocam_outlined,
-          Icons.person_outline,
-        ],
-        selectedIndex: 1,
-      ),
     );
   }
 }
