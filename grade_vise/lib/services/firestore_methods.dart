@@ -61,4 +61,38 @@ class FirestoreMethods {
       debugPrint(e.toString());
     }
   }
+
+  Future<String> createAnncouncement(
+    String uid,
+    String classroomId,
+    String mes,
+    String name,
+    String profilePic,
+  ) async {
+    String res = '';
+
+    try {
+      String announcementId = Uuid().v1();
+
+      await FirebaseFirestore.instance
+          .collection('announcements')
+          .doc(announcementId)
+          .set({
+            'announcementId': announcementId,
+            'uid': uid,
+            'classroomId': classroomId,
+            'message': mes,
+            'announcedBy': name,
+            'profilePic': profilePic,
+
+            'time': Timestamp.now(),
+          });
+
+      res = 'success';
+    } catch (e) {
+      res = e.toString();
+    }
+
+    return res;
+  }
 }

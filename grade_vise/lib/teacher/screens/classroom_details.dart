@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:grade_vise/teacher/announcements/anncouncements.dart';
 import 'package:grade_vise/teacher/submissions/submission.dart';
 import 'package:grade_vise/teacher/assignments/assignment.dart';
 import 'package:grade_vise/utils/colors.dart';
@@ -9,12 +10,14 @@ import 'package:grade_vise/widgets/classroom_details/custom_textfeild.dart';
 import 'package:grade_vise/widgets/classroom_details/subject_container.dart';
 
 class ClassroomDetails extends StatefulWidget {
+  final String username;
   final String classroomId;
   final String photoUrl;
   const ClassroomDetails({
     super.key,
     required this.classroomId,
     required this.photoUrl,
+    required this.username,
   });
 
   @override
@@ -26,17 +29,21 @@ class _ClassroomDetailsState extends State<ClassroomDetails> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: bgColor,
-
-      body: StreamBuilder(
+      body: StreamBuilder<DocumentSnapshot>(
         stream:
             FirebaseFirestore.instance
                 .collection('classrooms')
                 .doc(widget.classroomId)
                 .snapshots(),
         builder: (context, snapshot) {
-          if (snapshot.data == null) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
           }
+          if (!snapshot.hasData || snapshot.data == null) {
+            return Center(child: Text('Classroom not found.'));
+          }
+
+          final classroomData = snapshot.data!.data() as Map<String, dynamic>;
 
           return SafeArea(
             child: SingleChildScrollView(
@@ -48,9 +55,8 @@ class _ClassroomDetailsState extends State<ClassroomDetails> {
                       horizontal: 15,
                       vertical: 15,
                     ),
-                    child: SubjectContainer(title: snapshot.data!['name']),
+                    child: SubjectContainer(title: classroomData['name']),
                   ),
-
                   Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 10,
@@ -66,9 +72,9 @@ class _ClassroomDetailsState extends State<ClassroomDetails> {
                                   builder:
                                       (context) => AssignmentsPage(
                                         photUrl: widget.photoUrl,
-                                        uid: snapshot.data!['uid'],
+                                        uid: classroomData['uid'],
                                         classroomId:
-                                            snapshot.data!['classroomId'],
+                                            classroomData['classroomId'],
                                       ),
                                 ),
                               ),
@@ -83,7 +89,7 @@ class _ClassroomDetailsState extends State<ClassroomDetails> {
                         Components(
                           ontap: () {},
                           imgpath: 'assets/images/teacher/tasks/time_table.png',
-                          title: "Time table",
+                          title: "Time Table",
                         ),
                         Components(
                           ontap:
@@ -93,7 +99,7 @@ class _ClassroomDetailsState extends State<ClassroomDetails> {
                                       (context) => SubmissionsPage(
                                         photo: widget.photoUrl,
                                         classroomId:
-                                            snapshot.data!['classroomId'],
+                                            classroomData['classroomId'],
                                       ),
                                 ),
                               ),
@@ -111,29 +117,69 @@ class _ClassroomDetailsState extends State<ClassroomDetails> {
                       horizontal: 10,
                       vertical: 10,
                     ),
-
                     child: CustomTextFieldWidget(
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder:
+                              (context) => AnnouncementDialog(
+                                classroomId: widget.classroomId,
+                                profilePic: widget.photoUrl,
+                                name: widget.username,
+                                uid: classroomData['uid'],
+                              ),
+                        );
+                      },
                       hintText: 'Announce something Here',
-
                       icon: Icons.announcement_outlined,
                     ),
                   ),
 
                   SizedBox(height: 20),
 
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 15,
-                      vertical: 10,
-                    ),
-                    child: PostContainerWidget(
-                      userName: 'Aditya',
-                      date: 'yesterday',
-                      message:
-                          'Hello everyone, I have uploaded the assignment for this week. Please check it out.',
-                      linkText: 'View Assignment link',
-                      linkIcon: Icons.link_off_outlined,
-                    ),
+                  StreamBuilder<QuerySnapshot>(
+                    stream:
+                        FirebaseFirestore.instance
+                            .collection('announcements')
+                            .where('classroomId', isEqualTo: widget.classroomId)
+                            .snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(child: CircularProgressIndicator());
+                      }
+                      if (snapshot.hasError) {
+                        return Center(
+                          child: Text('Error loading announcements'),
+                        );
+                      }
+
+                      final docs = snapshot.data?.docs;
+                      if (docs == null || docs.isEmpty) {
+                        return Center(
+                          child: Text('No announcements available.'),
+                        );
+                      }
+
+                      return ListView.builder(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: docs.length,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: PostContainerWidget(
+                              userName: 'Aditya',
+                              date: 'yesterday',
+                              message:
+                                  docs[index]['message'] ??
+                                  'No message available.',
+                              linkText: 'View Assignment link',
+                              linkIcon: Icons.link_off_outlined,
+                            ),
+                          );
+                        },
+                      );
+                    },
                   ),
                 ],
               ),

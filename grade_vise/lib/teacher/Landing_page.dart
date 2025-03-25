@@ -175,11 +175,22 @@ class HomePage extends StatelessWidget {
                                     ),
                                     child: InkWell(
                                       splashColor: Colors.grey,
-                                      onTap: () {
+                                      onTap: () async {
+                                        final snap =
+                                            await FirebaseFirestore.instance
+                                                .collection('users')
+                                                .doc(
+                                                  snapshot
+                                                      .data!
+                                                      .docs[index]['uid'],
+                                                )
+                                                .get();
                                         Navigator.of(context).push(
                                           MaterialPageRoute(
                                             builder:
                                                 (context) => MainPage(
+                                                  teacherPhoto:
+                                                      snap.data()!['photoURL'],
                                                   username: userData['name'],
                                                   userPhoto:
                                                       userData['photoURL'],

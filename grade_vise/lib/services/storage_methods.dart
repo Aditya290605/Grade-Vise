@@ -106,7 +106,7 @@ class StorageMethods {
             'fileUrl': downloadUrl,
             'fileType': fileType,
             'uploadedAt': FieldValue.serverTimestamp(),
-            'assignments': [],
+            'submittedBy': FieldValue.arrayUnion([auth.currentUser!.uid]),
           });
 
       await FirebaseFirestore.instance

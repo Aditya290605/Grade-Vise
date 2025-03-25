@@ -9,12 +9,14 @@ class MainPage extends StatefulWidget {
   final String classroomId;
   final String userPhoto;
   final String username;
+  final String teacherPhoto;
 
   const MainPage({
     super.key,
     required this.classroomId,
     required this.userPhoto,
     required this.username,
+    required this.teacherPhoto,
   });
 
   @override
@@ -79,6 +81,7 @@ class _MainPageState extends State<MainPage> {
                   ClassroomDetails(
                     classroomId: widget.classroomId,
                     photoUrl: widget.userPhoto,
+                    username: widget.username,
                   ),
                   Grading(),
                   Meet(),
@@ -86,6 +89,7 @@ class _MainPageState extends State<MainPage> {
                     classroomId: widget.classroomId,
                     name: widget.username,
                     photoUrl: widget.userPhoto,
+                    teacherPhoto: widget.teacherPhoto,
                   ),
                 ],
               ),
@@ -154,6 +158,7 @@ class _MainPageState extends State<MainPage> {
       onTap: () {
         setState(() {
           selectedIndex = itemIndex;
+          debugPrint(widget.username);
         });
       },
       child: Container(
