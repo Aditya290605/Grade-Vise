@@ -288,7 +288,8 @@ class Checkeachsubmission extends StatelessWidget {
                               ? Colors.green
                               : Colors.red,
                       marks: '0',
-                      shade: true, aiFeedback: '',
+                      shade: true,
+                      aiFeedback: '',
                     );
                   },
                 );
@@ -401,28 +402,34 @@ class Checkeachsubmission extends StatelessWidget {
                       color: Colors.transparent,
                       child: InkWell(
                         borderRadius: BorderRadius.circular(28),
-onTap: () async {
-  for (var studentId in snap['users']) {
-    var submissionSnapshot =
-        await FirebaseFirestore.instance.collection('submissions').doc(studentId).get();
+                        onTap: () async {
+                          for (var studentId in snap['users']) {
+                            var submissionSnapshot =
+                                await FirebaseFirestore.instance
+                                    .collection('submissions')
+                                    .doc(studentId)
+                                    .get();
 
-    if (submissionSnapshot.exists) {
-      var submissionData = submissionSnapshot.data();
-      if (submissionData != null && submissionData.containsKey('fileUrl')) {
-        String fileUrl = submissionData['fileUrl'];
+                            if (submissionSnapshot.exists) {
+                              var submissionData = submissionSnapshot.data();
+                              if (submissionData != null &&
+                                  submissionData.containsKey('fileUrl')) {
+                                String fileUrl = submissionData['fileUrl'];
 
-        // Get AI feedback
-        String aiFeedback = await analyzeWithAI(fileUrl);
+                                // Get AI feedback
+                                String aiFeedback = await analyzeWithAI(
+                                  fileUrl,
+                                );
 
-        // Update Firestore and trigger UI refresh
-        await FirebaseFirestore.instance
-            .collection('submissions')
-            .doc(studentId)
-            .update({'aiFeedback': aiFeedback});
-      }
-    }
-  }
-},
+                                // Update Firestore and trigger UI refresh
+                                await FirebaseFirestore.instance
+                                    .collection('submissions')
+                                    .doc(studentId)
+                                    .update({'aiFeedback': aiFeedback});
+                              }
+                            }
+                          }
+                        },
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 12),
                           child: Row(
@@ -468,9 +475,12 @@ onTap: () async {
     );
   }
 }
+
 Future<String> analyzeWithAI(String imageUrl) async {
-  String apiKey = "AIzaSyCURahkwb1_t_q9Z5To6c9qcE3u-bbS7Kg";  // Ensure this is correct
-  String apiUrl = "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent";
+  String apiKey =
+      "AIzaSyCURahkwb1_t_q9Z5To6c9qcE3u-bbS7Kg"; // Ensure this is correct
+  String apiUrl =
+      "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent";
 
   var response = await http.post(
     Uri.parse(apiUrl),
@@ -483,23 +493,27 @@ Future<String> analyzeWithAI(String imageUrl) async {
         {
           "parts": [
             {
-              "text": "Analyze the image and extract the text to mark the test out of 10."
+              "text":
+                  "Analyze the image and extract the text to mark the test out of 10.",
             },
             {
               "inlineData": {
                 "mimeType": "image/jpeg",
-                "data": base64Encode((await http.get(Uri.parse(imageUrl))).bodyBytes)
-              }
-            }
-          ]
-        }
-      ]
+                "data": base64Encode(
+                  (await http.get(Uri.parse(imageUrl))).bodyBytes,
+                ),
+              },
+            },
+          ],
+        },
+      ],
     }),
   );
 
   if (response.statusCode == 200) {
     var data = jsonDecode(response.body);
-    return data['candidates']?[0]['content']?['parts']?[0]?['text'] ?? "AI analysis failed";
+    return data['candidates']?[0]['content']?['parts']?[0]?['text'] ??
+        "AI analysis failed";
   } else {
     return "Error analyzing submission: ${response.body}";
   }
@@ -520,8 +534,7 @@ class ExamListItem extends StatelessWidget {
     required this.statusColor,
     required this.marks,
     required this.shade,
-    required this.aiFeedback,  // Receive AI Feedback
-
+    required this.aiFeedback, // Receive AI Feedback
   });
 
   @override
@@ -552,7 +565,10 @@ class ExamListItem extends StatelessWidget {
               Expanded(
                 flex: 2,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     color: statusColor,
                     borderRadius: BorderRadius.circular(8),
