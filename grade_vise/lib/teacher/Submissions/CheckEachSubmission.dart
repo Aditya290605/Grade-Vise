@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class Checkeachsubmission extends StatelessWidget {
   final String title;
@@ -286,7 +288,7 @@ class Checkeachsubmission extends StatelessWidget {
                               ? Colors.green
                               : Colors.red,
                       marks: '0',
-                      shade: true,
+                      shade: true, aiFeedback: '',
                     );
                   },
                 );
@@ -399,7 +401,28 @@ class Checkeachsubmission extends StatelessWidget {
                       color: Colors.transparent,
                       child: InkWell(
                         borderRadius: BorderRadius.circular(28),
-                        onTap: () {},
+onTap: () async {
+  for (var studentId in snap['users']) {
+    var submissionSnapshot =
+        await FirebaseFirestore.instance.collection('submissions').doc(studentId).get();
+
+    if (submissionSnapshot.exists) {
+      var submissionData = submissionSnapshot.data();
+      if (submissionData != null && submissionData.containsKey('fileUrl')) {
+        String fileUrl = submissionData['fileUrl'];
+
+        // Get AI feedback
+        String aiFeedback = await analyzeWithAI(fileUrl);
+
+        // Update Firestore and trigger UI refresh
+        await FirebaseFirestore.instance
+            .collection('submissions')
+            .doc(studentId)
+            .update({'aiFeedback': aiFeedback});
+      }
+    }
+  }
+},
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 12),
                           child: Row(
@@ -445,6 +468,42 @@ class Checkeachsubmission extends StatelessWidget {
     );
   }
 }
+Future<String> analyzeWithAI(String imageUrl) async {
+  String apiKey = "AIzaSyCURahkwb1_t_q9Z5To6c9qcE3u-bbS7Kg";  // Ensure this is correct
+  String apiUrl = "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent";
+
+  var response = await http.post(
+    Uri.parse(apiUrl),
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer $apiKey",
+    },
+    body: jsonEncode({
+      "contents": [
+        {
+          "parts": [
+            {
+              "text": "Analyze the image and extract the text to mark the test out of 10."
+            },
+            {
+              "inlineData": {
+                "mimeType": "image/jpeg",
+                "data": base64Encode((await http.get(Uri.parse(imageUrl))).bodyBytes)
+              }
+            }
+          ]
+        }
+      ]
+    }),
+  );
+
+  if (response.statusCode == 200) {
+    var data = jsonDecode(response.body);
+    return data['candidates']?[0]['content']?['parts']?[0]?['text'] ?? "AI analysis failed";
+  } else {
+    return "Error analyzing submission: ${response.body}";
+  }
+}
 
 class ExamListItem extends StatelessWidget {
   final String title;
@@ -452,6 +511,7 @@ class ExamListItem extends StatelessWidget {
   final Color statusColor;
   final String marks;
   final bool shade;
+  final String aiFeedback; // Add AI Feedback
 
   const ExamListItem({
     super.key,
@@ -460,6 +520,8 @@ class ExamListItem extends StatelessWidget {
     required this.statusColor,
     required this.marks,
     required this.shade,
+    required this.aiFeedback,  // Receive AI Feedback
+
   });
 
   @override
@@ -471,56 +533,67 @@ class ExamListItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
       ),
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            flex: 3,
-            child: Text(
-              title,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w500,
-                fontSize: 15,
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 2,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: statusColor,
-                borderRadius: BorderRadius.circular(8),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    spreadRadius: 0,
-                    blurRadius: 3,
-                    offset: const Offset(0, 1),
+          Row(
+            children: [
+              Expanded(
+                flex: 3,
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 15,
                   ),
-                ],
-              ),
-              child: Text(
-                status,
-                style: const TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14,
                 ),
-                textAlign: TextAlign.center,
               ),
-            ),
+              Expanded(
+                flex: 2,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: statusColor,
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        spreadRadius: 0,
+                        blurRadius: 3,
+                        offset: const Offset(0, 1),
+                      ),
+                    ],
+                  ),
+                  child: Text(
+                    status,
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Text(
+                  marks,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
           ),
-          Expanded(
-            child: Text(
-              marks,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
-              ),
-              textAlign: TextAlign.center,
-            ),
+          const SizedBox(height: 8),
+          // Display AI Feedback
+          Text(
+            "AI Feedback: $aiFeedback",
+            style: const TextStyle(color: Colors.lightBlue, fontSize: 14),
           ),
         ],
       ),

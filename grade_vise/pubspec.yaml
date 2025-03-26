@@ -39,7 +39,7 @@ dependencies:
   google_sign_in: ^6.3.0
   provider: ^6.1.2
   uuid: ^4.5.1
-  intl: ^0.20.2
+  intl: ^0.19.0
   file_picker: ^9.2.0
   flutter_svg: ^2.0.17
   image_picker: ^1.1.2
@@ -50,6 +50,7 @@ dependencies:
   android_intent_plus: ^4.0.0
   google_fonts: ^5.0.0
   syncfusion_flutter_pdfviewer: ^28.2.12
+  
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -99,6 +100,7 @@ flutter:
     - assets/images/teacher/tasks/
     - assets/images/teacher/components/
     - assets/credentials.json
+    - assets/notifications.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

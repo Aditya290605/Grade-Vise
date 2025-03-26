@@ -1,5 +1,7 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:grade_vise/services/firestore_methods.dart';
 import 'package:grade_vise/utils/colors.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/services.dart';
@@ -7,7 +9,17 @@ import 'package:android_intent_plus/android_intent.dart';
 import 'dart:io';
 
 class Meet extends StatefulWidget {
-  const Meet({super.key});
+  final String uid;
+  final String name;
+  final String profilePic;
+  final String classroomId;
+  const Meet({
+    super.key,
+    required this.uid,
+    required this.classroomId,
+    required this.name,
+    required this.profilePic,
+  });
 
   @override
   State<Meet> createState() => _MeetState();
@@ -42,11 +54,20 @@ class _MeetState extends State<Meet> {
       await FirebaseFirestore.instance.collection('meet_links').add({
         'meetLink': meetUrl,
         'timestamp': FieldValue.serverTimestamp(),
+        'classroomId': widget.classroomId,
       });
 
       _meetLinkController.clear();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Meet link sent to all students!")),
+      );
+
+      await FirestoreMethods().createAnncouncement(
+        widget.uid,
+        widget.classroomId,
+        meetUrl,
+        widget.name,
+        widget.profilePic,
       );
     } catch (e) {
       print("Error saving Meet link: $e");
@@ -95,11 +116,9 @@ class _MeetState extends State<Meet> {
   @override
   Widget build(BuildContext context) {
     // Define theme colors
-    final primaryColor = Theme.of(context).primaryColor;
+
     final backgroundColor = bgColor;
     const cardColor = Colors.white;
-    const meetBlue = Color(0xFF4285F4);
-    const meetGreen = Color(0xFF34A853);
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -252,6 +271,7 @@ class _MeetState extends State<Meet> {
                     FirebaseFirestore.instance
                         .collection('meet_links')
                         .orderBy('timestamp', descending: true)
+                        .where('classroomId', isEqualTo: widget.classroomId)
                         .snapshots(),
                 builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
