@@ -13,16 +13,11 @@ class Grading extends StatefulWidget {
 }
 
 class _GradingState extends State<Grading> {
-  // Search controller to enable filtering
   final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-
-    // Sort students by points in descending order initially
-
-    // Add listener for search functionality
     _searchController.addListener(_filterStudents);
   }
 
@@ -41,58 +36,107 @@ class _GradingState extends State<Grading> {
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+
           children: [
+            // App Bar
+
+            // Search Bar
             Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16.0,
-                vertical: 15,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+
+              child: Row(
                 children: [
-                  _buildSearchBar(),
-                  const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      _buildStatsCard(
-                        icon: Icons.person,
-                        value: widget.students.toString(),
-                        label: "Total Students",
-                        iconColor: Colors.blue,
+                  Expanded(
+                    child: Container(
+                      margin: const EdgeInsets.only(top: 20),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      _buildStatsCard(
-                        icon: Icons.star,
-                        value: "4.5",
-                        label: "Average Grade",
-                        iconColor: Colors.purple,
+                      child: TextField(
+                        controller: _searchController,
+                        style: const TextStyle(color: Colors.white),
+                        decoration: InputDecoration(
+                          hintText: "Search",
+                          hintStyle: TextStyle(
+                            color: Colors.white.withOpacity(0.5),
+                          ),
+                          prefixIcon: Icon(
+                            Icons.search,
+                            color: Colors.white.withOpacity(0.5),
+                          ),
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsets.symmetric(
+                            vertical: 15,
+                          ),
+                        ),
                       ),
-                    ],
+                    ),
                   ),
-                  const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      _buildStatsCard(
-                        icon: Icons.check_circle,
-                        value: "95%",
-                        label: "Attendance",
-                        iconColor: Colors.yellow,
-                      ),
-                      _buildStatsCard(
-                        icon: Icons.school,
-                        value: "10",
-                        label: "Classes",
-                        iconColor: Colors.pink,
-                      ),
-                    ],
+                  const SizedBox(width: 10),
+                  Container(
+                    margin: const EdgeInsets.only(top: 20),
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(Icons.notifications, color: Colors.white),
                   ),
-                  const SizedBox(height: 20),
-                  _buildStudentListHeader(),
                 ],
               ),
             ),
-            // Expanded widget to make student list scrollable and visible
+
+            const SizedBox(height: 20),
+
+            // Stats Cards
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Row(
+                children: [
+                  _buildStatCard(
+                    icon: Icons.people,
+                    value: widget.students.toString(),
+                    label: 'Total Students',
+                    color: const Color(0xFF3B82F6),
+                  ),
+                  const SizedBox(width: 10),
+                  _buildStatCard(
+                    icon: Icons.task,
+                    value: '258+',
+                    label: 'Task Completed',
+                    color: const Color(0xFF8B5CF6),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 10),
+
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Row(
+                children: [
+                  _buildStatCard(
+                    icon: Icons.timer,
+                    value: '64%',
+                    label: 'Activity Ratio',
+                    color: const Color(0xFFFACC15),
+                  ),
+                  const SizedBox(width: 10),
+                  _buildStatCard(
+                    icon: Icons.star,
+                    value: '245',
+                    label: 'Reward Points',
+                    color: const Color(0xFFF43F5E),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            // Student List
             Expanded(child: _buildStudentList()),
           ],
         ),
@@ -100,111 +144,52 @@ class _GradingState extends State<Grading> {
     );
   }
 
-  Widget _buildSearchBar() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: TextField(
-        controller: _searchController,
-        style: const TextStyle(color: Colors.white),
-        decoration: InputDecoration(
-          hintText: "Search students",
-          hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
-          prefixIcon: Icon(Icons.search, color: Colors.white.withOpacity(0.5)),
-          border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(vertical: 15),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildStatsCard({
+  Widget _buildStatCard({
     required IconData icon,
     required String value,
     required String label,
-    required Color iconColor,
+    required Color color,
   }) {
-    return Container(
-      width: MediaQuery.of(context).size.width * 0.42,
-      height: 80,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            spreadRadius: 2,
-            blurRadius: 8,
-            offset: Offset(2, 4),
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [color.withOpacity(0.2), color.withOpacity(0.6)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 5.0,
-                  vertical: 5,
-                ),
-                child: Container(
-                  padding: const EdgeInsets.all(10),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: iconColor.withOpacity(0.1),
+                    color: Colors.white.withOpacity(0.3),
                     shape: BoxShape.circle,
                   ),
-
-                  child: Icon(icon, color: iconColor, size: 28),
+                  child: Icon(icon, color: color, size: 20),
                 ),
-              ),
-              const SizedBox(width: 20),
-              Text(
-                value,
-                style: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
+                const Spacer(),
+                Text(
+                  value,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 4),
-            ],
-          ),
-
-          Text(
-            label,
-            style: const TextStyle(
-              color: Colors.black54,
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
+              ],
             ),
-          ),
-        ],
+            const SizedBox(height: 8),
+            Text(label, style: TextStyle(color: Colors.white, fontSize: 12)),
+          ],
+        ),
       ),
-    );
-  }
-
-  Widget _buildStudentListHeader() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          "Student List ()",
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        IconButton(
-          icon: const Icon(Icons.filter_list, color: Colors.white),
-          onPressed: () {
-            // TODO: Implement filtering functionality
-          },
-        ),
-      ],
     );
   }
 

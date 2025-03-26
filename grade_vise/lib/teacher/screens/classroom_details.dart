@@ -98,7 +98,6 @@ class _ClassroomDetailsState extends State<ClassroomDetails> {
                                 MaterialPageRoute(
                                   builder:
                                       (context) => SubmissionsPage(
-                                        isStudent: false,
                                         photo: widget.photoUrl,
                                         classroomId:
                                             classroomData['classroomId'],

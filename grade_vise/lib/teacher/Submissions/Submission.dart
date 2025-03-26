@@ -6,12 +6,11 @@ import 'package:grade_vise/utils/colors.dart';
 class SubmissionsPage extends StatelessWidget {
   final String classroomId;
   final String photo;
-  final bool isStudent;
+
   const SubmissionsPage({
     super.key,
     required this.classroomId,
     required this.photo,
-    required this.isStudent,
   });
 
   Widget _buildAssignmentHeader() {
@@ -106,61 +105,75 @@ class SubmissionsPage extends StatelessWidget {
                     .doc(classroomId)
                     .snapshots(),
             builder: (context, snapshot) {
-              if (snapshot.data != null) {
-                return Expanded(
-                  child: ListView.builder(
-                    itemCount: snapshot.data!['assignments'].length,
-                    itemBuilder: (context, index) {
-                      var assignments = snapshot.data!['assignments'];
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-                      if (assignments.isEmpty) {
-                        return Center(
-                          child: Image.network(
-                            "https://i.pinimg.com/736x/a8/1e/3d/a81e3d8e4abb9b68c624e9738d61b7f4.jpg",
-                          ),
-                        );
-                      }
+              if (snapshot.hasError ||
+                  !snapshot.hasData ||
+                  snapshot.data == null) {
+                return const Center(child: Text("Error loading data"));
+              }
 
-                      return StreamBuilder(
-                        stream:
-                            FirebaseFirestore.instance
-                                .collection('assignments')
-                                .where(
-                                  'fileId',
-                                  isEqualTo:
-                                      snapshot.data!['assignments'][index],
-                                )
-                                .snapshots(),
-                        builder: (context, snap) {
-                          if (snap.data == null) {
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          }
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 15.0,
-                            ),
-                            child: SubmissionCard(
-                              isStudent: isStudent,
-                              snap: snapshot.data!,
-                              snap1: snap.data!.docs[index],
-                              subject: snapshot.data!['subject'],
-                              title: snap.data!.docs[index]['title'],
-                              submissions:
-                                  snap.data!.docs[index]['submissions'],
-                              submitted:
-                                  snap.data!.docs[index]['submissions'].length,
-                              total: '${snapshot.data!['users'].length}',
-                            ),
-                          );
-                        },
-                      );
-                    },
+              var assignments = snapshot.data!.data()?['assignments'] ?? [];
+
+              if (assignments.isEmpty) {
+                return Center(
+                  child: Image.network(
+                    "https://i.pinimg.com/736x/a8/1e/3d/a81e3d8e4abb9b68c624e9738d61b7f4.jpg",
                   ),
                 );
               }
-              return const Center(child: CircularProgressIndicator());
+
+              return Expanded(
+                child: ListView.builder(
+                  itemCount: assignments.length,
+                  itemBuilder: (context, index) {
+                    return StreamBuilder(
+                      stream:
+                          FirebaseFirestore.instance
+                              .collection('assignments')
+                              .where('fileId', isEqualTo: assignments[index])
+                              .snapshots(),
+                      builder: (context, snap) {
+                        if (snap.connectionState == ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+
+                        if (snap.hasError ||
+                            !snap.hasData ||
+                            snap.data == null ||
+                            snap.data!.docs.isEmpty) {
+                          return const Center(
+                            child: Text("No assignment found"),
+                          );
+                        }
+
+                        // Instead of using `index`, use `snap.data!.docs.first`
+                        var assignmentData = snap.data!.docs.first;
+
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 15.0,
+                            vertical: 10,
+                          ),
+                          child: SubmissionCard(
+                            snap: snapshot.data!,
+                            snap1: assignmentData,
+                            subject: snapshot.data!['subject'],
+                            title: assignmentData['title'],
+                            submitted: assignmentData['submissions'].length,
+                            total: '${assignmentData['submissions'].length}',
+                            submissions: assignmentData['submissions'],
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+              );
             },
           ),
         ],
@@ -179,7 +192,6 @@ class SubmissionCard extends StatelessWidget {
   final DocumentSnapshot<Map<String, dynamic>> snap1;
   final List submissions;
   final DocumentSnapshot<Map<String, dynamic>> snap;
-  final bool isStudent;
 
   const SubmissionCard({
     super.key,
@@ -190,7 +202,6 @@ class SubmissionCard extends StatelessWidget {
     required this.total,
     required this.snap1,
     required this.snap,
-    required this.isStudent,
   });
 
   @override
@@ -250,25 +261,23 @@ class SubmissionCard extends StatelessWidget {
           const SizedBox(height: 16),
           ElevatedButton.icon(
             onPressed: () {
-              isStudent == false
-                  ? Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder:
-                          (context) => Checkeachsubmission(
-                            title: title,
-                            subject: subject,
-                            snap: snap,
-                            snap1: snap1,
-                            status: submissions,
-                          ),
-                    ),
-                  )
-                  : VoidCallback;
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder:
+                      (context) => Checkeachsubmission(
+                        title: title,
+                        subject: subject,
+                        snap: snap,
+                        snap1: snap1,
+                        status: submissions,
+                      ),
+                ),
+              );
             },
             icon: const Icon(Icons.check_circle_outline, color: Colors.white),
             label: Text(
-              isStudent == false ? 'Check Submissions' : '',
+              'Check Submissions',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 16,
