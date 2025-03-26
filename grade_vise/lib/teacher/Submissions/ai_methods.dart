@@ -48,8 +48,12 @@ class AiMethods {
 
       if (response.statusCode == 200) {
         var jsonResponse = jsonDecode(response.body);
-        return jsonResponse
-            .toString(); // Return the response (process it as needed)
+
+        // Extract the text field
+        String textResponse =
+            jsonResponse["candidates"][0]["content"]["parts"][0]["text"];
+
+        return textResponse; // This will return only the generated number
       } else {
         return "Error: ${response.statusCode}, ${response.body}";
       }
