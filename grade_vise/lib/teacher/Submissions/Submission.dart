@@ -165,7 +165,7 @@ class SubmissionsPage extends StatelessWidget {
                             subject: snapshot.data!['subject'],
                             title: assignmentData['title'],
                             submitted: assignmentData['submissions'].length,
-                            total: '${assignmentData['submissions'].length}',
+                            total: '${snapshot.data!['users'].length}',
                             submissions: assignmentData['submissions'],
                           ),
                         );
