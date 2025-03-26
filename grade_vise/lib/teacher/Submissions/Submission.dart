@@ -6,6 +6,7 @@ import 'package:grade_vise/utils/colors.dart';
 class SubmissionsPage extends StatelessWidget {
   final String classroomId;
   final String photo;
+
   const SubmissionsPage({
     super.key,
     required this.classroomId,
@@ -275,7 +276,7 @@ class SubmissionCard extends StatelessWidget {
               );
             },
             icon: const Icon(Icons.check_circle_outline, color: Colors.white),
-            label: const Text(
+            label: Text(
               'Check Submissions',
               style: TextStyle(
                 color: Colors.white,

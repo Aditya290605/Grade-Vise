@@ -2,8 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import 'package:grade_vise/student/assignment_page.dart';
+import 'package:grade_vise/student/submissions.dart';
 import 'package:grade_vise/student/timetables.dart';
 import 'package:grade_vise/teacher/announcements/anncouncements.dart';
+import 'package:grade_vise/teacher/submissions/submission.dart';
 
 import 'package:grade_vise/utils/colors.dart';
 import 'package:grade_vise/widgets/classroom_details/announcement.dart';
@@ -156,7 +158,12 @@ class _ClassroomScreenState extends State<ClassroomStudentScreen> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => Scaffold()),
+                        MaterialPageRoute(
+                          builder:
+                              (context) => AssignmentListScreen(
+                                classroomId: widget.classroomId,
+                              ),
+                        ),
                       );
                     },
                   ),
