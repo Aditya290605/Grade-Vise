@@ -216,6 +216,9 @@ class _GradingState extends State<Grading> {
               .where('classrooms', arrayContains: widget.classroomId)
               .snapshots(),
       builder: (context, snapshot) {
+        if (snapshot.data == null) {
+          return Center(child: CircularProgressIndicator());
+        }
         return ListView.builder(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           itemCount: snapshot.data!.docs.length,

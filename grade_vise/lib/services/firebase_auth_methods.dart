@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/calendar/v3.dart' as calendar;
@@ -13,6 +14,50 @@ class FirebaseAuthMethods {
   FirebaseAuthMethods(this._auth);
 
   Stream<User?> get authState => _auth.authStateChanges();
+
+  void setupFCM() async {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+    // Request notification permissions
+    NotificationSettings settings = await messaging.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      print("Notifications permission granted!");
+
+      // Get FCM Token and save to Firestore
+      String? token = await messaging.getToken();
+      print("FCM Token: $token");
+
+      // Save token to Firestore
+
+      if (user != null && token != null) {
+        FirebaseFirestore.instance.collection('users').doc(user.uid).update({
+          'fcmToken': token,
+        });
+      }
+    }
+
+    FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
+      FirebaseFirestore.instance.collection('users').doc(user!.uid).update({
+        'fcmToken': newToken,
+      });
+    });
+
+    // Listen for foreground messages
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      if (message.notification != null) {
+        print("New notification: ${message.notification!.title}");
+      }
+    });
+
+    // Handle notification clicks
+  }
 
   Future<String> signUpUser(
     BuildContext context,
@@ -154,6 +199,7 @@ class FirebaseAuthMethods {
           "createdAt": DateTime.now(),
         });
       }
+      setupFCM();
 
       return user;
     } catch (e) {
