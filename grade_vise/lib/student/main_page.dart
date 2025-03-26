@@ -9,12 +9,16 @@ import 'package:grade_vise/utils/colors.dart';
 class MainPageScreen extends StatefulWidget {
   final String photoUrl;
   final String classroomId;
+  final String name;
+  final String teacherPhoto;
   final Map<String, dynamic> classData;
 
   const MainPageScreen({
     super.key,
     required this.photoUrl,
     required this.classData,
+    required this.teacherPhoto,
+    required this.name,
     required this.classroomId,
   });
 
@@ -83,8 +87,9 @@ class _MainPageScreenState extends State<MainPageScreen> {
                   Student_Meet(),
                   PeoplePage(
                     classroomId: widget.classroomId,
-                    name: widget.classData['name'],
+                    name: widget.name,
                     photoUrl: widget.photoUrl,
+                    teacherPhoto: widget.teacherPhoto,
                   ),
                 ],
               ),

@@ -49,6 +49,7 @@ dependencies:
   url_launcher: ^6.1.11
   android_intent_plus: ^4.0.0
   google_fonts: ^5.0.0
+  syncfusion_flutter_pdfviewer: ^28.2.12
 
 
   # The following adds the Cupertino Icons font to your application.
