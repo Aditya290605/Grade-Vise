@@ -105,59 +105,74 @@ class SubmissionsPage extends StatelessWidget {
                     .doc(classroomId)
                     .snapshots(),
             builder: (context, snapshot) {
-              if (snapshot.data != null) {
-                return Expanded(
-                  child: ListView.builder(
-                    itemCount: snapshot.data!['assignments'].length,
-                    itemBuilder: (context, index) {
-                      var assignments = snapshot.data!['assignments'];
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-                      if (assignments.isEmpty) {
-                        return Center(
-                          child: Image.network(
-                            "https://i.pinimg.com/736x/a8/1e/3d/a81e3d8e4abb9b68c624e9738d61b7f4.jpg",
-                          ),
-                        );
-                      }
+              if (snapshot.hasError ||
+                  !snapshot.hasData ||
+                  snapshot.data == null) {
+                return const Center(child: Text("Error loading data"));
+              }
 
-                      return StreamBuilder(
-                        stream:
-                            FirebaseFirestore.instance
-                                .collection('assignments')
-                                .where(
-                                  'fileId',
-                                  isEqualTo:
-                                      snapshot.data!['assignments'][index],
-                                )
-                                .snapshots(),
-                        builder: (context, snap) {
-                          if (snap.data == null) {
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          }
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 15.0,
-                            ),
-                            child: SubmissionCard(
-                              snap: snapshot.data!,
-                              snap1: snap.data!.docs[index],
-                              subject: snapshot.data!['subject'],
-                              title: snap.data!.docs[index]['title'],
-                              submitted:
-                                  snap.data!.docs[index]['submissions'].length,
-                              total:
-                                  '${snap.data!.docs[index]['submissions'].length}',
-                            ),
-                          );
-                        },
-                      );
-                    },
+              var assignments = snapshot.data!.data()?['assignments'] ?? [];
+
+              if (assignments.isEmpty) {
+                return Center(
+                  child: Image.network(
+                    "https://i.pinimg.com/736x/a8/1e/3d/a81e3d8e4abb9b68c624e9738d61b7f4.jpg",
                   ),
                 );
               }
-              return const Center(child: CircularProgressIndicator());
+
+              return Expanded(
+                child: ListView.builder(
+                  itemCount: assignments.length,
+                  itemBuilder: (context, index) {
+                    return StreamBuilder(
+                      stream:
+                          FirebaseFirestore.instance
+                              .collection('assignments')
+                              .where('fileId', isEqualTo: assignments[index])
+                              .snapshots(),
+                      builder: (context, snap) {
+                        if (snap.connectionState == ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+
+                        if (snap.hasError ||
+                            !snap.hasData ||
+                            snap.data == null ||
+                            snap.data!.docs.isEmpty) {
+                          return const Center(
+                            child: Text("No assignment found"),
+                          );
+                        }
+
+                        // Instead of using `index`, use `snap.data!.docs.first`
+                        var assignmentData = snap.data!.docs.first;
+
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 15.0,
+                            vertical: 10,
+                          ),
+                          child: SubmissionCard(
+                            snap: snapshot.data!,
+                            snap1: assignmentData,
+                            subject: snapshot.data!['subject'],
+                            title: assignmentData['title'],
+                            submitted: assignmentData['submissions'].length,
+                            total: '${assignmentData['submissions'].length}',
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+              );
             },
           ),
         ],

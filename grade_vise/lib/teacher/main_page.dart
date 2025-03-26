@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:grade_vise/teacher/screens/Grading.dart';
+import 'package:grade_vise/teacher/screens/grading.dart';
 import 'package:grade_vise/teacher/screens/classroom_details.dart';
 import 'package:grade_vise/teacher/screens/meet.dart';
 import 'package:grade_vise/teacher/screens/uses_list.dart';
@@ -11,6 +11,7 @@ class MainPage extends StatefulWidget {
   final String username;
   final String teacherPhoto;
   final String uid;
+  final int students;
 
   const MainPage({
     super.key,
@@ -19,6 +20,7 @@ class MainPage extends StatefulWidget {
     required this.username,
     required this.teacherPhoto,
     required this.uid,
+    required this.students,
   });
 
   @override
@@ -85,7 +87,10 @@ class _MainPageState extends State<MainPage> {
                     photoUrl: widget.userPhoto,
                     username: widget.username,
                   ),
-                  Grading(),
+                  Grading(
+                    classroomId: widget.classroomId,
+                    students: widget.students,
+                  ),
                   Meet(
                     uid: widget.uid,
                     classroomId: widget.classroomId,

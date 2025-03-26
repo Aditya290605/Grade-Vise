@@ -59,6 +59,7 @@ dependencies:
   lucide_icons: ^0.257.0
   flutter_native_splash: ^2.4.5
   firebase_messaging: ^15.2.4
+  firebase_vertexai: ^1.4.0
 
 dev_dependencies:
   flutter_test:

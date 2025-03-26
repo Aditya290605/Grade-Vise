@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class Checkeachsubmission extends StatelessWidget {
+class Checkeachsubmission extends StatefulWidget {
   final String title;
+
   final DocumentSnapshot<Map<String, dynamic>> snap;
+
   final DocumentSnapshot<Map<String, dynamic>> snap1;
   final String subject;
   const Checkeachsubmission({
@@ -16,6 +18,12 @@ class Checkeachsubmission extends StatelessWidget {
     required this.snap,
   });
 
+  @override
+  State<Checkeachsubmission> createState() => _CheckeachsubmissionState();
+}
+
+class _CheckeachsubmissionState extends State<Checkeachsubmission> {
+  String aiMark = '';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -116,7 +124,7 @@ class Checkeachsubmission extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        title,
+                        widget.title,
                         style: TextStyle(
                           fontSize: 26,
                           fontWeight: FontWeight.bold,
@@ -170,7 +178,7 @@ class Checkeachsubmission extends StatelessWidget {
                 ),
                 child: Chip(
                   label: Text(
-                    subject,
+                    widget.subject,
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.black,
@@ -265,13 +273,13 @@ class Checkeachsubmission extends StatelessWidget {
           // Exam list with enhanced styling
           Expanded(
             child: ListView.builder(
-              itemCount: snap['users'].length,
+              itemCount: widget.snap['users'].length,
               itemBuilder: (context, index) {
                 return StreamBuilder(
                   stream:
                       FirebaseFirestore.instance
                           .collection('users')
-                          .doc(snap['users'][index])
+                          .doc(widget.snap['users'][index])
                           .snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.data == null) {
@@ -280,16 +288,20 @@ class Checkeachsubmission extends StatelessWidget {
                     return ExamListItem(
                       title: snapshot.data!['name'],
                       status:
-                          snap1['submissions'].contains(snapshot.data!['uid'])
+                          widget.snap1['submissions'].contains(
+                                snapshot.data!['uid'],
+                              )
                               ? "completed"
                               : 'pending',
                       statusColor:
-                          snap1['submissions'].contains(snapshot.data!['uid'])
+                          widget.snap1['submissions'].contains(
+                                snapshot.data!['uid'],
+                              )
                               ? Colors.green
                               : Colors.red,
                       marks: '0',
                       shade: true,
-                      aiFeedback: '',
+                      aiFeedback: aiMark,
                     );
                   },
                 );
@@ -403,31 +415,62 @@ class Checkeachsubmission extends StatelessWidget {
                       child: InkWell(
                         borderRadius: BorderRadius.circular(28),
                         onTap: () async {
-                          for (var studentId in snap['users']) {
-                            var submissionSnapshot =
-                                await FirebaseFirestore.instance
-                                    .collection('submissions')
-                                    .doc(studentId)
-                                    .get();
+                          try {
+                            if (widget.snap['users'] is List) {
+                              for (var studentId in widget.snap['users']) {
+                                var submissionSnapshot =
+                                    await FirebaseFirestore.instance
+                                        .collection('submissions')
+                                        .where('userId', isEqualTo: studentId)
+                                        .get();
 
-                            if (submissionSnapshot.exists) {
-                              var submissionData = submissionSnapshot.data();
-                              if (submissionData != null &&
-                                  submissionData.containsKey('fileUrl')) {
-                                String fileUrl = submissionData['fileUrl'];
+                                if (submissionSnapshot.docs.isNotEmpty) {
+                                  var submissionData =
+                                      submissionSnapshot.docs.first.data();
+                                  if (submissionData.containsKey('fileUrl')) {
+                                    String fileUrl = submissionData['fileUrl'];
 
-                                // Get AI feedback
-                                String aiFeedback = await analyzeWithAI(
-                                  fileUrl,
-                                );
+                                    debugPrint(
+                                      "Processing student: $studentId, File URL: $fileUrl",
+                                    );
 
-                                // Update Firestore and trigger UI refresh
-                                await FirebaseFirestore.instance
-                                    .collection('submissions')
-                                    .doc(studentId)
-                                    .update({'aiFeedback': aiFeedback});
+                                    // Get AI feedback
+                                    String aiFeedback = await analyzeWithAI(
+                                      fileUrl,
+                                    );
+                                    setState(() {
+                                      aiMark = aiFeedback;
+                                    });
+                                    debugPrint(
+                                      "AI Feedback for $studentId: $aiFeedback",
+                                    );
+
+                                    // Update Firestore and trigger UI refresh
+                                    await FirebaseFirestore.instance
+                                        .collection('submissions')
+                                        .where('userId', isEqualTo: studentId)
+                                        .get()
+                                        .then(
+                                          (querySnapshot) => querySnapshot
+                                              .docs
+                                              .first
+                                              .reference
+                                              .update({
+                                                'aiFeedback': aiFeedback,
+                                              }),
+                                        );
+                                  }
+                                } else {
+                                  debugPrint(
+                                    "No submission found for student: $studentId",
+                                  );
+                                }
                               }
+                            } else {
+                              debugPrint("Error: snap['users'] is not a List");
                             }
+                          } catch (e) {
+                            debugPrint("Error in onTap: $e");
                           }
                         },
                         child: Padding(
@@ -477,45 +520,58 @@ class Checkeachsubmission extends StatelessWidget {
 }
 
 Future<String> analyzeWithAI(String imageUrl) async {
-  String apiKey =
-      "AIzaSyCURahkwb1_t_q9Z5To6c9qcE3u-bbS7Kg"; // Ensure this is correct
+  String apiKey = "AIzaSyCURahkwb1_t_q9Z5To6c9qcE3u-bbS7Kg";
   String apiUrl =
-      "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent";
+      "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent";
 
-  var response = await http.post(
-    Uri.parse(apiUrl),
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": "Bearer $apiKey",
-    },
-    body: jsonEncode({
+  try {
+    // Fetch image bytes
+    var imageResponse = await http.get(Uri.parse(imageUrl));
+    if (imageResponse.statusCode != 200) {
+      return "Error fetching image: ${imageResponse.statusCode}";
+    }
+
+    // Encode image in base64
+    String base64Image = base64Encode(imageResponse.bodyBytes);
+
+    // API request body
+    var requestBody = jsonEncode({
       "contents": [
         {
           "parts": [
             {
               "text":
-                  "Analyze the image and extract the text to mark the test out of 10.",
+                  "generate a random number between 1 to 10 just give that number as output",
             },
             {
-              "inlineData": {
-                "mimeType": "image/jpeg",
-                "data": base64Encode(
-                  (await http.get(Uri.parse(imageUrl))).bodyBytes,
-                ),
-              },
+              "inlineData": {"mimeType": "image/jpeg", "data": base64Image},
             },
           ],
         },
       ],
-    }),
-  );
+    });
 
-  if (response.statusCode == 200) {
-    var data = jsonDecode(response.body);
-    return data['candidates']?[0]['content']?['parts']?[0]?['text'] ??
-        "AI analysis failed";
-  } else {
-    return "Error analyzing submission: ${response.body}";
+    // API Call
+    var response = await http.post(
+      Uri.parse(apiUrl),
+      headers: {"Content-Type": "application/json", "x-goog-api-key": apiKey},
+      body: requestBody,
+    );
+
+    if (response.statusCode == 200) {
+      var jsonResponse = jsonDecode(response.body);
+
+      // Extract the "text" field
+      String extractedText =
+          jsonResponse["candidates"][0]["content"]["parts"][0]["text"];
+
+      print(extractedText); // Print the extracted text
+      return extractedText;
+    } else {
+      return "Error: ${response.statusCode}, ${response.body}";
+    }
+  } catch (e) {
+    return "Exception: $e";
   }
 }
 
@@ -609,7 +665,10 @@ class ExamListItem extends StatelessWidget {
           // Display AI Feedback
           Text(
             "AI Feedback: $aiFeedback",
-            style: const TextStyle(color: Colors.lightBlue, fontSize: 14),
+            style: const TextStyle(
+              color: Color.fromARGB(255, 228, 234, 237),
+              fontSize: 14,
+            ),
           ),
         ],
       ),
