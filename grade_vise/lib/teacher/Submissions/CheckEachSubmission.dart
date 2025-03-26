@@ -5,7 +5,9 @@ import 'dart:convert';
 
 class Checkeachsubmission extends StatefulWidget {
   final String title;
+
   final DocumentSnapshot<Map<String, dynamic>> snap;
+
   final DocumentSnapshot<Map<String, dynamic>> snap1;
   final String subject;
   const Checkeachsubmission({
@@ -21,6 +23,7 @@ class Checkeachsubmission extends StatefulWidget {
 }
 
 class _CheckeachsubmissionState extends State<Checkeachsubmission> {
+  String aiMark = '';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -285,15 +288,20 @@ class _CheckeachsubmissionState extends State<Checkeachsubmission> {
                     return ExamListItem(
                       title: snapshot.data!['name'],
                       status:
-                          widget.snap1['submissions'].contains(snapshot.data!['uid'])
+                          widget.snap1['submissions'].contains(
+                                snapshot.data!['uid'],
+                              )
                               ? "completed"
                               : 'pending',
                       statusColor:
-                          widget.snap1['submissions'].contains(snapshot.data!['uid'])
-                              ? Colors.green
-                              : Colors.red,
+                          widget.snap1['submissions'].contains(
+                                snapshot.data!['uid'],
+                              )
+                              ? Colors.red
+                              : Colors.green,
                       marks: '0',
-                      shade: true, aiFeedback: '',
+                      shade: true,
+                      aiFeedback: aiMark,
                     );
                   },
                 );
@@ -406,46 +414,65 @@ class _CheckeachsubmissionState extends State<Checkeachsubmission> {
                       color: Colors.transparent,
                       child: InkWell(
                         borderRadius: BorderRadius.circular(28),
-onTap: () async {
-  try {
-    if (widget.snap['users'] is List) {
-      for (var studentId in widget.snap['users']) {
-        var submissionSnapshot = await FirebaseFirestore.instance
-            .collection('submissions')
-            .where('userId',isEqualTo:studentId)
-            .get();
+                        onTap: () async {
+                          try {
+                            if (widget.snap['users'] is List) {
+                              for (var studentId in widget.snap['users']) {
+                                var submissionSnapshot =
+                                    await FirebaseFirestore.instance
+                                        .collection('submissions')
+                                        .where('userId', isEqualTo: studentId)
+                                        .get();
 
-        if (submissionSnapshot.docs.isNotEmpty) {
-          var submissionData = submissionSnapshot.docs.first.data();
-          if (submissionData.containsKey('fileUrl')) {
-            String fileUrl = submissionData['fileUrl'];
+                                if (submissionSnapshot.docs.isNotEmpty) {
+                                  var submissionData =
+                                      submissionSnapshot.docs.first.data();
+                                  if (submissionData.containsKey('fileUrl')) {
+                                    String fileUrl = submissionData['fileUrl'];
 
-            debugPrint("Processing student: $studentId, File URL: $fileUrl");
+                                    debugPrint(
+                                      "Processing student: $studentId, File URL: $fileUrl",
+                                    );
 
-            // Get AI feedback
-            String aiFeedback = await analyzeWithAI(fileUrl);
-            setState(() {
-              aiFeedback = aiFeedback;
-            });
-            debugPrint("AI Feedback for $studentId: $aiFeedback");
+                                    // Get AI feedback
+                                    String aiFeedback = await analyzeWithAI(
+                                      fileUrl,
+                                    );
+                                    setState(() {
+                                      aiMark = aiFeedback;
+                                    });
+                                    debugPrint(
+                                      "AI Feedback for $studentId: $aiFeedback",
+                                    );
 
-            // Update Firestore and trigger UI refresh
-            await FirebaseFirestore.instance
-                .collection('submissions')
-                .where('userId',isEqualTo:studentId)
-                .update({'aiFeedback': aiFeedback});
-          }
-        } else {
-          debugPrint("No submission found for student: $studentId");
-        }
-      }
-    } else {
-      debugPrint("Error: snap['users'] is not a List");
-    }
-  } catch (e) {
-    debugPrint("Error in onTap: $e");
-  }
-},
+                                    // Update Firestore and trigger UI refresh
+                                    await FirebaseFirestore.instance
+                                        .collection('submissions')
+                                        .where('userId', isEqualTo: studentId)
+                                        .get()
+                                        .then(
+                                          (querySnapshot) => querySnapshot
+                                              .docs
+                                              .first
+                                              .reference
+                                              .update({
+                                                'aiFeedback': aiFeedback,
+                                              }),
+                                        );
+                                  }
+                                } else {
+                                  debugPrint(
+                                    "No submission found for student: $studentId",
+                                  );
+                                }
+                              }
+                            } else {
+                              debugPrint("Error: snap['users'] is not a List");
+                            }
+                          } catch (e) {
+                            debugPrint("Error in onTap: $e");
+                          }
+                        },
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 12),
                           child: Row(
@@ -491,9 +518,12 @@ onTap: () async {
     );
   }
 }
+
 Future<String> analyzeWithAI(String imageUrl) async {
-  String apiKey = "AIzaSyCURahkwb1_t_q9Z5To6c9qcE3u-bbS7Kg";  // Replace with a valid API key
-  String apiUrl = "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent";
+  String apiKey =
+      "AIzaSyCURahkwb1_t_q9Z5To6c9qcE3u-bbS7Kg"; // Replace with a valid API key
+  String apiUrl =
+      "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent";
 
   try {
     // Fetch image bytes
@@ -511,17 +541,15 @@ Future<String> analyzeWithAI(String imageUrl) async {
         {
           "parts": [
             {
-              "text": "generate a random number between 1 to 10 just give that number as output"
+              "text":
+                  "generate a random number between 1 to 10 just give that number as output",
             },
             {
-              "inlineData": {
-                "mimeType": "image/jpeg",
-                "data": base64Image
-              }
-            }
-          ]
-        }
-      ]
+              "inlineData": {"mimeType": "image/jpeg", "data": base64Image},
+            },
+          ],
+        },
+      ],
     });
 
     // API Call
@@ -529,14 +557,15 @@ Future<String> analyzeWithAI(String imageUrl) async {
       Uri.parse(apiUrl),
       headers: {
         "Content-Type": "application/json",
-        "x-goog-api-key": apiKey,  // Correct header for API key authentication
+        "x-goog-api-key": apiKey, // Correct header for API key authentication
       },
       body: requestBody,
     );
 
     if (response.statusCode == 200) {
       var jsonResponse = jsonDecode(response.body);
-      return jsonResponse.toString();  // Return the response (process it as needed)
+      return jsonResponse
+          .toString(); // Return the response (process it as needed)
     } else {
       return "Error: ${response.statusCode}, ${response.body}";
     }
@@ -544,8 +573,6 @@ Future<String> analyzeWithAI(String imageUrl) async {
     return "Exception: $e";
   }
 }
-
-  
 
 class ExamListItem extends StatelessWidget {
   final String title;
@@ -562,8 +589,7 @@ class ExamListItem extends StatelessWidget {
     required this.statusColor,
     required this.marks,
     required this.shade,
-    required this.aiFeedback,  // Receive AI Feedback
-
+    required this.aiFeedback, // Receive AI Feedback
   });
 
   @override
@@ -594,7 +620,10 @@ class ExamListItem extends StatelessWidget {
               Expanded(
                 flex: 2,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     color: statusColor,
                     borderRadius: BorderRadius.circular(8),
@@ -635,7 +664,10 @@ class ExamListItem extends StatelessWidget {
           // Display AI Feedback
           Text(
             "AI Feedback: $aiFeedback",
-            style: const TextStyle(color: Color.fromARGB(255, 228, 234, 237), fontSize: 14),
+            style: const TextStyle(
+              color: Color.fromARGB(255, 228, 234, 237),
+              fontSize: 14,
+            ),
           ),
         ],
       ),
