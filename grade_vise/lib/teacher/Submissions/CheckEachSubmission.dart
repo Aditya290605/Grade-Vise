@@ -322,7 +322,7 @@ class _CheckeachsubmissionState extends State<Checkeachsubmission> {
                           users.contains(snapshot.data!['uid'])
                               ? Colors.green
                               : Colors.red,
-                      marks: '0',
+                      marks: aiMark == '' ? '0' : aiMark,
                       shade: true,
                       aiFeedback: aiMark,
                     );
@@ -685,14 +685,8 @@ class ExamListItem extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
+
           // Display AI Feedback
-          Text(
-            "AI Feedback: $aiFeedback",
-            style: const TextStyle(
-              color: Color.fromARGB(255, 228, 234, 237),
-              fontSize: 14,
-            ),
-          ),
         ],
       ),
     );
