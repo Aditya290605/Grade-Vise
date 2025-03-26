@@ -6,10 +6,12 @@ import 'package:grade_vise/utils/colors.dart';
 class SubmissionsPage extends StatelessWidget {
   final String classroomId;
   final String photo;
+  final bool isStudent;
   const SubmissionsPage({
     super.key,
     required this.classroomId,
     required this.photo,
+    required this.isStudent,
   });
 
   Widget _buildAssignmentHeader() {
@@ -140,6 +142,7 @@ class SubmissionsPage extends StatelessWidget {
                               horizontal: 15.0,
                             ),
                             child: SubmissionCard(
+                              isStudent: isStudent,
                               snap: snapshot.data!,
                               snap1: snap.data!.docs[index],
                               subject: snapshot.data!['subject'],
@@ -176,6 +179,7 @@ class SubmissionCard extends StatelessWidget {
   final DocumentSnapshot<Map<String, dynamic>> snap1;
   final List submissions;
   final DocumentSnapshot<Map<String, dynamic>> snap;
+  final bool isStudent;
 
   const SubmissionCard({
     super.key,
@@ -186,6 +190,7 @@ class SubmissionCard extends StatelessWidget {
     required this.total,
     required this.snap1,
     required this.snap,
+    required this.isStudent,
   });
 
   @override
@@ -245,23 +250,25 @@ class SubmissionCard extends StatelessWidget {
           const SizedBox(height: 16),
           ElevatedButton.icon(
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder:
-                      (context) => Checkeachsubmission(
-                        title: title,
-                        subject: subject,
-                        snap: snap,
-                        snap1: snap1,
-                        status: submissions,
-                      ),
-                ),
-              );
+              isStudent == false
+                  ? Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) => Checkeachsubmission(
+                            title: title,
+                            subject: subject,
+                            snap: snap,
+                            snap1: snap1,
+                            status: submissions,
+                          ),
+                    ),
+                  )
+                  : VoidCallback;
             },
             icon: const Icon(Icons.check_circle_outline, color: Colors.white),
-            label: const Text(
-              'Check Submissions',
+            label: Text(
+              isStudent == false ? 'Check Submissions' : '',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 16,
