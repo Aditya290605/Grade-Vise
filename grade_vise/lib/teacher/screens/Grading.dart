@@ -1,7 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:grade_vise/teacher/screens/persoanl_details.dart';
+import 'package:grade_vise/utils/colors.dart';
 
 class Grading extends StatefulWidget {
-  const Grading({Key? key}) : super(key: key);
+  final String classroomId;
+  final int students;
+  const Grading({super.key, required this.classroomId, required this.students});
 
   @override
   _GradingState createState() => _GradingState();
@@ -10,40 +15,18 @@ class Grading extends StatefulWidget {
 class _GradingState extends State<Grading> {
   // Search controller to enable filtering
   final TextEditingController _searchController = TextEditingController();
-  List<Map<String, String>> _filteredStudents = [];
-  List<Map<String, String>> _students = [
-    {"name": "Abhishek Sangule", "points": "120"},
-    {"name": "Chandan Bhirud", "points": "80"},
-    {"name": "Sanika Chavan", "points": "210"},
-    {"name": "Sakshi", "points": "110"},
-    {"name": "Kshitija Magar", "points": "40"},
-    {"name": "Shri Krishna", "points": "130"},
-    {"name": "Ram", "points": "120"},
-  ];
 
   @override
   void initState() {
     super.initState();
+
     // Sort students by points in descending order initially
-    _students.sort(
-      (a, b) => int.parse(b['points']!).compareTo(int.parse(a['points']!)),
-    );
-    _filteredStudents = List.from(_students);
 
     // Add listener for search functionality
     _searchController.addListener(_filterStudents);
   }
 
-  void _filterStudents() {
-    setState(() {
-      _filteredStudents =
-          _students.where((student) {
-            final nameLower = student['name']!.toLowerCase();
-            final searchLower = _searchController.text.toLowerCase();
-            return nameLower.contains(searchLower);
-          }).toList();
-    });
-  }
+  void _filterStudents() {}
 
   @override
   void dispose() {
@@ -54,21 +37,56 @@ class _GradingState extends State<Grading> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1C1C2E),
+      backgroundColor: bgColor,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 15,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildAppBar(),
-                  const SizedBox(height: 20),
                   _buildSearchBar(),
                   const SizedBox(height: 20),
-                  _buildStatsGrid(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      _buildStatsCard(
+                        icon: Icons.person,
+                        value: widget.students.toString(),
+                        label: "Total Students",
+                        iconColor: Colors.blue,
+                      ),
+                      _buildStatsCard(
+                        icon: Icons.star,
+                        value: "4.5",
+                        label: "Average Grade",
+                        iconColor: Colors.purple,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      _buildStatsCard(
+                        icon: Icons.check_circle,
+                        value: "95%",
+                        label: "Attendance",
+                        iconColor: Colors.yellow,
+                      ),
+                      _buildStatsCard(
+                        icon: Icons.school,
+                        value: "10",
+                        label: "Classes",
+                        iconColor: Colors.pink,
+                      ),
+                    ],
+                  ),
                   const SizedBox(height: 20),
                   _buildStudentListHeader(),
                 ],
@@ -79,30 +97,6 @@ class _GradingState extends State<Grading> {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildAppBar() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        IconButton(
-          icon: const Icon(Icons.menu, color: Colors.white),
-          onPressed: () {},
-        ),
-        const Text(
-          "Grade",
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        IconButton(
-          icon: const Icon(Icons.notifications_outlined, color: Colors.white),
-          onPressed: () {},
-        ),
-      ],
     );
   }
 
@@ -126,42 +120,6 @@ class _GradingState extends State<Grading> {
     );
   }
 
-  Widget _buildStatsGrid() {
-    return GridView.count(
-      crossAxisCount: 2,
-      crossAxisSpacing: 16,
-      mainAxisSpacing: 16,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      children: [
-        _buildStatsCard(
-          icon: Icons.person,
-          value: _students.length.toString(),
-          label: "Total Students",
-          iconColor: Colors.blue,
-        ),
-        _buildStatsCard(
-          icon: Icons.star,
-          value: "4.5",
-          label: "Average Grade",
-          iconColor: Colors.orange,
-        ),
-        _buildStatsCard(
-          icon: Icons.check_circle,
-          value: "95%",
-          label: "Attendance",
-          iconColor: Colors.green,
-        ),
-        _buildStatsCard(
-          icon: Icons.school,
-          value: "10",
-          label: "Classes",
-          iconColor: Colors.purple,
-        ),
-      ],
-    );
-  }
-
   Widget _buildStatsCard({
     required IconData icon,
     required String value,
@@ -169,51 +127,58 @@ class _GradingState extends State<Grading> {
     required Color iconColor,
   }) {
     return Container(
+      width: MediaQuery.of(context).size.width * 0.42,
+      height: 80,
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [iconColor.withOpacity(0.2), Colors.white.withOpacity(0.1)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: iconColor.withOpacity(0.2),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(icon, color: iconColor, size: 24),
-            ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            spreadRadius: 2,
+            blurRadius: 8,
+            offset: Offset(2, 4),
           ),
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  value,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 0.5,
-                  ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 5.0,
+                  vertical: 5,
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  label,
-                  style: const TextStyle(
-                    color: Colors.white70,
-                    fontSize: 12,
-                    letterSpacing: 0.3,
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: iconColor.withOpacity(0.1),
+                    shape: BoxShape.circle,
                   ),
+
+                  child: Icon(icon, color: iconColor, size: 28),
                 ),
-              ],
+              ),
+              const SizedBox(width: 20),
+              Text(
+                value,
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 4),
+            ],
+          ),
+
+          Text(
+            label,
+            style: const TextStyle(
+              color: Colors.black54,
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ],
@@ -226,7 +191,7 @@ class _GradingState extends State<Grading> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          "Student List (${_filteredStudents.length})",
+          "Student List ()",
           style: const TextStyle(
             color: Colors.white,
             fontSize: 18,
@@ -244,53 +209,67 @@ class _GradingState extends State<Grading> {
   }
 
   Widget _buildStudentList() {
-    return _filteredStudents.isEmpty
-        ? Center(
-          child: Text(
-            'No students found',
-            style: TextStyle(color: Colors.white54),
-          ),
-        )
-        : ListView.builder(
+    return StreamBuilder(
+      stream:
+          FirebaseFirestore.instance
+              .collection('users')
+              .where('classrooms', arrayContains: widget.classroomId)
+              .snapshots(),
+      builder: (context, snapshot) {
+        return ListView.builder(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          itemCount: _filteredStudents.length,
+          itemCount: snapshot.data!.docs.length,
           physics: const BouncingScrollPhysics(),
           itemBuilder: (context, index) {
-            final student = _filteredStudents[index];
+            final student = snapshot.data!.docs[index];
             return Container(
               margin: const EdgeInsets.symmetric(vertical: 8),
               decoration: BoxDecoration(
                 color: Colors.white.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: ListTile(
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-                title: Text(
-                  student["name"]!,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16,
+              child: InkWell(
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder:
+                          (context) => StudentDashboard(
+                            name: student['name'],
+                            email: student['email'],
+                            assignements: [],
+                          ),
+                    ),
+                  );
+                },
+                child: ListTile(
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
                   ),
-                ),
-                trailing: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    student["points"]!,
+                  title: Text(
+                    student["name"]!,
                     style: const TextStyle(
                       color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                    ),
+                  ),
+                  trailing: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      '0',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
                     ),
                   ),
                 ),
@@ -298,5 +277,7 @@ class _GradingState extends State<Grading> {
             );
           },
         );
+      },
+    );
   }
 }
