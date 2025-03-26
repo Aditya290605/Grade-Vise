@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:grade_vise/utils/colors.dart';
 import 'package:intl/intl.dart';
+import 'package:grade_vise/utils/colors.dart';
 
 class AssignmentListScreen extends StatelessWidget {
   final String classroomId;
@@ -18,41 +18,18 @@ class AssignmentListScreen extends StatelessWidget {
         color: const Color(0xFFE3D1EF),
         borderRadius: BorderRadius.circular(15),
       ),
-      child: Stack(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Positioned(
-            right: 0,
-            top: -20,
-            child: Container(
-              width: 100,
-              height: 100,
-              decoration: BoxDecoration(
-                color: Color(0xFFF8D7A4),
-                shape: BoxShape.circle,
-              ),
+          const Text(
+            'Submissions',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF333333),
             ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                'Submissions',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF333333),
-                ),
-              ),
-              Container(
-                width: 12,
-                height: 12,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Color(0xFF333333),
-                ),
-              ),
-            ],
-          ),
+          const CircleAvatar(backgroundColor: Color(0xFF333333), radius: 6),
         ],
       ),
     );
@@ -62,7 +39,6 @@ class AssignmentListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: bgColor,
-
       body: SafeArea(
         child: Column(
           children: [
@@ -70,48 +46,36 @@ class AssignmentListScreen extends StatelessWidget {
             _buildAssignmentHeader(),
             const SizedBox(height: 20),
             Expanded(
-              child: StreamBuilder<QuerySnapshot>(
+              child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
                 stream:
                     FirebaseFirestore.instance
-                        .collection('assignments')
-                        .where('classroomId', isEqualTo: classroomId)
+                        .collection('classrooms')
+                        .doc(classroomId)
                         .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   }
 
-                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                    return const Center(child: Text('No assignments found'));
-                  }
-
-                  var assignments = snapshot.data!.docs;
+                  var assignments = snapshot.data!['assignments'];
 
                   return ListView.builder(
                     itemCount: assignments.length,
                     itemBuilder: (context, index) {
-                      var data =
-                          assignments[index].data() as Map<String, dynamic>;
-
-                      return FutureBuilder<QuerySnapshot>(
+                      return FutureBuilder<QuerySnapshot<Map<String, dynamic>>>(
                         future:
                             FirebaseFirestore.instance
                                 .collection('submissions')
                                 .where(
-                                  'classroomId',
-                                  isEqualTo:
-                                      snapshot.data!.docs[index]['classroomId'],
-                                )
-                                .where(
-                                  'submissions',
-                                  arrayContains:
-                                      snapshot.data!.docs[index]['fileId'],
+                                  'assignmentId',
+                                  isEqualTo: assignments[index],
                                 )
                                 .where(
                                   'userId',
                                   isEqualTo:
                                       FirebaseAuth.instance.currentUser!.uid,
                                 )
+                                .where('classroomId', isEqualTo: classroomId)
                                 .get(),
                         builder: (context, submissionSnapshot) {
                           if (submissionSnapshot.connectionState ==
@@ -121,114 +85,17 @@ class AssignmentListScreen extends StatelessWidget {
                             );
                           }
 
-                          return Card(
-                            margin: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15.0),
-                            ),
-                            elevation: 6,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(15.0),
-                                gradient: LinearGradient(
-                                  colors: [
-                                    Colors.blue.shade50,
-                                    Colors.blue.shade100,
-                                  ],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                ),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Icon(
-                                          Icons.assignment,
-                                          color: Colors.blueAccent,
-                                          size: 28,
-                                        ),
-                                        const SizedBox(width: 12),
-                                        Expanded(
-                                          child: Text(
-                                            data['title'] ??
-                                                'Untitled Assignment',
-                                            style: const TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.black87,
-                                            ),
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 12),
-                                    Row(
-                                      children: [
-                                        Icon(
-                                          Icons.description,
-                                          color: Colors.grey.shade600,
-                                        ),
-                                        const SizedBox(width: 8),
-                                        Expanded(
-                                          child: Text(
-                                            data['description'] ??
-                                                'No description available',
-                                            style: const TextStyle(
-                                              color: Colors.black54,
-                                            ),
-                                            overflow: TextOverflow.ellipsis,
-                                            maxLines: 2,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 12),
-                                    Row(
-                                      children: [
-                                        Icon(
-                                          Icons.schedule,
-                                          color: Colors.redAccent,
-                                        ),
-                                        const SizedBox(width: 8),
-                                        Text(
-                                          'Due: ${data['dueDate'] ?? 'No due date'}',
-                                          style: const TextStyle(
-                                            color: Colors.redAccent,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 12),
-                                    Row(
-                                      children: [
-                                        Icon(
-                                          Icons.check_circle,
-                                          color: Colors.green,
-                                        ),
-                                        const SizedBox(width: 8),
-                                        Text(
-                                          'Submitted at: ${DateFormat('dd MMMM yyyy').format((data['uploadedAt'] as Timestamp).toDate())}',
-                                          style: const TextStyle(
-                                            color: Colors.green,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          );
+                          if (!submissionSnapshot.hasData ||
+                              submissionSnapshot.data!.docs.isEmpty) {
+                            return const Center(
+                              child: Text('No submissions found'),
+                            );
+                          }
+
+                          var submissionData =
+                              submissionSnapshot.data!.docs.first;
+
+                          return _buildAssignmentCard(submissionData);
                         },
                       );
                     },
@@ -238,6 +105,81 @@ class AssignmentListScreen extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildAssignmentCard(
+    DocumentSnapshot<Map<String, dynamic>> submissionData,
+  ) {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+      elevation: 6,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15.0),
+          gradient: LinearGradient(
+            colors: [Colors.blue.shade50, Colors.blue.shade100],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildInfoRow(
+                Icons.assignment,
+                submissionData['title'] ?? 'Untitled Assignment',
+                20.0,
+                Colors.blueAccent,
+              ),
+              _buildInfoRow(
+                Icons.description,
+                submissionData['description'] ?? 'No description available',
+                16.0,
+                Colors.grey.shade600,
+              ),
+
+              _buildInfoRow(
+                Icons.check_circle,
+                'Submitted at: ${DateFormat('dd MMMM yyyy').format((submissionData['uploadedAt'] as Timestamp).toDate())}',
+                14.0,
+                Colors.green,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoRow(
+    IconData icon,
+    String text,
+    double fontSize,
+    Color color,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        children: [
+          Icon(icon, color: color, size: 24),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(
+                fontSize: fontSize,
+                fontWeight: FontWeight.w500,
+                color: Colors.black87,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
       ),
     );
   }
