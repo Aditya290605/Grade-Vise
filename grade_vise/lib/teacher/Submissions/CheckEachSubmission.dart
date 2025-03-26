@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:grade_vise/teacher/submissions/ai_methods.dart';
+import 'package:grade_vise/teacher/submissions/pdfToText.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -27,7 +28,8 @@ class Checkeachsubmission extends StatefulWidget {
 class _CheckeachsubmissionState extends State<Checkeachsubmission> {
   String aiMark = '';
   List<Map<String, dynamic>> submissions = [];
-  List users = [];
+  List<String> users = [];
+  List<String> fileUrls = [];
 
   @override
   void initState() {
@@ -46,9 +48,10 @@ class _CheckeachsubmissionState extends State<Checkeachsubmission> {
     setState(() {
       for (var i = 0; i < widget.status.length; i++) {
         users.add(snap.docs[i]['userId']);
+        fileUrls.add(snap.docs[i]['fileUrl']);
       }
     });
-    debugPrint('${users}');
+    debugPrint('${users} /n ${fileUrls}');
   }
 
   @override
@@ -439,6 +442,11 @@ class _CheckeachsubmissionState extends State<Checkeachsubmission> {
                         borderRadius: BorderRadius.circular(28),
                         onTap: () async {
                           try {
+                            var res = processAndExtractAssignments(
+                              users,
+                              fileUrls,
+                            );
+                            debugPrint('${res}');
                             if (widget.snap['users'] is List) {
                               for (var studentId in widget.snap['users']) {
                                 var submissionSnapshot =
