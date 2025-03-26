@@ -1,11 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class Checkeachsubmission extends StatefulWidget {
   final String title;
-
+  final List status;
   final DocumentSnapshot<Map<String, dynamic>> snap;
 
   final DocumentSnapshot<Map<String, dynamic>> snap1;
@@ -16,6 +17,7 @@ class Checkeachsubmission extends StatefulWidget {
     required this.title,
     required this.subject,
     required this.snap,
+    required this.status,
   });
 
   @override
@@ -24,6 +26,31 @@ class Checkeachsubmission extends StatefulWidget {
 
 class _CheckeachsubmissionState extends State<Checkeachsubmission> {
   String aiMark = '';
+  List<Map<String, dynamic>> submissions = [];
+  List users = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchSubmissionsAndUsers();
+  }
+
+  Future<void> fetchSubmissionsAndUsers() async {
+    final snap = await FirebaseFirestore.instance
+        .collection('submissions')
+        .where('submissionId', whereIn: widget.status)
+        .get()
+        .catchError((error) {
+          debugPrint("Failed to fetch documents: $error");
+        });
+    setState(() {
+      for (var i = 0; i < widget.status.length; i++) {
+        users.add(snap.docs[i]['userId']);
+      }
+    });
+    debugPrint('${users}');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -288,15 +315,11 @@ class _CheckeachsubmissionState extends State<Checkeachsubmission> {
                     return ExamListItem(
                       title: snapshot.data!['name'],
                       status:
-                          widget.snap1['submissions'].contains(
-                                snapshot.data!['uid'],
-                              )
+                          users.contains(snapshot.data!['uid'])
                               ? "completed"
                               : 'pending',
                       statusColor:
-                          widget.snap1['submissions'].contains(
-                                snapshot.data!['uid'],
-                              )
+                          users.contains(snapshot.data!['uid'])
                               ? Colors.green
                               : Colors.red,
                       marks: '0',

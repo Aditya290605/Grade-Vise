@@ -10,13 +10,10 @@ import 'package:grade_vise/services/firebase_auth_methods.dart';
 import 'package:grade_vise/utils/colors.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:firebase_vertexai/firebase_vertexai.dart';
-
 
 // Background notification handler
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-  print("Background Message: ${message.notification?.title}");
 }
 
 void main() async {

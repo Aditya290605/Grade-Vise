@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:grade_vise/main.dart';
 import 'package:grade_vise/screens/mobile_screen.dart';
 import 'package:grade_vise/screens/starter_screen.dart';
 import 'package:grade_vise/pages/sign_in.dart';
@@ -94,6 +97,48 @@ class _SignUpState extends State<SignUp> with TickerProviderStateMixin {
   final TextEditingController pass = TextEditingController();
   final TextEditingController confrimPass = TextEditingController();
 
+  void setupFCM() async {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+    // Request notification permissions
+    NotificationSettings settings = await messaging.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      print("Notifications permission granted!");
+
+      // Get FCM Token and save to Firestore
+      String? token = await messaging.getToken();
+      print("FCM Token: $token");
+
+      // Save token to Firestore
+
+      if (user != null && token != null) {
+        FirebaseFirestore.instance.collection('users').doc(user.uid).update({
+          'fcmToken': token,
+        });
+      }
+    }
+
+    FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
+      FirebaseFirestore.instance.collection('users').doc(user!.uid).update({
+        'fcmToken': newToken,
+      });
+    });
+
+    // Listen for foreground messages
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      if (message.notification != null) {
+        print("New notification: ${message.notification!.title}");
+      }
+    });
+  }
+
   void getUserSignUp(String email_, String pass, BuildContext context) async {
     if (!mounted) return; // Check if the widget is still mounted
     setState(() {
@@ -119,6 +164,7 @@ class _SignUpState extends State<SignUp> with TickerProviderStateMixin {
             MaterialPageRoute(builder: (context) => HomePage()),
           );
         }
+        setupFCM();
       } else {
         showSnakbar(context, "Sign up failed");
       }

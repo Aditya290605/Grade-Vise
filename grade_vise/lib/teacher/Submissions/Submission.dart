@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:grade_vise/teacher/Submissions/CheckEachSubmission.dart';
 import 'package:grade_vise/utils/colors.dart';
-import 'package:grade_vise/widgets/classroom_details/custom_navigation.dart';
 
 class SubmissionsPage extends StatelessWidget {
   final String classroomId;
@@ -166,6 +165,7 @@ class SubmissionsPage extends StatelessWidget {
                             title: assignmentData['title'],
                             submitted: assignmentData['submissions'].length,
                             total: '${assignmentData['submissions'].length}',
+                            submissions: assignmentData['submissions'],
                           ),
                         );
                       },
@@ -189,12 +189,13 @@ class SubmissionCard extends StatelessWidget {
   final int submitted;
   final String total;
   final DocumentSnapshot<Map<String, dynamic>> snap1;
-
+  final List submissions;
   final DocumentSnapshot<Map<String, dynamic>> snap;
 
   const SubmissionCard({
     super.key,
     required this.subject,
+    required this.submissions,
     required this.title,
     required this.submitted,
     required this.total,
@@ -268,6 +269,7 @@ class SubmissionCard extends StatelessWidget {
                         subject: subject,
                         snap: snap,
                         snap1: snap1,
+                        status: submissions,
                       ),
                 ),
               );
