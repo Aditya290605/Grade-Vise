@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import 'package:grade_vise/student/assignment_page.dart';
+import 'package:grade_vise/student/feedback/feedhome.dart';
 import 'package:grade_vise/student/submissions.dart';
 import 'package:grade_vise/student/timetables.dart';
 import 'package:grade_vise/teacher/announcements/anncouncements.dart';
@@ -134,7 +135,15 @@ class _ClassroomScreenState extends State<ClassroomStudentScreen> {
                     iconColor: Colors.white,
                     backgroundColor: Color(0xFF22CAAC),
                     label: 'Feedback',
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder:
+                              (context) => FeedbackPage(),
+                        ),
+                      );
+                    },
                   ),
                   _buildRoundMenuButton(
                     icon: Icons.calendar_today,
