@@ -443,11 +443,12 @@ class _CheckeachsubmissionState extends State<Checkeachsubmission> {
                         borderRadius: BorderRadius.circular(28),
                         onTap: () async {
                           try {
-                            var res = processAndExtractAssignments(
+                            var res = await processAndExtractAssignments(
                               users,
                               fileUrls,
                             );
                             debugPrint('${res}');
+
                             if (widget.snap['users'] is List) {
                               for (var studentId in widget.snap['users']) {
                                 var submissionSnapshot =
