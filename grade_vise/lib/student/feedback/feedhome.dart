@@ -56,28 +56,14 @@ class FeedbackPage extends StatelessWidget {
                       Column(
   mainAxisAlignment: MainAxisAlignment.center,
   children: [
-    Image.network(
-      'https://via.placeholder.com/50x75?text=Woman',
-      width: 50,
-      height: 75,
-      errorBuilder: (context, error, stackTrace) {
-        return Text('Image failed to load');
-      },
-    ),
+    
   ],
 ),
 SizedBox(width: 20),
 Column(
   mainAxisAlignment: MainAxisAlignment.center,
   children: [
-    Image.network(
-      'https://via.placeholder.com/50x75?text=Man',
-      width: 50,
-      height: 75,
-      errorBuilder: (context, error, stackTrace) {
-        return Text('Image failed to load');
-      },
-    ),
+    
   ],
 ),
                     ],

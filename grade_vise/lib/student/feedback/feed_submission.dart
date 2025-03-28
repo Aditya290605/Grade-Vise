@@ -42,13 +42,7 @@ class _FeedbackSubmissionPageState extends State<FeedbackSubmissionPage> {
 
  void _submitFeedback() {
     // Validation checks
-    if (selectedClassroom == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select a classroom')),
-      );
-      return;
-    }
-
+   
     if (titleController.text.isEmpty) {
       ScaffoldMessenger.of(
         context,
@@ -187,43 +181,7 @@ class _FeedbackSubmissionPageState extends State<FeedbackSubmissionPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Classroom Dropdown
-                        _buildSectionTitle('Select Classroom'),
-                        Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey.shade300),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: DropdownButtonFormField<String>(
-                            decoration: InputDecoration(
-                              hintText: 'Select Classroom',
-                              prefixIcon: Icon(
-                                Icons.school,
-                                color: Colors.grey.shade500,
-                              ),
-                              border: InputBorder.none,
-                              contentPadding: const EdgeInsets.symmetric(
-                                vertical: 12,
-                                horizontal: 9,
-                              ),
-                            ),
-                            value: selectedClassroom,
-                            items:
-                                classrooms
-                                    .map(
-                                      (classroom) => DropdownMenuItem(
-                                        value: classroom,
-                                        child: Text(classroom),
-                                      ),
-                                    )
-                                    .toList(),
-                            onChanged: (value) {
-                              setState(() {
-                                selectedClassroom = value;
-                              });
-                            },
-                          ),
-                        ),
-                        const SizedBox(height: 24),
+                        
 
                         // Title Field
                         _buildSectionTitle('Feedback Title'),
