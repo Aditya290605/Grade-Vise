@@ -106,4 +106,51 @@ class FirestoreMethods {
 
     return res;
   }
+
+  Future<String> createFeedback(
+    String classroomId,
+    String title,
+    String des,
+    String email,
+    String uid,
+    String userPhoto,
+    String? fileUrl,
+    String? fileType,
+  ) async {
+    String res = '';
+
+    try {
+      String feebackId = Uuid().v1();
+
+      await FirebaseFirestore.instance
+          .collection('feedbacks')
+          .doc(feebackId)
+          .set({
+            'feedbackId': feebackId,
+            'classroomId': classroomId,
+            'title': title,
+            'description': des,
+            'email': email,
+            'userPhoto': userPhoto,
+            'fileUrl': fileUrl ?? '',
+            'fileType': fileType ?? '',
+            'userId': uid,
+            'time': Timestamp.now(),
+          });
+
+      res = 'success';
+    } catch (e) {
+      res = e.toString();
+    }
+
+    final userid =
+        await FirebaseFirestore.instance
+            .collection('classrooms')
+            .doc(classroomId)
+            .get();
+
+    FirebaseConfig().sendNotificationToTeacher(des, userid.data()!['uid']);
+
+    return res;
+  }
 }

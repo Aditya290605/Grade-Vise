@@ -53,51 +53,51 @@ class _FeedbackPageState extends State<FeedbackPageteach> {
         children: [
           // Header Card with enhanced shadows and animations
           Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-      margin: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: const Color(0xFFE3D1EF),
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: Stack(
-        children: [
-          Positioned(
-            right: 0,
-            top: -20,
-            child: Container(
-              width: 100,
-              height: 100,
-              decoration: BoxDecoration(
-                color: Color(0xFFF8D7A4),
-                shape: BoxShape.circle,
-              ),
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+            margin: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: const Color(0xFFE3D1EF),
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: Stack(
+              children: [
+                Positioned(
+                  right: 0,
+                  top: -20,
+                  child: Container(
+                    width: 100,
+                    height: 100,
+                    decoration: BoxDecoration(
+                      color: Color(0xFFF8D7A4),
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Feedbacks',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF333333),
+                      ),
+                    ),
+                    Container(
+                      width: 12,
+                      height: 12,
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Color(0xFF333333),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                'Submissions',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF333333),
-                ),
-              ),
-              Container(
-                width: 12,
-                height: 12,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Color(0xFF333333),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    ),
 
           // Table header with enhanced styling
           Padding(
@@ -198,7 +198,8 @@ class FeedbackListItem extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => StudentFeedbackDetailScreen(studentName: title),
+            builder:
+                (context) => StudentFeedbackDetailScreen(studentName: title),
           ),
         );
       },

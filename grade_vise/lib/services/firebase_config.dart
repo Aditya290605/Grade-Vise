@@ -5,7 +5,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:googleapis/admin/directory_v1.dart';
 import 'package:googleapis_auth/auth_io.dart' as auth1;
 import 'package:googleapis_auth/googleapis_auth.dart' as auth;
 import 'package:http/http.dart' as http;
@@ -117,6 +119,99 @@ class FirebaseConfig {
     } catch (e, stackTrace) {
       debugPrint('Error sending notifications: $e');
       debugPrint('Stack trace: $stackTrace');
+    }
+  }
+
+  Future<void> sendNotificationToTeacher(
+    String message,
+    String teacherId,
+  ) async {
+    try {
+      final docSnapshot =
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(teacherId)
+              .get();
+
+      if (!docSnapshot.exists) {
+        debugPrint('Teacher not found');
+        return;
+      }
+
+      String? token = docSnapshot.data()?['fcmToken'];
+
+      if (token == null || token.isEmpty) {
+        debugPrint('No FCM token found for teacher');
+        return;
+      }
+
+      final accessToken = await getAccessToken();
+      if (accessToken.isEmpty) {
+        debugPrint('Failed to get access token');
+        return;
+      }
+
+      final response = await http.post(
+        Uri.parse(
+          'https://fcm.googleapis.com/v1/projects/gradevise-e5c0d/messages:send',
+        ),
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          "message": {
+            "token": token,
+            "notification": {
+              "title": "New Feedback from Student",
+              "body": message,
+            },
+            "android": {"priority": "high"},
+            "apns": {
+              "headers": {"apns-priority": "10"},
+            },
+          },
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        debugPrint('Notification sent to token: $token');
+      } else if (response.statusCode == 404 ||
+          response.body.contains('InvalidRegistration')) {
+        debugPrint('Invalid token detected. Generating a new one...');
+
+        String? newToken = await regenerateToken();
+        if (newToken != null) {
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(teacherId)
+              .update({'fcmToken': newToken});
+
+          debugPrint(
+            'New token generated and updated in the database. Retrying notification...',
+          );
+          await sendNotificationToTeacher(message, teacherId);
+        } else {
+          debugPrint('Failed to generate a new token');
+        }
+      } else {
+        debugPrint('Failed to send notification. Error: ${response.body}');
+      }
+    } catch (e, stackTrace) {
+      debugPrint('Error sending notifications: $e');
+      debugPrint('Stack trace: $stackTrace');
+    }
+  }
+
+  Future<String?> regenerateToken() async {
+    // Implement your logic to generate a new FCM token.
+    // This could involve calling FirebaseMessaging.instance.getToken().
+    try {
+      String? newToken = await FirebaseMessaging.instance.getToken();
+      return newToken;
+    } catch (e) {
+      debugPrint('Error regenerating FCM token: $e');
+      return null;
     }
   }
 }

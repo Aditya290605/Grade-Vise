@@ -89,7 +89,9 @@ class _ClassroomDetailsState extends State<ClassroomDetails> {
                               () => Navigator.of(context).push(
                                 MaterialPageRoute(
                                   builder:
-                                      (context) => FeedbackPageteach(),
+                                      (context) => FeedbackPageteach(
+                                        classroomId: widget.classroomId,
+                                      ),
                                 ),
                               ),
                           imgpath: 'assets/images/teacher/tasks/feedback.png',

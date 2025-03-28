@@ -1,14 +1,24 @@
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/material.dart';
-import 'package:grade_vise/student/feedback/complaint_track.dart';
-import 'package:intl/intl.dart';
+import 'package:grade_vise/services/firestore_methods.dart';
+import 'package:grade_vise/services/storage_methods.dart';
+
 import 'dart:io';
 
 class FeedbackSubmissionPage extends StatefulWidget {
+  final String classroomId;
+  final String email;
+  final String userPhoto;
+
   // final String uid;
   const FeedbackSubmissionPage({
     super.key,
     // required this.uid,
+    required this.userPhoto,
+    required this.email,
+    required this.classroomId,
   });
 
   @override
@@ -21,8 +31,6 @@ class _FeedbackSubmissionPageState extends State<FeedbackSubmissionPage> {
   final TextEditingController descriptionController = TextEditingController();
 
   // Classroom dropdown
-  List<String> classrooms = ['Class 10A', 'Class 11B', 'Class 12C'];
-  String? selectedClassroom;
 
   FilePickerResult? _file;
   bool isLoading = false;
@@ -40,14 +48,17 @@ class _FeedbackSubmissionPageState extends State<FeedbackSubmissionPage> {
     }
   }
 
- void _submitFeedback() {
+  void _submitFeedback(
+    String fileType,
+    String title,
+    String des,
+    FilePickerResult? file,
+    classroomId,
+    String email,
+    String userPhoto,
+  ) async {
     // Validation checks
-    if (selectedClassroom == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select a classroom')),
-      );
-      return;
-    }
+    debugPrint('hey');
 
     if (titleController.text.isEmpty) {
       ScaffoldMessenger.of(
@@ -57,29 +68,56 @@ class _FeedbackSubmissionPageState extends State<FeedbackSubmissionPage> {
     }
 
     // Set loading state
-    setState(() {
-      isLoading = true;
-    });
+    if (_file == null) {
+      debugPrint('contriller');
+      setState(() {
+        isLoading = true;
+      });
 
-    // Simulate submission
-    Future.delayed(const Duration(seconds: 2), () {
+      await FirestoreMethods().createFeedback(
+        classroomId,
+        title,
+        des,
+        FirebaseAuth.instance.currentUser!.uid,
+        '',
+        '',
+        email,
+        userPhoto,
+      );
+
       setState(() {
         isLoading = false;
+        Navigator.pop(context);
       });
-      
-      // Show success snackbar
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Feedback submitted successfully')),
+    }
+
+    if (_file != null) {
+      setState(() {
+        isLoading = true;
+      });
+
+      final String fileUrl = await StorageMethods().uploadFeedback(
+        _file!,
+        'feedback',
+        FirebaseAuth.instance.currentUser!.uid,
       );
-      
-      // Navigate to ComplaintTrackingApp
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ComplaintTrackingApp(),
-        ),
+
+      await FirestoreMethods().createFeedback(
+        classroomId,
+        title,
+        des,
+        FirebaseAuth.instance.currentUser!.uid,
+        fileUrl,
+        fileType,
+        email,
+        userPhoto,
       );
-    });
+
+      setState(() {
+        isLoading = false;
+        Navigator.pop(context);
+      });
+    }
   }
 
   Widget _buildFilePreview(FilePickerResult fileResult) {
@@ -131,12 +169,7 @@ class _FeedbackSubmissionPageState extends State<FeedbackSubmissionPage> {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ComplaintTrackingPage(),
-                        ),
-                      );
+                      Navigator.pop(context);
                     },
                     child: Container(
                       padding: const EdgeInsets.all(8),
@@ -187,43 +220,6 @@ class _FeedbackSubmissionPageState extends State<FeedbackSubmissionPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Classroom Dropdown
-                        _buildSectionTitle('Select Classroom'),
-                        Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey.shade300),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: DropdownButtonFormField<String>(
-                            decoration: InputDecoration(
-                              hintText: 'Select Classroom',
-                              prefixIcon: Icon(
-                                Icons.school,
-                                color: Colors.grey.shade500,
-                              ),
-                              border: InputBorder.none,
-                              contentPadding: const EdgeInsets.symmetric(
-                                vertical: 12,
-                                horizontal: 9,
-                              ),
-                            ),
-                            value: selectedClassroom,
-                            items:
-                                classrooms
-                                    .map(
-                                      (classroom) => DropdownMenuItem(
-                                        value: classroom,
-                                        child: Text(classroom),
-                                      ),
-                                    )
-                                    .toList(),
-                            onChanged: (value) {
-                              setState(() {
-                                selectedClassroom = value;
-                              });
-                            },
-                          ),
-                        ),
-                        const SizedBox(height: 24),
 
                         // Title Field
                         _buildSectionTitle('Feedback Title'),
@@ -314,7 +310,17 @@ class _FeedbackSubmissionPageState extends State<FeedbackSubmissionPage> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
-                onPressed: _submitFeedback,
+                onPressed: () {
+                  _submitFeedback(
+                    fileType,
+                    titleController.text,
+                    descriptionController.text,
+                    _file,
+                    widget.classroomId,
+                    widget.email,
+                    widget.userPhoto,
+                  );
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
                   foregroundColor: Colors.black,
