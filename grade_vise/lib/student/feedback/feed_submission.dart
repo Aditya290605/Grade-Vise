@@ -78,11 +78,12 @@ class _FeedbackSubmissionPageState extends State<FeedbackSubmissionPage> {
         classroomId,
         title,
         des,
-        FirebaseAuth.instance.currentUser!.uid,
-        '',
-        '',
         email,
+        FirebaseAuth.instance.currentUser!.uid,
+
         userPhoto,
+        '',
+        '',
       );
 
       setState(() {
@@ -106,11 +107,12 @@ class _FeedbackSubmissionPageState extends State<FeedbackSubmissionPage> {
         classroomId,
         title,
         des,
+        email,
         FirebaseAuth.instance.currentUser!.uid,
+
+        userPhoto,
         fileUrl,
         fileType,
-        email,
-        userPhoto,
       );
 
       setState(() {

@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:grade_vise/responsive_layout/responsive_screen.dart';
 import 'package:grade_vise/student/Student_meet.dart';
 import 'package:grade_vise/student/classroom_screen.dart';
 import 'package:grade_vise/student/my_grades.dart';
@@ -40,19 +42,54 @@ class _MainPageScreenState extends State<MainPageScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: Drawer(
+        backgroundColor: bgColor,
+        child: SafeArea(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              Center(
+                child: CircleAvatar(
+                  radius: 40,
+                  child: ClipOval(child: Image.network(widget.teacherPhoto)),
+                ),
+              ),
+              const SizedBox(height: 20),
+              _buildMenuSection('CLASSROOM', [
+                _buildMenuItem(Icons.home_outlined, 'View profile', 0, () {}),
+                _buildMenuItem(Icons.info, 'About', 1, () {}),
+              ]),
+
+              _buildMenuItem(Icons.info, 'Log Out', 1, () {
+                FirebaseAuth.instance.signOut();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ResponsiveScreen()),
+                );
+              }),
+            ],
+          ),
+        ),
+      ),
       backgroundColor: bgColor,
       body: SafeArea(
         child: Column(
           children: [
             Row(
               children: [
-                Expanded(
-                  child: IconButton(
-                    onPressed: () {},
-                    icon: Image.asset(
-                      "assets/images/teacher/components/more_options.png",
-                    ),
-                  ),
+                Builder(
+                  builder: (context) {
+                    return Expanded(
+                      child: IconButton(
+                        onPressed: () {
+                          Scaffold.of(context).openDrawer();
+                        },
+                        icon: Image.asset(
+                          "assets/images/teacher/components/more_options.png",
+                        ),
+                      ),
+                    );
+                  },
                 ),
 
                 IconButton(
@@ -171,6 +208,49 @@ class _MainPageScreenState extends State<MainPageScreen> {
           color: isSelected ? Colors.white : Colors.black54,
         ),
       ),
+    );
+  }
+
+  Widget _buildMenuSection(String title, List<Widget> items) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 8.0,
+            ),
+            child: Text(
+              title,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          ...items,
+        ],
+      ),
+    );
+  }
+
+  // Build Menu Item (same as previous implementation)
+  Widget _buildMenuItem(
+    IconData icon,
+    String title,
+    int index,
+    VoidCallback onTap,
+  ) {
+    return ListTile(
+      leading: Icon(icon, color: Colors.white),
+      title: Text(
+        title,
+        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+      ),
+      onTap: onTap,
     );
   }
 }

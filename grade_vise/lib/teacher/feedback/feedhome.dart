@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:grade_vise/teacher/feedback/return_feedback.dart';
 
 class FeedbackPageteach extends StatefulWidget {
-  const FeedbackPageteach({super.key});
+  final String classroomId;
+  const FeedbackPageteach({super.key, required this.classroomId});
 
   @override
   State<FeedbackPageteach> createState() => _FeedbackPageState();
@@ -158,18 +160,34 @@ class _FeedbackPageState extends State<FeedbackPageteach> {
           ),
 
           // Feedback list with enhanced styling
-          Expanded(
-            child: ListView.builder(
-              itemCount: 5, // Placeholder count, replace with actual list
-              itemBuilder: (context, index) {
-                return FeedbackListItem(
-                  title: 'Student Name ${index + 1}',
-                  status: 'completed',
-                  statusColor: Colors.green,
-                  shade: index.isEven,
+          StreamBuilder(
+            stream:
+                FirebaseFirestore.instance
+                    .collection('feedbacks')
+                    .where('classroomId', isEqualTo: widget.classroomId)
+                    .snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.data != null) {
+                return Expanded(
+                  child: ListView.builder(
+                    itemCount:
+                        snapshot
+                            .data!
+                            .docs
+                            .length, // Placeholder count, replace with actual list
+                    itemBuilder: (context, index) {
+                      return FeedbackListItem(
+                        title: snapshot.data!.docs[index]['email'],
+                        status: 'view feedback',
+                        statusColor: Colors.white,
+                        shade: index.isEven,
+                      );
+                    },
+                  ),
                 );
-              },
-            ),
+              }
+              return Center(child: CircularProgressIndicator());
+            },
           ),
         ],
       ),
