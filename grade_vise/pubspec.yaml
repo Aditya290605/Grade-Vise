@@ -51,6 +51,7 @@ dependencies:
   google_fonts: ^5.0.0
   syncfusion_flutter_pdfviewer: ^28.2.12
   syncfusion_flutter_pdf: ^28.2.9
+  awesome_drawer_bar: ^1.2.1
   
 
 

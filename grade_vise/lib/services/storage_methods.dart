@@ -122,4 +122,27 @@ class StorageMethods {
     }
     return res;
   }
+
+  Future<String> uploadFeedback(
+    FilePickerResult result,
+    String childname,
+    String uid,
+  ) async {
+    File file = File(result.files.single.path!);
+    String fileId = const Uuid().v1();
+
+    Reference storageRef = FirebaseStorage.instance
+        .ref()
+        .child(childname)
+        .child(uid)
+        .child(fileId);
+
+    UploadTask uploadTask = storageRef.putFile(file);
+
+    TaskSnapshot snapshot = await uploadTask;
+
+    String downloadUrl = await snapshot.ref.getDownloadURL();
+
+    return downloadUrl;
+  }
 }

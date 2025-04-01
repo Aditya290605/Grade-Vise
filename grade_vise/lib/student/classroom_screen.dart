@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import 'package:grade_vise/student/assignment_page.dart';
+import 'package:grade_vise/student/feedback/complaint_track.dart';
 import 'package:grade_vise/student/feedback/feedhome.dart';
 import 'package:grade_vise/student/submissions.dart';
 import 'package:grade_vise/student/timetables.dart';
@@ -140,7 +141,11 @@ class _ClassroomScreenState extends State<ClassroomStudentScreen> {
                         context,
                         MaterialPageRoute(
                           builder:
-                              (context) => FeedbackPage(),
+                              (context) => FeedbackPage(
+                                classroomId: widget.classroomId,
+                                userPhoto: widget.photoUrl,
+                                email: widget.name,
+                              ),
                         ),
                       );
                     },

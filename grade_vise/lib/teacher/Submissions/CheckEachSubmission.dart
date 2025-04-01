@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:grade_vise/teacher/submissions/ai_methods.dart';
 import 'package:grade_vise/teacher/submissions/pdfToText.dart';
@@ -448,6 +447,7 @@ class _CheckeachsubmissionState extends State<Checkeachsubmission> {
                               fileUrls,
                             );
                             debugPrint('${res}');
+
                             if (widget.snap['users'] is List) {
                               for (var studentId in widget.snap['users']) {
                                 var submissionSnapshot =

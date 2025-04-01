@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:grade_vise/student/feedback/feedhome.dart';
 import 'package:grade_vise/teacher/announcements/anncouncements.dart';
+import 'package:grade_vise/teacher/feedback/feedhome.dart';
 import 'package:grade_vise/teacher/submissions/submission.dart';
 import 'package:grade_vise/teacher/assignments/assignment.dart';
 import 'package:grade_vise/utils/colors.dart';
@@ -83,7 +85,15 @@ class _ClassroomDetailsState extends State<ClassroomDetails> {
                           title: "Assignments",
                         ),
                         Components(
-                          ontap: () {},
+                          ontap:
+                              () => Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder:
+                                      (context) => FeedbackPageteach(
+                                        classroomId: widget.classroomId,
+                                      ),
+                                ),
+                              ),
                           imgpath: 'assets/images/teacher/tasks/feedback.png',
                           title: "Feedback",
                         ),

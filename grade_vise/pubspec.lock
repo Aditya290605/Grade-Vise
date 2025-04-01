@@ -65,6 +65,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.12.0"
+  awesome_drawer_bar:
+    dependency: "direct main"
+    description:
+      name: awesome_drawer_bar
+      sha256: adfa7448c6b3c7952e2b0ba76aa2e63655bf57891aa977bca34e21297e526049
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.2.1"
   boolean_selector:
     dependency: transitive
     description:
@@ -398,6 +406,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_adaptive_scaffold:
+    dependency: transitive
+    description:
+      name: flutter_adaptive_scaffold
+      sha256: "7279d74da2f2531a16d21c2ec327308778c3aedd672dfe4eaf3bf416463501f8"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.2"
   flutter_animate:
     dependency: "direct main"
     description:
