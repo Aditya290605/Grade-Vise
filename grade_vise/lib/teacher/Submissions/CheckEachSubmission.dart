@@ -443,7 +443,7 @@ class _CheckeachsubmissionState extends State<Checkeachsubmission> {
                         borderRadius: BorderRadius.circular(28),
                         onTap: () async {
                           try {
-                            var res = processAndExtractAssignments(
+                            var res = await processAndExtractAssignments(
                               users,
                               fileUrls,
                             );
