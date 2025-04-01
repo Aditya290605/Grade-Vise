@@ -51,23 +51,34 @@ class AssignmentPage extends StatelessWidget {
             return Center(child: CircularProgressIndicator());
           }
 
-          return ListView.builder(
-            itemCount: snapshot.data!.docs.length,
-            itemBuilder: (context, index) {
-              return AssignmentCard(
-                title: snapshot.data!.docs[index]['title'],
-                subject: snapshot.data!.docs[index]['description'],
-                classroomId: classroomId,
-                date: snapshot.data!.docs[index]['dueDate'],
-                isTeacher: false,
-                assignmentId: snapshot.data!.docs[index]['fileId'],
-                uid: snapshot.data!.docs[index]['userId'],
-                fileUrl: snapshot.data!.docs[index]['fileUrl'],
-                des: snapshot.data!.docs[index]['description'],
-                fileType: snapshot.data!.docs[index]['fileType'],
+          return snapshot.data!.docs.isEmpty
+              ? Center(
+                child: Text(
+                  'No assignments uploaded yet',
+                  style: TextStyle(
+                    fontSize: 22,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              )
+              : ListView.builder(
+                itemCount: snapshot.data!.docs.length,
+                itemBuilder: (context, index) {
+                  return AssignmentCard(
+                    title: snapshot.data!.docs[index]['title'],
+                    subject: snapshot.data!.docs[index]['description'],
+                    classroomId: classroomId,
+                    date: snapshot.data!.docs[index]['dueDate'],
+                    isTeacher: false,
+                    assignmentId: snapshot.data!.docs[index]['fileId'],
+                    uid: snapshot.data!.docs[index]['userId'],
+                    fileUrl: snapshot.data!.docs[index]['fileUrl'],
+                    des: snapshot.data!.docs[index]['description'],
+                    fileType: snapshot.data!.docs[index]['fileType'],
+                  );
+                },
               );
-            },
-          );
         },
       ),
     );

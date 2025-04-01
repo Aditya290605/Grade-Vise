@@ -3,6 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
+import 'package:grade_vise/teacher/submissions/pdf_to_text.dart';
 
 import 'package:uuid/uuid.dart';
 
@@ -35,6 +37,8 @@ class StorageMethods {
       TaskSnapshot snapshot = await uploadTask;
 
       String downloadUrl = await snapshot.ref.getDownloadURL();
+      debugPrint(downloadUrl);
+      String? content = await extractTextFromUrl(downloadUrl);
 
       await FirebaseFirestore.instance
           .collection('assignments')
@@ -47,6 +51,7 @@ class StorageMethods {
             "dueDate": date,
             'classroomId': classroomId,
             'fileUrl': downloadUrl,
+            'content': content ?? '',
             'fileType': fileType,
             'uploadedAt': FieldValue.serverTimestamp(),
             'submissions': [],
@@ -92,6 +97,8 @@ class StorageMethods {
       TaskSnapshot snapshot = await uploadTask;
 
       String downloadUrl = await snapshot.ref.getDownloadURL();
+      debugPrint(downloadUrl);
+      String? content = await extractTextFromUrl(downloadUrl);
 
       await FirebaseFirestore.instance
           .collection('submissions')
@@ -102,11 +109,11 @@ class StorageMethods {
             'title': title,
             'description': description,
             "userId": auth.currentUser!.uid,
+            'fileContent': content,
             'classroomId': classroomId,
             'fileUrl': downloadUrl,
             'fileType': fileType,
             'uploadedAt': FieldValue.serverTimestamp(),
-            'submittedBy': FieldValue.arrayUnion([auth.currentUser!.uid]),
           });
 
       await FirebaseFirestore.instance

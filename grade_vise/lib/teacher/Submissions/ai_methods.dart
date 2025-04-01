@@ -1,63 +1,67 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:google_generative_ai/google_generative_ai.dart';
 
-class AiMethods {
-  Future<String> analyzeWithAI(String imageUrl) async {
-    String apiKey =
-        "AIzaSyCURahkwb1_t_q9Z5To6c9qcE3u-bbS7Kg"; // Replace with a valid API key
-    String apiUrl =
-        "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent";
+Future<List<Map<String, dynamic>>> evaluateSolutions(
+  List<Map<String, String>> solutions,
+  String assignmentContent,
+) async {
+  final apiKey = "AIzaSyC-rB4l8vm-8qwvynNstXa3rh3FwYlm8mc";
+  // Use Firebase remote config or env variable
+  final model = GenerativeModel(model: 'gemini-2.0-flash', apiKey: apiKey);
 
-    try {
-      // Fetch image bytes
-      var imageResponse = await http.get(Uri.parse(imageUrl));
-      if (imageResponse.statusCode != 200) {
-        return "Error fetching image: ${imageResponse.statusCode}";
-      }
+  List<Map<String, dynamic>> results = [];
 
-      // Encode image in base64
-      String base64Image = base64Encode(imageResponse.bodyBytes);
+  for (var solution in solutions) {
+    Content prompt = Content.text("""
+      You are an expert teacher grading student assignments. Evaluate the student's answer strictly based on the given assignment instructions.
+      
+      **Assignment Description:** 
+      $assignmentContent
 
-      // API request body
-      var requestBody = jsonEncode({
-        "contents": [
-          {
-            "parts": [
-              {
-                "text":
-                    "generate a random number between 1 to 10 just give that number as output",
-              },
-              {
-                "inlineData": {"mimeType": "image/jpeg", "data": base64Image},
-              },
-            ],
-          },
-        ],
+      **Student Submission:** 
+      ${solution["solution"]}
+
+      **Your Task:**
+      - Give a **mark out of 10** (strict grading)
+      - Provide detailed **feedback**, including:
+        - Mistakes in content, formatting, or approach
+        - Suggestions for improvement
+        - Highlight good points
+
+      **Response Format:**
+      ```
+      Mark: <number out of 10>
+      Feedback: <detailed feedback>
+      ```
+    """);
+
+    final response = await model.generateContent([prompt]);
+
+    if (response.text != null) {
+      final extractedData = parseResponse(response.text!);
+      results.add({
+        "uid": solution["uid"],
+        "mark": extractedData["mark"],
+        "feedback": extractedData["feedback"],
       });
-
-      // API Call
-      var response = await http.post(
-        Uri.parse(apiUrl),
-        headers: {
-          "Content-Type": "application/json",
-          "x-goog-api-key": apiKey, // Correct header for API key authentication
-        },
-        body: requestBody,
-      );
-
-      if (response.statusCode == 200) {
-        var jsonResponse = jsonDecode(response.body);
-
-        // Extract the text field
-        String textResponse =
-            jsonResponse["candidates"][0]["content"]["parts"][0]["text"];
-
-        return textResponse; // This will return only the generated number
-      } else {
-        return "Error: ${response.statusCode}, ${response.body}";
-      }
-    } catch (e) {
-      return "Exception: $e";
     }
   }
+
+  return results;
+}
+
+// Helper function to parse Gemini response
+Map<String, dynamic> parseResponse(String responseText) {
+  RegExp markRegex = RegExp(r"Mark:\s*(\d+)");
+  RegExp feedbackRegex = RegExp(r"Feedback:\s*(.+)", dotAll: true);
+
+  int mark =
+      markRegex.firstMatch(responseText)?.group(1) != null
+          ? int.parse(markRegex.firstMatch(responseText)!.group(1)!)
+          : 0;
+
+  String feedback =
+      feedbackRegex.firstMatch(responseText)?.group(1) ??
+      "No feedback provided.";
+
+  return {"mark": mark, "feedback": feedback};
 }

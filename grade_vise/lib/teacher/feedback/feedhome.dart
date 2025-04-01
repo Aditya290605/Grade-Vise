@@ -177,9 +177,13 @@ class _FeedbackPageState extends State<FeedbackPageteach> {
                             .length, // Placeholder count, replace with actual list
                     itemBuilder: (context, index) {
                       return FeedbackListItem(
-                        title: snapshot.data!.docs[index]['email'],
+                        name: snapshot.data!.docs[index]['email'],
+                        des: snapshot.data!.docs[index]['description'],
+                        fileType: snapshot.data!.docs[index]['fileType'],
+                        fileUrl: snapshot.data!.docs[index]['fileUrl'],
                         status: 'view feedback',
                         statusColor: Colors.white,
+                        title: snapshot.data!.docs[index]['title'],
                         shade: index.isEven,
                       );
                     },
@@ -196,17 +200,25 @@ class _FeedbackPageState extends State<FeedbackPageteach> {
 }
 
 class FeedbackListItem extends StatelessWidget {
-  final String title;
+  final String name;
   final String status;
   final Color statusColor;
   final bool shade;
+  final String des;
+  final String fileType;
+  final String fileUrl;
+  final String title;
 
   const FeedbackListItem({
     super.key,
-    required this.title,
+    required this.name,
     required this.status,
+    required this.fileType,
     required this.statusColor,
     required this.shade,
+    required this.des,
+    required this.fileUrl,
+    required this.title,
   });
 
   @override
@@ -217,7 +229,13 @@ class FeedbackListItem extends StatelessWidget {
           context,
           MaterialPageRoute(
             builder:
-                (context) => StudentFeedbackDetailScreen(studentName: title),
+                (context) => StudentFeedbackDetailScreen(
+                  studentName: name,
+                  des: des,
+                  title: title,
+                  filePath: fileUrl,
+                  fileType: fileType,
+                ),
           ),
         );
       },
@@ -233,7 +251,7 @@ class FeedbackListItem extends StatelessWidget {
             Expanded(
               flex: 3,
               child: Text(
-                title,
+                name,
                 style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w500,

@@ -1,7 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:grade_vise/student/assignment_details.dart';
 
 import 'package:grade_vise/teacher/assignments_list.dart';
+import 'package:grade_vise/teacher/submissions/pdf_to_text.dart';
 import 'package:grade_vise/utils/colors.dart';
 
 class AssignmentCard extends StatelessWidget {
@@ -184,7 +187,7 @@ Widget _buildAssignmentCard(
           ),
           SizedBox(height: 20),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               if (!isTeacher) {
                 Navigator.of(context).push(
                   MaterialPageRoute(
@@ -203,6 +206,7 @@ Widget _buildAssignmentCard(
                         ),
                   ),
                 );
+                debugPrint(fileUrl);
               }
 
               if (isTeacher) {
