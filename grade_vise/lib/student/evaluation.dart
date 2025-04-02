@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:grade_vise/student/clarification_page.dart';
 import 'package:grade_vise/utils/colors.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -82,7 +83,7 @@ class StudentEvaluation extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
       decoration: BoxDecoration(
-        border: Border(left: BorderSide(color: Colors.blue.shade400, width: 4)),
+        border: Border(left: BorderSide(color: bgColor, width: 4)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -354,24 +355,25 @@ class StudentEvaluation extends StatelessWidget {
               ],
             ),
             child: Column(
-              children:
-                  feedback
-                      .split('\n\n')
-                      .map(
-                        (paragraph) => Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: Text(
-                            paragraph,
-                            style: TextStyle(
-                              fontSize: 16,
-                              height: 1.6,
-                              color: Colors.grey.shade800,
-                              letterSpacing: 0.2,
-                            ),
-                          ),
-                        ),
-                      )
-                      .toList(),
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: MarkdownBody(
+                    data: feedback, // Directly pass the feedback string
+                    styleSheet: MarkdownStyleSheet(
+                      p: TextStyle(
+                        fontSize: 16,
+                        height: 1.6,
+                        color: Colors.grey.shade800,
+                      ),
+                      strong: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 20),
@@ -395,7 +397,7 @@ class StudentEvaluation extends StatelessWidget {
               icon: const Icon(Icons.chat_outlined),
               label: const Text('Request Clarification'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue.shade600,
+                backgroundColor: bgColor,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 24,
