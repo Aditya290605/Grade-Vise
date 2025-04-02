@@ -53,6 +53,9 @@ dependencies:
   syncfusion_flutter_pdf: ^28.2.9
   awesome_drawer_bar: ^1.2.1
   google_generative_ai: ^0.4.6
+  percent_indicator: ^4.2.3  # This is the latest version at the time of writing
+
+
   
 
 
