@@ -40,8 +40,11 @@ Future<List<Map<String, dynamic>>> evaluateSolutions(
       final extractedData = parseResponse(response.text!);
       results.add({
         "uid": solution["uid"],
+        "assignmentId": solution["assignmentId"],
+        "classroomId": solution["classroomId"],
         "mark": extractedData["mark"],
         "feedback": extractedData["feedback"],
+        'submissionId': solution['submissionId'],
       });
     }
   }

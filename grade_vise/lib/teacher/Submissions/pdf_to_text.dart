@@ -37,6 +37,9 @@ Future<String?> extractTextFromUrl(String pdfUrl) async {
 List<Map<String, String>> convertToSolutionList(
   List<String> uids,
   List<String> fileContents,
+  List<String> assignmentId,
+  List<String> classroomId,
+  List<String> submissionId,
 ) {
   if (uids.length != fileContents.length) {
     throw Exception("Mismatch in UID and file content length!");
@@ -44,6 +47,12 @@ List<Map<String, String>> convertToSolutionList(
 
   return List.generate(
     uids.length,
-    (index) => {"uid": uids[index], "solution": fileContents[index]},
+    (index) => {
+      "uid": uids[index],
+      "solution": fileContents[index],
+      'assignmentId': assignmentId[index],
+      'classroomId': classroomId[index],
+      'submissionId': submissionId[index],
+    },
   );
 }

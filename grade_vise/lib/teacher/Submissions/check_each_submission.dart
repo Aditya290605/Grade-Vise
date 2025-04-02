@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:grade_vise/services/firestore_methods.dart';
 import 'package:grade_vise/teacher/submissions/ai_methods.dart';
 import 'package:grade_vise/teacher/submissions/pdf_to_text.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 class Checkeachsubmission extends StatefulWidget {
   final String title;
@@ -32,16 +30,42 @@ class _CheckeachsubmissionState extends State<Checkeachsubmission> {
   String aiMark = '';
   List<Map<String, dynamic>> submissions = [];
   List<String> users = [];
+  List<String> users1 = [];
   List<String> fileContent = [];
   bool isLoading = false;
+  List<String> assignmentId = [];
+  List<String> classroomId = [];
+  List<String> submissionsId = [];
 
   @override
   void initState() {
     super.initState();
     fetchSubmissionsAndUsers();
+    fetchSubmissionsUsers();
   }
 
   Future<void> fetchSubmissionsAndUsers() async {
+    final snap = await FirebaseFirestore.instance
+        .collection('submissions')
+        .where('submissionId', whereIn: widget.status)
+        .where('isChecked', isEqualTo: false)
+        .get()
+        .catchError((error) {
+          debugPrint("Failed to fetch documents: $error");
+        });
+    setState(() {
+      for (var i = 0; i < widget.status.length; i++) {
+        users.add(snap.docs[i]['userId']);
+        fileContent.add(snap.docs[i]['fileContent']);
+        assignmentId.add(snap.docs[i]['assignmentId']);
+        classroomId.add(snap.docs[i]['classroomId']);
+        submissionsId.add(snap.docs[i]['submissionId']);
+      }
+    });
+    debugPrint('$users \n $fileContent /n $classroomId /n $assignmentId');
+  }
+
+  Future<void> fetchSubmissionsUsers() async {
     final snap = await FirebaseFirestore.instance
         .collection('submissions')
         .where('submissionId', whereIn: widget.status)
@@ -51,12 +75,10 @@ class _CheckeachsubmissionState extends State<Checkeachsubmission> {
         });
     setState(() {
       for (var i = 0; i < widget.status.length; i++) {
-        users.add(snap.docs[i]['userId']);
-        fileContent.add(snap.docs[i]['fileContent']);
+        users1.add(snap.docs[i]['userId']);
       }
     });
-    debugPrint('$users /n $fileContent');
-    debugPrint('${widget.snap1['content']}');
+    debugPrint('$users1');
   }
 
   @override
@@ -263,6 +285,18 @@ class _CheckeachsubmissionState extends State<Checkeachsubmission> {
                           ),
                         ),
                         Expanded(
+                          flex: 3,
+                          child: Text(
+                            'Check Status',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ),
+                        Expanded(
                           flex: 2,
                           child: Row(
                             children: [
@@ -335,16 +369,24 @@ class _CheckeachsubmissionState extends State<Checkeachsubmission> {
                             return ExamListItem(
                               title: snapshot.data!['name'],
                               status:
-                                  users.contains(snapshot.data!['uid'])
+                                  users1.contains(snapshot.data!['uid'])
                                       ? "completed"
                                       : 'pending',
-                              statusColor:
+                              check:
                                   users.contains(snapshot.data!['uid'])
+                                      ? Colors.red
+                                      : Colors.green,
+                              statusColor:
+                                  users1.contains(snapshot.data!['uid'])
                                       ? Colors.green
                                       : Colors.red,
                               marks: aiMark == '' ? '0' : aiMark,
                               shade: true,
                               aiFeedback: aiMark,
+                              checkStatus:
+                                  users.contains(snapshot.data!['uid'])
+                                      ? "unchecked"
+                                      : 'checked',
                             );
                           },
                         );
@@ -470,6 +512,9 @@ class _CheckeachsubmissionState extends State<Checkeachsubmission> {
                                   var solutionList = convertToSolutionList(
                                     users,
                                     fileContent,
+                                    assignmentId,
+                                    classroomId,
+                                    submissionsId,
                                   );
 
                                   // 2. Evaluate with Gemini API
@@ -483,7 +528,9 @@ class _CheckeachsubmissionState extends State<Checkeachsubmission> {
                                     evaluations,
                                   );
 
-                                  print("Evaluations stored successfully!");
+                                  debugPrint(
+                                    "Evaluations stored successfully!",
+                                  );
                                   setState(() {
                                     isLoading = false;
                                   });
@@ -579,7 +626,10 @@ class ExamListItem extends StatelessWidget {
   final Color statusColor;
   final String marks;
   final bool shade;
-  final String aiFeedback; // Add AI Feedback
+  final String aiFeedback;
+  final Color check;
+  final String checkStatus;
+  // Add AI Feedback
 
   const ExamListItem({
     super.key,
@@ -588,6 +638,8 @@ class ExamListItem extends StatelessWidget {
     required this.statusColor,
     required this.marks,
     required this.shade,
+    required this.check,
+    required this.checkStatus,
     required this.aiFeedback, // Receive AI Feedback
   });
 
@@ -605,14 +657,45 @@ class ExamListItem extends StatelessWidget {
         children: [
           Row(
             children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 15,
+                ),
+              ),
+              SizedBox(width: MediaQuery.of(context).size.width * 0.15),
               Expanded(
-                flex: 3,
-                child: Text(
-                  title,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 15,
+                flex: 2,
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 50),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: check,
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          spreadRadius: 0,
+                          blurRadius: 3,
+                          offset: const Offset(0, 1),
+                        ),
+                      ],
+                    ),
+                    child: Text(
+                      checkStatus,
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
                   ),
                 ),
               ),
