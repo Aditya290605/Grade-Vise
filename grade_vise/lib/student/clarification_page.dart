@@ -181,14 +181,14 @@ class _ClarificationRequestPageState extends State<ClarificationRequestPage>
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
         ),
         elevation: 0,
-        backgroundColor: Colors.transparent,
+        backgroundColor: bgColor,
         iconTheme: const IconThemeData(color: Colors.white),
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Colors.blue.shade800, Colors.blue.shade600],
+              colors: [bgColor, bgColor],
             ),
           ),
         ),
@@ -198,7 +198,7 @@ class _ClarificationRequestPageState extends State<ClarificationRequestPage>
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Colors.blue.shade800, Colors.indigo.shade900],
+            colors: [Colors.blue.shade800, bgColor],
             stops: const [0.0, 0.3],
           ),
         ),
@@ -256,10 +256,7 @@ class _ClarificationRequestPageState extends State<ClarificationRequestPage>
             ),
             child: Row(
               children: [
-                _buildAnimatedIcon(
-                  Icons.assignment_outlined,
-                  Colors.blue.shade300,
-                ),
+                _buildAnimatedIcon(Icons.assignment_outlined, bgColor),
                 const SizedBox(width: 16),
                 Expanded(
                   child: Column(
@@ -536,7 +533,7 @@ class _ClarificationRequestPageState extends State<ClarificationRequestPage>
                                   height: 12,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color: Colors.blue.shade600,
+                                    color: bgColor,
                                   ),
                                 ),
                               ),
@@ -573,10 +570,7 @@ class _ClarificationRequestPageState extends State<ClarificationRequestPage>
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
-                        color:
-                            isSelected
-                                ? Colors.blue.shade700
-                                : Colors.grey.shade800,
+                        color: isSelected ? bgColor : Colors.grey.shade800,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -615,7 +609,7 @@ class _ClarificationRequestPageState extends State<ClarificationRequestPage>
             colors:
                 _isSubmitting
                     ? [Colors.grey.shade400, Colors.grey.shade500]
-                    : [Colors.blue.shade500, Colors.blue.shade700],
+                    : [bgColor, bgColor],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
