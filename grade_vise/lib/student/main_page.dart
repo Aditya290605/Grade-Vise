@@ -4,6 +4,7 @@ import 'package:grade_vise/responsive_layout/responsive_screen.dart';
 import 'package:grade_vise/student/Student_meet.dart';
 import 'package:grade_vise/student/classroom_screen.dart';
 import 'package:grade_vise/student/my_grades.dart';
+import 'package:grade_vise/teacher/profile.dart';
 import 'package:grade_vise/teacher/screens/meet.dart';
 import 'package:grade_vise/teacher/screens/uses_list.dart';
 import 'package:grade_vise/utils/colors.dart';
@@ -125,13 +126,14 @@ class _MainPageScreenState extends State<MainPageScreen> {
                   ),
                   MyGrades(),
                   Student_Meet(),
-                  PeoplePage(
-                    classroomId: widget.classroomId,
-                    name: widget.name,
-                    teachername: widget.teahername,
-                    photoUrl: widget.photoUrl,
-                    teacherPhoto: widget.teacherPhoto,
-                  ),
+                  MyProfilePage(),
+                  // PeoplePage(
+                  //   classroomId: widget.classroomId,
+                  //   name: widget.name,
+                  //   teachername: widget.teahername,
+                  //   photoUrl: widget.photoUrl,
+                  //   teacherPhoto: widget.teacherPhoto,
+                  // ),
                 ],
               ),
             ),
