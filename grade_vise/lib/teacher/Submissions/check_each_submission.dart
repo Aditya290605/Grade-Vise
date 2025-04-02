@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:grade_vise/services/firestore_methods.dart';
 import 'package:grade_vise/teacher/submissions/ai_methods.dart';
 import 'package:grade_vise/teacher/submissions/pdf_to_text.dart';
+import 'package:grade_vise/widgets/simple_dailog.dart';
 
 class Checkeachsubmission extends StatefulWidget {
   final String title;
@@ -511,69 +512,10 @@ class _CheckeachsubmissionState extends State<Checkeachsubmission> {
                                       barrierDismissible:
                                           false, // Prevent closing by tapping outside
                                       builder: (context) {
-                                        return Dialog(
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              20,
-                                            ),
-                                          ),
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(20.0),
-                                            child: Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                // ✅ Lottie Animation
-                                                SizedBox(height: 20),
-
-                                                // ✅ Title
-                                                Text(
-                                                  "All Assignments Checked!",
-                                                  style: TextStyle(
-                                                    fontSize: 20,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                  textAlign: TextAlign.center,
-                                                ),
-
-                                                SizedBox(height: 10),
-
-                                                // ✅ Subtitle
-                                                Text(
-                                                  "All student submissions have been checked.",
-                                                  style: TextStyle(
-                                                    fontSize: 16,
-                                                    color: Colors.grey[600],
-                                                  ),
-                                                  textAlign: TextAlign.center,
-                                                ),
-
-                                                SizedBox(height: 20),
-
-                                                // ✅ Close Button
-                                                ElevatedButton(
-                                                  onPressed: () {
-                                                    Navigator.pop(context);
-                                                  },
-                                                  style: ElevatedButton.styleFrom(
-                                                    backgroundColor:
-                                                        Colors.green,
-                                                    shape: RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            10,
-                                                          ),
-                                                    ),
-                                                  ),
-                                                  child: Text(
-                                                    "OK",
-                                                    style: TextStyle(
-                                                      color: Colors.white,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
+                                        return CustomSimpleDailog(
+                                          mes:
+                                              "All submissions have been checked !",
+                                          title: 'No submission to check',
                                         );
                                       },
                                     );

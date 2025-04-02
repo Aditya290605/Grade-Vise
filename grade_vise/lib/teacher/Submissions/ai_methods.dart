@@ -1,38 +1,36 @@
-import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:firebase_vertexai/firebase_vertexai.dart';
 
 Future<List<Map<String, dynamic>>> evaluateSolutions(
   List<Map<String, String>> solutions,
   String assignmentContent,
 ) async {
-  final apiKey = "AIzaSyC-rB4l8vm-8qwvynNstXa3rh3FwYlm8mc";
   // Use Firebase remote config or env variable
-  final model = GenerativeModel(model: 'gemini-2.0-flash', apiKey: apiKey);
+  final model = FirebaseVertexAI.instance.generativeModel(
+    model: 'gemini-2.0-flash',
+  );
 
   List<Map<String, dynamic>> results = [];
 
   for (var solution in solutions) {
-    Content prompt = Content.text("""
-      You are an expert teacher grading student assignments. Evaluate the student's answer strictly based on the given assignment instructions.
-      
-      **Assignment Description:** 
-      $assignmentContent
+    Content prompt = Content.text('''
+You are an experienced teacher grading a student's assignment. Your goal is to evaluate the answer strictly based on the given assignment instructions while providing constructive feedback in a **clear, structured, and human-like manner**.
 
-      **Student Submission:** 
-      ${solution["solution"]}
+---
+### **Assignment Description:**  
+$assignmentContent  
 
-      **Your Task:**
-      - Give a **mark out of 10** (strict grading)
-      - Provide detailed **feedback**, including:
-        - Mistakes in content, formatting, or approach
-        - Suggestions for improvement
-        - Highlight good points
+### **Student's Answer:**  
+${solution["solution"]}  
 
-      **Response Format:**
-      ```
-      Mark: <number out of 10>
-      Feedback: <detailed feedback>
-      ```
-    """);
+---
+### **Your Task:**  
+- Assign a **strict mark out of 10** based on accuracy, completeness, clarity, and adherence to instructions.  
+- Provide **well-structured feedback** directly addressing the student.  
+- Use a professional but encouraging tone. Avoid third-person references like "the student"—instead, speak directly ("You have explained...", "Your answer could be improved by...").  
+
+---
+### **Response Format:**  
+''');
 
     final response = await model.generateContent([prompt]);
 

@@ -1,7 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
 import 'package:grade_vise/student/uploade_submisson.dart';
 import 'package:grade_vise/widgets/pdf_viewer.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:grade_vise/widgets/simple_dailog.dart';
 
 class AssignmentDetailScreen extends StatefulWidget {
   final String title;
@@ -34,9 +37,36 @@ class AssignmentDetailScreen extends StatefulWidget {
 }
 
 class _AssignmentDetailScreenState extends State<AssignmentDetailScreen> {
+  @override
+  void initState() {
+    super.initState();
+    checkStudentSubmission();
+  }
+
   bool isUploading = false;
   double uploadProgress = 0.0;
   String? uploadedFileName;
+  List<String> user = [];
+
+  Future<void> checkStudentSubmission() async {
+    try {
+      var snap =
+          await FirebaseFirestore.instance
+              .collection('submissions')
+              .where(
+                'userId',
+                isEqualTo: FirebaseAuth.instance.currentUser!.uid,
+              )
+              .where('assignmentId', isEqualTo: widget.assignmentId)
+              .get();
+      for (var i = 0; i < snap.docs.length; i++) {
+        user.add(snap.docs[i].data()['userId']);
+      }
+      debugPrint("$user ${widget.uid}");
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -187,16 +217,30 @@ class _AssignmentDetailScreenState extends State<AssignmentDetailScreen> {
                           width: double.infinity,
                           child: ElevatedButton.icon(
                             onPressed: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
+                              if (user.contains(
+                                FirebaseAuth.instance.currentUser!.uid,
+                              )) {
+                                showDialog(
+                                  context: context,
                                   builder:
-                                      (context) => UploadeSubmisson(
-                                        assignmentId: widget.assignmentId,
-                                        uid: widget.uid,
-                                        classroomId: widget.classroomId,
+                                      (context) => CustomSimpleDailog(
+                                        mes:
+                                            'You already submitted this assignment',
+                                        title: 'already submitted',
                                       ),
-                                ),
-                              );
+                                );
+                              } else {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder:
+                                        (context) => UploadeSubmisson(
+                                          assignmentId: widget.assignmentId,
+                                          uid: widget.uid,
+                                          classroomId: widget.classroomId,
+                                        ),
+                                  ),
+                                );
+                              }
                             },
                             icon: Icon(Icons.upload_file),
                             label: Text('Upload Assignment'),

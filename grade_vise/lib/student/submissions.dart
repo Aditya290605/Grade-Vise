@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:grade_vise/student/evaluation.dart';
 import 'package:grade_vise/utils/show_error.dart';
+import 'package:grade_vise/widgets/simple_dailog.dart';
 import 'package:intl/intl.dart';
 import 'package:grade_vise/utils/colors.dart';
 
@@ -172,10 +173,9 @@ class AssignmentListScreen extends StatelessWidget {
                           showDialog(
                             context: context,
                             builder:
-                                (context) => AboutDialog(
-                                  applicationName:
-                                      'Results are not declared yet !',
-                                  applicationIcon: Icon(Icons.error),
+                                (context) => CustomSimpleDailog(
+                                  mes: 'Your reult have not been checked yet ',
+                                  title: 'Result not declared !',
                                 ),
                           );
                         } else {
