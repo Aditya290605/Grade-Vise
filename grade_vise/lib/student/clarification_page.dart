@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -178,7 +180,11 @@ class _ClarificationRequestPageState extends State<ClarificationRequestPage>
       appBar: AppBar(
         title: const Text(
           'Request Clarification',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+            fontSize: 20,
+          ),
         ),
         elevation: 0,
         backgroundColor: bgColor,
@@ -198,7 +204,7 @@ class _ClarificationRequestPageState extends State<ClarificationRequestPage>
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Colors.blue.shade800, bgColor],
+            colors: [bgColor, const Color.fromARGB(255, 7, 41, 80)],
             stops: const [0.0, 0.3],
           ),
         ),
