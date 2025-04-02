@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:grade_vise/student/clarification_page.dart';
 import 'package:grade_vise/utils/colors.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
@@ -62,7 +63,7 @@ class StudentEvaluation extends StatelessWidget {
                     .fadeIn(duration: 600.ms)
                     .slideY(begin: 0.2, end: 0),
                 const SizedBox(height: 24),
-                _buildEvaluationCard()
+                _buildEvaluationCard(context)
                     .animate()
                     .fadeIn(duration: 800.ms, delay: 300.ms)
                     .scale(
@@ -109,7 +110,7 @@ class StudentEvaluation extends StatelessWidget {
     );
   }
 
-  Widget _buildEvaluationCard() {
+  Widget _buildEvaluationCard(BuildContext context) {
     return Card(
       elevation: 8,
       shadowColor: Colors.black26,
@@ -134,9 +135,9 @@ class StudentEvaluation extends StatelessWidget {
                   .animate(delay: 600.ms)
                   .fadeIn(duration: 800.ms),
               const SizedBox(height: 28),
-              _buildFeedbackSection()
-                  .animate(delay: 900.ms)
-                  .fadeIn(duration: 800.ms),
+              _buildFeedbackSection(
+                context,
+              ).animate(delay: 900.ms).fadeIn(duration: 800.ms),
             ],
           ),
         ),
@@ -317,7 +318,7 @@ class StudentEvaluation extends StatelessWidget {
     );
   }
 
-  Widget _buildFeedbackSection() {
+  Widget _buildFeedbackSection(BuildContext context) {
     return Visibility(
       visible: isChecked,
       child: Column(
@@ -376,7 +377,21 @@ class StudentEvaluation extends StatelessWidget {
           const SizedBox(height: 20),
           Center(
             child: ElevatedButton.icon(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  (context),
+                  MaterialPageRoute(
+                    builder:
+                        (context) => ClarificationRequestPage(
+                          assignmentId: '',
+                          assignmentTitle: '',
+                          studentId: '',
+                          studentName: "",
+                          title: "",
+                        ),
+                  ),
+                );
+              },
               icon: const Icon(Icons.chat_outlined),
               label: const Text('Request Clarification'),
               style: ElevatedButton.styleFrom(
