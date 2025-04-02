@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:grade_vise/student/evaluation.dart';
+import 'package:grade_vise/utils/show_error.dart';
 import 'package:intl/intl.dart';
 import 'package:grade_vise/utils/colors.dart';
 
@@ -156,7 +157,7 @@ class AssignmentListScreen extends StatelessWidget {
                 stream:
                     FirebaseFirestore.instance
                         .collection('evaluations')
-                        .doc(submissionData['userId'])
+                        .where('uid', isEqualTo: submissionData['userId'])
                         .snapshots(),
                 builder: (context, snap) {
                   if (snap.data == null) {
@@ -167,19 +168,32 @@ class AssignmentListScreen extends StatelessWidget {
                     alignment: Alignment.bottomRight,
                     child: InkWell(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
+                        if (snap.data!.docs.isEmpty) {
+                          showDialog(
+                            context: context,
                             builder:
-                                (context) => StudentEvaluation(
-                                  assignmentTitle: submissionData['title'],
-                                  marks: snap.data!.data()!['mark'],
-                                  totalMarks: 10,
-                                  feedback: snap.data!.data()!['feedback'],
-                                  isChecked: true,
+                                (context) => AboutDialog(
+                                  applicationName:
+                                      'Results are not declared yet !',
+                                  applicationIcon: Icon(Icons.error),
                                 ),
-                          ),
-                        );
+                          );
+                        } else {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (context) => StudentEvaluation(
+                                    assignmentTitle: submissionData['title'],
+                                    marks: snap.data!.docs[0].data()['mark'],
+                                    totalMarks: 10,
+                                    feedback:
+                                        snap.data!.docs[0].data()['feedback'],
+                                    isChecked: true,
+                                  ),
+                            ),
+                          );
+                        }
                       },
                       child: Container(
                         decoration: BoxDecoration(

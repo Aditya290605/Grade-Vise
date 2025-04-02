@@ -54,12 +54,12 @@ class _CheckeachsubmissionState extends State<Checkeachsubmission> {
           debugPrint("Failed to fetch documents: $error");
         });
     setState(() {
-      for (var i = 0; i < widget.status.length; i++) {
-        users.add(snap.docs[i]['userId']);
-        fileContent.add(snap.docs[i]['fileContent']);
-        assignmentId.add(snap.docs[i]['assignmentId']);
-        classroomId.add(snap.docs[i]['classroomId']);
-        submissionsId.add(snap.docs[i]['submissionId']);
+      for (var i = 0; i < snap.docs.length; i++) {
+        users.add(snap.docs[i].data()['userId']);
+        fileContent.add(snap.docs[i].data()['fileContent']);
+        assignmentId.add(snap.docs[i].data()['assignmentId']);
+        classroomId.add(snap.docs[i].data()['classroomId']);
+        submissionsId.add(snap.docs[i].data()['submissionId']);
       }
     });
     debugPrint('$users \n $fileContent /n $classroomId /n $assignmentId');
@@ -505,35 +505,109 @@ class _CheckeachsubmissionState extends State<Checkeachsubmission> {
                               child: InkWell(
                                 borderRadius: BorderRadius.circular(28),
                                 onTap: () async {
-                                  setState(() {
-                                    isLoading = true;
-                                  });
+                                  if (users.isEmpty) {
+                                    showDialog(
+                                      context: context,
+                                      barrierDismissible:
+                                          false, // Prevent closing by tapping outside
+                                      builder: (context) {
+                                        return Dialog(
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              20,
+                                            ),
+                                          ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(20.0),
+                                            child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                // ✅ Lottie Animation
+                                                SizedBox(height: 20),
 
-                                  var solutionList = convertToSolutionList(
-                                    users,
-                                    fileContent,
-                                    assignmentId,
-                                    classroomId,
-                                    submissionsId,
-                                  );
+                                                // ✅ Title
+                                                Text(
+                                                  "All Assignments Checked!",
+                                                  style: TextStyle(
+                                                    fontSize: 20,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                  textAlign: TextAlign.center,
+                                                ),
 
-                                  // 2. Evaluate with Gemini API
-                                  var evaluations = await evaluateSolutions(
-                                    solutionList,
-                                    widget.snap1['content'],
-                                  );
+                                                SizedBox(height: 10),
 
-                                  // 3. Store in Firestore
-                                  await FirestoreMethods().storeEvaluations(
-                                    evaluations,
-                                  );
+                                                // ✅ Subtitle
+                                                Text(
+                                                  "All student submissions have been checked.",
+                                                  style: TextStyle(
+                                                    fontSize: 16,
+                                                    color: Colors.grey[600],
+                                                  ),
+                                                  textAlign: TextAlign.center,
+                                                ),
 
-                                  debugPrint(
-                                    "Evaluations stored successfully!",
-                                  );
-                                  setState(() {
-                                    isLoading = false;
-                                  });
+                                                SizedBox(height: 20),
+
+                                                // ✅ Close Button
+                                                ElevatedButton(
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                  },
+                                                  style: ElevatedButton.styleFrom(
+                                                    backgroundColor:
+                                                        Colors.green,
+                                                    shape: RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            10,
+                                                          ),
+                                                    ),
+                                                  ),
+                                                  child: Text(
+                                                    "OK",
+                                                    style: TextStyle(
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  } else {
+                                    setState(() {
+                                      isLoading = true;
+                                    });
+
+                                    var solutionList = convertToSolutionList(
+                                      users,
+                                      fileContent,
+                                      assignmentId,
+                                      classroomId,
+                                      submissionsId,
+                                    );
+
+                                    // 2. Evaluate with Gemini API
+                                    var evaluations = await evaluateSolutions(
+                                      solutionList,
+                                      widget.snap1['content'],
+                                    );
+
+                                    // 3. Store in Firestore
+                                    await FirestoreMethods().storeEvaluations(
+                                      evaluations,
+                                    );
+
+                                    debugPrint(
+                                      "Evaluations stored successfully!",
+                                    );
+                                    setState(() {
+                                      isLoading = false;
+                                    });
+                                  }
                                 },
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(

@@ -111,6 +111,7 @@ class StorageMethods {
             "userId": auth.currentUser!.uid,
             'fileContent': content,
             'classroomId': classroomId,
+            'isChecked': false,
             'fileUrl': downloadUrl,
             'fileType': fileType,
             'uploadedAt': FieldValue.serverTimestamp(),
