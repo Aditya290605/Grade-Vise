@@ -1,63 +1,68 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:firebase_vertexai/firebase_vertexai.dart';
 
-class AiMethods {
-  Future<String> analyzeWithAI(String imageUrl) async {
-    String apiKey =
-        "AIzaSyCURahkwb1_t_q9Z5To6c9qcE3u-bbS7Kg"; // Replace with a valid API key
-    String apiUrl =
-        "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent";
+Future<List<Map<String, dynamic>>> evaluateSolutions(
+  List<Map<String, String>> solutions,
+  String assignmentContent,
+) async {
+  // Use Firebase remote config or env variable
+  final model = FirebaseVertexAI.instance.generativeModel(
+    model: 'gemini-2.0-flash',
+  );
 
-    try {
-      // Fetch image bytes
-      var imageResponse = await http.get(Uri.parse(imageUrl));
-      if (imageResponse.statusCode != 200) {
-        return "Error fetching image: ${imageResponse.statusCode}";
-      }
+  List<Map<String, dynamic>> results = [];
 
-      // Encode image in base64
-      String base64Image = base64Encode(imageResponse.bodyBytes);
+  for (var solution in solutions) {
+    Content prompt = Content.text('''
+You are an experienced teacher grading a student's assignment. Your goal is to evaluate the answer strictly based on the given assignment instructions while providing constructive feedback in a **clear, structured, and human-like manner**.
 
-      // API request body
-      var requestBody = jsonEncode({
-        "contents": [
-          {
-            "parts": [
-              {
-                "text":
-                    "generate a random number between 1 to 10 just give that number as output",
-              },
-              {
-                "inlineData": {"mimeType": "image/jpeg", "data": base64Image},
-              },
-            ],
-          },
-        ],
+---
+### **Assignment Description:**  
+$assignmentContent  
+
+### **Student's Answer:**  
+${solution["solution"]}  
+
+---
+### **Your Task:**  
+- Assign a **strict mark out of 10** based on accuracy, completeness, clarity, and adherence to instructions.  
+- Provide **well-structured feedback** directly addressing the student.  
+- Use a professional but encouraging tone. Avoid third-person references like "the student"—instead, speak directly ("You have explained...", "Your answer could be improved by...").  
+
+---
+### **Response Format:**  
+''');
+
+    final response = await model.generateContent([prompt]);
+
+    if (response.text != null) {
+      final extractedData = parseResponse(response.text!);
+      results.add({
+        "uid": solution["uid"],
+        "assignmentId": solution["assignmentId"],
+        "classroomId": solution["classroomId"],
+        "mark": extractedData["mark"],
+        "feedback": extractedData["feedback"],
+        'submissionId': solution['submissionId'],
       });
-
-      // API Call
-      var response = await http.post(
-        Uri.parse(apiUrl),
-        headers: {
-          "Content-Type": "application/json",
-          "x-goog-api-key": apiKey, // Correct header for API key authentication
-        },
-        body: requestBody,
-      );
-
-      if (response.statusCode == 200) {
-        var jsonResponse = jsonDecode(response.body);
-
-        // Extract the text field
-        String textResponse =
-            jsonResponse["candidates"][0]["content"]["parts"][0]["text"];
-
-        return textResponse; // This will return only the generated number
-      } else {
-        return "Error: ${response.statusCode}, ${response.body}";
-      }
-    } catch (e) {
-      return "Exception: $e";
     }
   }
+
+  return results;
+}
+
+// Helper function to parse Gemini response
+Map<String, dynamic> parseResponse(String responseText) {
+  RegExp markRegex = RegExp(r"Mark:\s*(\d+)");
+  RegExp feedbackRegex = RegExp(r"Feedback:\s*(.+)", dotAll: true);
+
+  int mark =
+      markRegex.firstMatch(responseText)?.group(1) != null
+          ? int.parse(markRegex.firstMatch(responseText)!.group(1)!)
+          : 0;
+
+  String feedback =
+      feedbackRegex.firstMatch(responseText)?.group(1) ??
+      "No feedback provided.";
+
+  return {"mark": mark, "feedback": feedback};
 }

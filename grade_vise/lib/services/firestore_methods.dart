@@ -153,4 +153,25 @@ class FirestoreMethods {
 
     return res;
   }
+
+  Future<void> storeEvaluations(List<Map<String, dynamic>> evaluations) async {
+    final FirebaseFirestore db = FirebaseFirestore.instance;
+
+    for (var evaluation in evaluations) {
+      String uid = Uuid().v1();
+
+      await db.collection("evaluations").doc(uid).set({
+        'uid': evaluation['uid'],
+        "mark": evaluation["mark"],
+        "feedback": evaluation["feedback"],
+        'classroomId': evaluation['classroomId'],
+        'assignmentId': evaluation['assignmentId'],
+        "timestamp": FieldValue.serverTimestamp(),
+      });
+
+      await db.collection('submissions').doc(evaluation['submissionId']).update(
+        {'isChecked': true},
+      );
+    }
+  }
 }

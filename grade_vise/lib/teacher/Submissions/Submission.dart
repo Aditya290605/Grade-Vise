@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:grade_vise/teacher/Submissions/CheckEachSubmission.dart';
+import 'package:grade_vise/teacher/Submissions/check_each_submission.dart';
 import 'package:grade_vise/utils/colors.dart';
 
 class SubmissionsPage extends StatelessWidget {

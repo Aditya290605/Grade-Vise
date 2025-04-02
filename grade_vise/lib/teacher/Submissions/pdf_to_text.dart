@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 
@@ -22,43 +22,37 @@ Future<String?> extractTextFromUrl(String pdfUrl) async {
       document.dispose();
       return extractedText.toString().trim();
     } else {
-      print(
+      debugPrint(
         "❌ Error: Failed to fetch PDF (Status Code: ${response.statusCode})",
       );
       return null;
     }
   } catch (e) {
-    print("❌ Exception while extracting text: $e");
+    debugPrint("❌ Exception while extracting text: $e");
     return null;
   }
 }
 
 // 🔹 Function to process PDF URLs and return extracted text
-Future<List<Map<String, String>>> processAndExtractAssignments(
-  List<String> userIds,
-  List<String> fileUrls,
-) async {
-  if (userIds.length != fileUrls.length) {
-    throw ArgumentError(
-      "User IDs and File URLs lists must be of the same length.",
-    );
+List<Map<String, String>> convertToSolutionList(
+  List<String> uids,
+  List<String> fileContents,
+  List<String> assignmentId,
+  List<String> classroomId,
+  List<String> submissionId,
+) {
+  if (uids.length != fileContents.length) {
+    throw Exception("Mismatch in UID and file content length!");
   }
 
-  List<Map<String, String>> results = [];
-
-  for (int i = 0; i < userIds.length; i++) {
-    String userId = userIds[i];
-    String pdfUrl = fileUrls[i];
-
-    print("📌 Processing User ID: $userId");
-
-    String? extractedText = await extractTextFromUrl(pdfUrl);
-
-    results.add({
-      "user_id": userId,
-      "assignment_text": extractedText ?? "Failed to extract text",
-    });
-  }
-
-  return results;
+  return List.generate(
+    uids.length,
+    (index) => {
+      "uid": uids[index],
+      "solution": fileContents[index],
+      'assignmentId': assignmentId[index],
+      'classroomId': classroomId[index],
+      'submissionId': submissionId[index],
+    },
+  );
 }

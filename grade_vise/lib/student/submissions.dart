@@ -1,6 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:grade_vise/student/evaluation.dart';
+import 'package:grade_vise/utils/show_error.dart';
+import 'package:grade_vise/widgets/simple_dailog.dart';
 import 'package:intl/intl.dart';
 import 'package:grade_vise/utils/colors.dart';
 
@@ -95,7 +98,7 @@ class AssignmentListScreen extends StatelessWidget {
                           var submissionData =
                               submissionSnapshot.data!.docs.first;
 
-                          return _buildAssignmentCard(submissionData);
+                          return _buildAssignmentCard(context, submissionData);
                         },
                       );
                     },
@@ -110,6 +113,7 @@ class AssignmentListScreen extends StatelessWidget {
   }
 
   Widget _buildAssignmentCard(
+    BuildContext context,
     DocumentSnapshot<Map<String, dynamic>> submissionData,
   ) {
     return Card(
@@ -148,6 +152,69 @@ class AssignmentListScreen extends StatelessWidget {
                 'Submitted at: ${DateFormat('dd MMMM yyyy').format((submissionData['uploadedAt'] as Timestamp).toDate())}',
                 14.0,
                 Colors.green,
+              ),
+
+              StreamBuilder(
+                stream:
+                    FirebaseFirestore.instance
+                        .collection('evaluations')
+                        .where('uid', isEqualTo: submissionData['userId'])
+                        .snapshots(),
+                builder: (context, snap) {
+                  if (snap.data == null) {
+                    return Center(child: CircularProgressIndicator());
+                  }
+
+                  return Align(
+                    alignment: Alignment.bottomRight,
+                    child: InkWell(
+                      onTap: () {
+                        if (snap.data!.docs.isEmpty) {
+                          showDialog(
+                            context: context,
+                            builder:
+                                (context) => CustomSimpleDailog(
+                                  mes: 'Your reult have not been checked yet ',
+                                  title: 'Result not declared !',
+                                ),
+                          );
+                        } else {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (context) => StudentEvaluation(
+                                    assignmentTitle: submissionData['title'],
+                                    marks: snap.data!.docs[0].data()['mark'],
+                                    totalMarks: 10,
+                                    feedback:
+                                        snap.data!.docs[0].data()['feedback'],
+                                    isChecked: true,
+                                  ),
+                            ),
+                          );
+                        }
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.lightBlue,
+                          borderRadius: BorderRadius.circular(26),
+                        ),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 15,
+                          vertical: 10,
+                        ),
+                        child: Text(
+                          'View results',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
               ),
             ],
           ),
