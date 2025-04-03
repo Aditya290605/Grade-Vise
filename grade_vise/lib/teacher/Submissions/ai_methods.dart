@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_vertexai/firebase_vertexai.dart';
+import 'package:uuid/uuid.dart';
 
 Future<List<Map<String, dynamic>>> evaluateSolutions(
   List<Map<String, String>> solutions,
@@ -149,9 +150,9 @@ Remark: [Brief remark on student's performance]
 
   if (response.text != null) {
     final extractedData = parseResponse1(response.text!);
-
+    var uidd = Uuid().v1();
     // Save to Firestore in summaryReport collection
-    await FirebaseFirestore.instance.collection('summaryReport').doc(uid).set({
+    await FirebaseFirestore.instance.collection('summaryReport').doc(uidd).set({
       "uid": uid,
       "classroomId": classroomId,
       "totalMarks": extractedData["totalMarks"],

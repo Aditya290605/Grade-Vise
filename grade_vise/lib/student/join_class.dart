@@ -210,6 +210,9 @@ class _JoinClassScreenState extends State<JoinClassScreen> {
                                                       (
                                                         context,
                                                       ) => MainPageScreen(
+                                                        email:
+                                                            userData['email'],
+                                                        uid: userData['uid'],
                                                         classData: classData,
                                                         teahername:
                                                             snap.data()!['name'],
