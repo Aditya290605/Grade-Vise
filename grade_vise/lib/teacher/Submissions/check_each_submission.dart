@@ -374,9 +374,12 @@ class _CheckeachsubmissionState extends State<Checkeachsubmission> {
                                       ? "completed"
                                       : 'pending',
                               check:
-                                  users.contains(snapshot.data!['uid'])
-                                      ? Colors.red
-                                      : Colors.green,
+                                  (!users.contains(snapshot.data!['uid']) &&
+                                          users1.contains(
+                                            snapshot.data!['uid'],
+                                          ))
+                                      ? Colors.green
+                                      : Colors.red,
                               statusColor:
                                   users1.contains(snapshot.data!['uid'])
                                       ? Colors.green
@@ -385,9 +388,12 @@ class _CheckeachsubmissionState extends State<Checkeachsubmission> {
                               shade: true,
                               aiFeedback: aiMark,
                               checkStatus:
-                                  users.contains(snapshot.data!['uid'])
-                                      ? "unchecked"
-                                      : 'checked',
+                                  (!users.contains(snapshot.data!['uid']) &&
+                                          users1.contains(
+                                            snapshot.data!['uid'],
+                                          ))
+                                      ? 'checked'
+                                      : 'unchecked',
                             );
                           },
                         );

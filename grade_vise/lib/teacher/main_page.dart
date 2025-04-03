@@ -14,6 +14,7 @@ class MainPage extends StatefulWidget {
   final String teacherPhoto;
   final int assignments;
   final String uid;
+
   final int students;
 
   const MainPage({
@@ -24,6 +25,7 @@ class MainPage extends StatefulWidget {
     required this.teacherPhoto,
     required this.assignments,
     required this.uid,
+
     required this.students,
   });
 
