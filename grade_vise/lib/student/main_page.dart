@@ -57,7 +57,12 @@ class _MainPageScreenState extends State<MainPageScreen> {
               ),
               const SizedBox(height: 20),
               _buildMenuSection('CLASSROOM', [
-                _buildMenuItem(Icons.home_outlined, 'View profile', 0, () {}),
+                _buildMenuItem(Icons.home_outlined, 'View profile', 0, () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => MyProfilePage()),
+                  );
+                }),
                 _buildMenuItem(Icons.info, 'About', 1, () {}),
               ]),
 
@@ -126,14 +131,14 @@ class _MainPageScreenState extends State<MainPageScreen> {
                   ),
                   MyGrades(),
                   Student_Meet(),
-                  MyProfilePage(),
-                  // PeoplePage(
-                  //   classroomId: widget.classroomId,
-                  //   name: widget.name,
-                  //   teachername: widget.teahername,
-                  //   photoUrl: widget.photoUrl,
-                  //   teacherPhoto: widget.teacherPhoto,
-                  // ),
+
+                  PeoplePage(
+                    classroomId: widget.classroomId,
+                    name: widget.name,
+                    teachername: widget.teahername,
+                    photoUrl: widget.photoUrl,
+                    teacherPhoto: widget.teacherPhoto,
+                  ),
                 ],
               ),
             ),

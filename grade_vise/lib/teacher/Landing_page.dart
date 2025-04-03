@@ -189,6 +189,11 @@ class HomePage extends StatelessWidget {
                                           MaterialPageRoute(
                                             builder:
                                                 (context) => MainPage(
+                                                  assignments:
+                                                      snapshot
+                                                          .data!
+                                                          .docs[index]['assignments']
+                                                          .length,
                                                   students:
                                                       snapshot
                                                           .data!

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:grade_vise/teacher/Submissions/check_each_submission.dart';
 import 'package:grade_vise/utils/colors.dart';
 
-class SubmissionsPage extends StatelessWidget {
+class SubmissionsPage extends StatefulWidget {
   final String classroomId;
   final String photo;
 
@@ -13,6 +13,11 @@ class SubmissionsPage extends StatelessWidget {
     required this.photo,
   });
 
+  @override
+  State<SubmissionsPage> createState() => _SubmissionsPageState();
+}
+
+class _SubmissionsPageState extends State<SubmissionsPage> {
   Widget _buildAssignmentHeader() {
     return Container(
       width: double.infinity,
@@ -82,9 +87,9 @@ class SubmissionsPage extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: CircleAvatar(
               backgroundImage: NetworkImage(
-                photo.isEmpty
+                widget.photo.isEmpty
                     ? "https://i.pinimg.com/474x/59/af/9c/59af9cd100daf9aa154cc753dd58316d.jpg"
-                    : photo,
+                    : widget.photo,
               ),
               backgroundColor: const Color(0xFFD9D9D9),
               radius: 20,
@@ -102,7 +107,7 @@ class SubmissionsPage extends StatelessWidget {
             stream:
                 FirebaseFirestore.instance
                     .collection('classrooms')
-                    .doc(classroomId)
+                    .doc(widget.classroomId)
                     .snapshots(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {

@@ -1,14 +1,18 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:grade_vise/utils/colors.dart';
 
 class StudentDashboard extends StatefulWidget {
   final String name;
+  final int length;
   final String email;
-  final List<Map<String, String>> assignements;
+
+  final List<QueryDocumentSnapshot<Map<String, dynamic>>> assignements;
   const StudentDashboard({
     super.key,
     required this.assignements,
     required this.email,
+    required this.length,
     required this.name,
   });
 
@@ -17,6 +21,34 @@ class StudentDashboard extends StatefulWidget {
 }
 
 class _StudentDashboardState extends State<StudentDashboard> {
+  List users1 = [];
+
+  Future<void> fetchSubmissionsUsers() async {
+    var status;
+    for (var i = 0; i < widget.length; i++) {
+      status = widget.assignements[i].data()['submissions'];
+      final snap = await FirebaseFirestore.instance
+          .collection('submissions')
+          .where('submissionId', whereIn: status)
+          .get()
+          .catchError((error) {
+            debugPrint("Failed to fetch documents: $error");
+          });
+      setState(() {
+        for (var i = 0; i < status.length; i++) {
+          users1.add(snap.docs[i]['userId']);
+        }
+      });
+      debugPrint('$users1');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchSubmissionsUsers();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -134,6 +166,7 @@ class _StudentDashboardState extends State<StudentDashboard> {
   }
 
   Widget _buildAssignmentTrack() {
+    debugPrint('${widget.assignements}');
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -157,7 +190,7 @@ class _StudentDashboardState extends State<StudentDashboard> {
           height: 250,
           child: ListView.builder(
             padding: const EdgeInsets.symmetric(horizontal: 10),
-            itemCount: widget.assignements.length,
+            itemCount: widget.length,
             physics: const BouncingScrollPhysics(),
             itemBuilder: (context, index) {
               final student = widget.assignements[index];
@@ -173,7 +206,7 @@ class _StudentDashboardState extends State<StudentDashboard> {
                     vertical: 8,
                   ),
                   title: Text(
-                    student["name"]!,
+                    student["title"]!,
                     style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w600,
@@ -190,7 +223,7 @@ class _StudentDashboardState extends State<StudentDashboard> {
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
-                      student["points"]!,
+                      '${student['submissions'].length}',
                       style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,

@@ -3,7 +3,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 class MyGrades extends StatefulWidget {
-  const MyGrades({Key? key}) : super(key: key);
+  const MyGrades({super.key});
 
   @override
   State<MyGrades> createState() => _MyGradesState();

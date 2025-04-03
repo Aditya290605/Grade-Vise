@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:grade_vise/teacher/screens/persoanl_details.dart';
 import 'package:grade_vise/utils/colors.dart';
@@ -6,13 +7,20 @@ import 'package:grade_vise/utils/colors.dart';
 class Grading extends StatefulWidget {
   final String classroomId;
   final int students;
-  const Grading({super.key, required this.classroomId, required this.students});
+  final int assignment;
+
+  const Grading({
+    super.key,
+    required this.classroomId,
+    required this.students,
+    required this.assignment,
+  });
 
   @override
-  _GradingState createState() => _GradingState();
+  GradingState createState() => GradingState();
 }
 
-class _GradingState extends State<Grading> {
+class GradingState extends State<Grading> {
   final TextEditingController _searchController = TextEditingController();
 
   @override
@@ -103,8 +111,8 @@ class _GradingState extends State<Grading> {
                   const SizedBox(width: 10),
                   _buildStatCard(
                     icon: Icons.task,
-                    value: '258+',
-                    label: 'Task Completed',
+                    value: '${widget.assignment}',
+                    label: 'Total assignments',
                     color: const Color(0xFF8B5CF6),
                   ),
                 ],
@@ -133,6 +141,12 @@ class _GradingState extends State<Grading> {
                 ],
               ),
             ),
+            _buildDivider(),
+
+            const SizedBox(height: 20),
+
+            _buildHeader('Students', Icons.person),
+            _buildDivider(),
 
             const SizedBox(height: 20),
 
@@ -141,6 +155,55 @@ class _GradingState extends State<Grading> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildHeader(String title, IconData icon, [String? subtitle]) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16.0),
+      decoration: BoxDecoration(
+        color: const Color(0xFFE6F0FF),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w500,
+              color: Color(0xFF2D3142),
+            ),
+          ),
+          Row(
+            children: [
+              if (subtitle != null)
+                Text(
+                  subtitle,
+                  style: const TextStyle(fontSize: 14, color: Colors.grey),
+                ),
+              const SizedBox(width: 8),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(50),
+                ),
+                child: Icon(icon, color: const Color(0xFF2D3142), size: 22),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDivider() {
+    return Container(
+      height: 1,
+      color: Colors.grey[700],
+      margin: const EdgeInsets.only(top: 10),
     );
   }
 
@@ -198,6 +261,10 @@ class _GradingState extends State<Grading> {
       stream:
           FirebaseFirestore.instance
               .collection('users')
+              .where(
+                'uid',
+                isNotEqualTo: FirebaseAuth.instance.currentUser!.uid,
+              )
               .where('classrooms', arrayContains: widget.classroomId)
               .snapshots(),
       builder: (context, snapshot) {
@@ -217,14 +284,22 @@ class _GradingState extends State<Grading> {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: InkWell(
-                onTap: () {
+                onTap: () async {
+                  var snap1 =
+                      await FirebaseFirestore.instance
+                          .collection('assignments')
+                          .where('classroomId', isEqualTo: widget.classroomId)
+                          .get();
+
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder:
                           (context) => StudentDashboard(
                             name: student['name'],
+
+                            length: snap1.docs.length,
                             email: student['email'],
-                            assignements: [],
+                            assignements: snap1.docs,
                           ),
                     ),
                   );

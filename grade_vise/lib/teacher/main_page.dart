@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:grade_vise/teacher/profile.dart';
 import 'package:grade_vise/teacher/screens/grading.dart';
 import 'package:grade_vise/teacher/screens/classroom_details.dart';
 import 'package:grade_vise/teacher/screens/meet.dart';
@@ -11,6 +12,7 @@ class MainPage extends StatefulWidget {
   final String userPhoto;
   final String username;
   final String teacherPhoto;
+  final int assignments;
   final String uid;
   final int students;
 
@@ -20,6 +22,7 @@ class MainPage extends StatefulWidget {
     required this.userPhoto,
     required this.username,
     required this.teacherPhoto,
+    required this.assignments,
     required this.uid,
     required this.students,
   });
@@ -54,7 +57,12 @@ class _MainPageState extends State<MainPage> {
               ),
               const SizedBox(height: 20),
               _buildMenuSection('CLASSROOM', [
-                _buildMenuItem(Icons.home_outlined, 'View profile', 0, () {}),
+                _buildMenuItem(Icons.home_outlined, 'View profile', 0, () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => MyProfilePage()),
+                  );
+                }),
                 _buildMenuItem(Icons.info, 'About', 1, () {}),
               ]),
 
@@ -120,6 +128,7 @@ class _MainPageState extends State<MainPage> {
                   Grading(
                     classroomId: widget.classroomId,
                     students: widget.students,
+                    assignment: widget.assignments,
                   ),
                   Meet(
                     uid: widget.uid,
