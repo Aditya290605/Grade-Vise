@@ -130,6 +130,7 @@ class _MainPageState extends State<MainPage> {
                   Grading(
                     classroomId: widget.classroomId,
                     students: widget.students,
+                    assignment: widget.assignments,
                   ),
                   Meet(
                     uid: widget.uid,
