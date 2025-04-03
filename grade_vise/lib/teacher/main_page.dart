@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:grade_vise/teacher/About/About.dart';
 import 'package:grade_vise/teacher/profile.dart';
 import 'package:grade_vise/teacher/screens/grading.dart';
 import 'package:grade_vise/teacher/screens/classroom_details.dart';
@@ -63,7 +64,12 @@ class _MainPageState extends State<MainPage> {
                     MaterialPageRoute(builder: (context) => MyProfilePage()),
                   );
                 }),
-                _buildMenuItem(Icons.info, 'About', 1, () {}),
+                _buildMenuItem(Icons.info, 'About', 1, () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => AboutPage()),
+                  );
+                }),
               ]),
 
               _buildMenuItem(Icons.info, 'Log Out', 1, () {
@@ -128,6 +134,7 @@ class _MainPageState extends State<MainPage> {
                   Grading(
                     classroomId: widget.classroomId,
                     students: widget.students,
+                    assignment: widget.assignments,
                   ),
                   Meet(
                     uid: widget.uid,
