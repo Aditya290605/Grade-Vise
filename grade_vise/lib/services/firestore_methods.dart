@@ -166,6 +166,7 @@ class FirestoreMethods {
         "feedback": evaluation["feedback"],
         'classroomId': evaluation['classroomId'],
         'assignmentId': evaluation['assignmentId'],
+        'summary': evaluation['summaryReport'],
         "timestamp": FieldValue.serverTimestamp(),
       });
 

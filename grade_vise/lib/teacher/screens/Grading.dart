@@ -7,12 +7,14 @@ import 'package:grade_vise/utils/colors.dart';
 class Grading extends StatefulWidget {
   final String classroomId;
   final int students;
+
   final int assignment;
 
   const Grading({
     super.key,
     required this.classroomId,
     required this.students,
+
     required this.assignment,
   });
 
@@ -296,8 +298,9 @@ class GradingState extends State<Grading> {
                       builder:
                           (context) => StudentDashboard(
                             name: student['name'],
-
+                            uid: student['uid'],
                             length: snap1.docs.length,
+                            classroom: widget.classroomId,
                             email: student['email'],
                             assignements: snap1.docs,
                           ),
