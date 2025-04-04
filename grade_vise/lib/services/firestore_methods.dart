@@ -44,7 +44,7 @@ class FirestoreMethods {
   ) async {
     try {
       String classroomId = Uuid().v1();
-
+      String roomId = Uuid().v1();
       await FirebaseFirestore.instance
           .collection('classrooms')
           .doc(classroomId)
@@ -53,7 +53,7 @@ class FirestoreMethods {
             'name': name,
             'section': section,
             'subject': subject,
-            'room': room,
+            'room': roomId,
             'classroomId': classroomId,
             'createdAt': DateTime.now(),
             'users': [],

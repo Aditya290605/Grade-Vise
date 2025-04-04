@@ -1,9 +1,8 @@
 import 'dart:ui';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:grade_vise/services/firestore_methods.dart';
-import 'package:grade_vise/student/my_grades.dart';
+import 'package:grade_vise/teacher/screens/persoanl_details.dart';
 import 'package:grade_vise/teacher/submissions/ai_methods.dart';
 import 'package:grade_vise/teacher/submissions/pdf_to_text.dart';
 import 'package:grade_vise/widgets/simple_dailog.dart';
@@ -32,6 +31,8 @@ class _CheckeachsubmissionState extends State<Checkeachsubmission> {
   String aiMark = '';
   List<Map<String, dynamic>> submissions = [];
   List<String> users = [];
+  var snaphot1;
+
   List<String> users1 = [];
   List<String> fileContent = [];
   bool isLoading = false;
@@ -47,6 +48,12 @@ class _CheckeachsubmissionState extends State<Checkeachsubmission> {
   }
 
   Future<void> fetchSubmissionsAndUsers() async {
+    var snapshot1 =
+        await FirebaseFirestore.instance
+            .collection('assignments')
+            .where('classroomId', isEqualTo: widget.snap1['classroomId'])
+            .get();
+    snaphot1 = snapshot1.docs;
     final snap = await FirebaseFirestore.instance
         .collection('submissions')
         .where('submissionId', whereIn: widget.status)
@@ -352,54 +359,93 @@ class _CheckeachsubmissionState extends State<Checkeachsubmission> {
                                   .doc(widget.snap['users'][index])
                                   .snapshots(),
                           builder: (context, snapshot) {
-                            if (snapshot.data == null) {
+                            if (!snapshot.hasData) {
                               return const Center(
                                 child: CircularProgressIndicator(),
                               );
                             }
-                            return InkWell(
-                              onTap: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder:
-                                        (context) => MyGrades(
-                                          name: snapshot.data!['name'],
-                                          email: snapshot.data!['email'],
-                                          classroomId:
-                                              widget.snap1['classroomId'],
-                                          uid: snapshot.data!['uid'],
-                                        ),
+
+                            final userData = snapshot.data!;
+                            final uid = userData['uid'];
+                            final classroomId = widget.snap1['classroomId'];
+
+                            return FutureBuilder(
+                              future:
+                                  FirebaseFirestore.instance
+                                      .collection('evaluations')
+                                      .where('uid', isEqualTo: uid)
+                                      .where(
+                                        'classroomId',
+                                        isEqualTo: classroomId,
+                                      )
+                                      .where(
+                                        'assignmentId',
+                                        isEqualTo: widget.snap1['fileId'],
+                                      )
+                                      .get(),
+                              builder: (context, evaluationSnapshot) {
+                                if (!evaluationSnapshot.hasData) {
+                                  return const Center(
+                                    child: CircularProgressIndicator(),
+                                  );
+                                }
+
+                                final docs = evaluationSnapshot.data!.docs;
+                                final evaluationData =
+                                    docs.isNotEmpty ? docs.first.data() : null;
+
+                                // You can safely access fields from evaluationData like evaluationData['marks']
+                                final marks =
+                                    evaluationData != null
+                                        ? evaluationData['mark'].toString()
+                                        : '0';
+                                final feedback =
+                                    evaluationData != null
+                                        ? evaluationData['feedback'] ?? ''
+                                        : '';
+
+                                return InkWell(
+                                  onTap: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder:
+                                            (context) => StudentDashboard(
+                                              name: userData['name'],
+                                              email: userData['email'],
+                                              length: snaphot1.length,
+                                              assignements: snaphot1,
+                                              classroom: classroomId,
+                                              uid: uid,
+                                            ),
+                                      ),
+                                    );
+                                  },
+                                  child: ExamListItem(
+                                    title: userData['name'],
+                                    status:
+                                        users1.contains(uid)
+                                            ? "completed"
+                                            : 'pending',
+                                    check:
+                                        (!users.contains(uid) &&
+                                                users1.contains(uid))
+                                            ? Colors.green
+                                            : Colors.red,
+                                    statusColor:
+                                        users1.contains(uid)
+                                            ? Colors.green
+                                            : Colors.red,
+                                    marks: marks,
+                                    shade: true,
+                                    aiFeedback: feedback,
+                                    checkStatus:
+                                        (!users.contains(uid) &&
+                                                users1.contains(uid))
+                                            ? 'checked'
+                                            : 'unchecked',
                                   ),
                                 );
                               },
-                              child: ExamListItem(
-                                title: snapshot.data!['name'],
-                                status:
-                                    users1.contains(snapshot.data!['uid'])
-                                        ? "completed"
-                                        : 'pending',
-                                check:
-                                    (!users.contains(snapshot.data!['uid']) &&
-                                            users1.contains(
-                                              snapshot.data!['uid'],
-                                            ))
-                                        ? Colors.green
-                                        : Colors.red,
-                                statusColor:
-                                    users1.contains(snapshot.data!['uid'])
-                                        ? Colors.green
-                                        : Colors.red,
-                                marks: aiMark == '' ? '0' : aiMark,
-                                shade: true,
-                                aiFeedback: aiMark,
-                                checkStatus:
-                                    (!users.contains(snapshot.data!['uid']) &&
-                                            users1.contains(
-                                              snapshot.data!['uid'],
-                                            ))
-                                        ? 'checked'
-                                        : 'unchecked',
-                              ),
                             );
                           },
                         );

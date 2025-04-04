@@ -31,8 +31,8 @@ class _MyGradesState extends State<MyGrades>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
     getSnap();
+    _tabController = TabController(length: 2, vsync: this);
   }
 
   Future<void> getSnap() async {
@@ -336,245 +336,241 @@ class _MyGradesState extends State<MyGrades>
   }
 
   Widget _buildProgressTab(double percentage, String grade, int totalMarks) {
-    return snap == null
-        ? Center(child: CircularProgressIndicator())
-        : Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              color: const Color(0xFF2C3441),
-              elevation: 10,
-              shadowColor: Colors.black.withOpacity(0.3),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+    return Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          color: const Color(0xFF2C3441),
+          elevation: 10,
+          shadowColor: Colors.black.withOpacity(0.3),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Title Row
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // Title Row
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'Progress Track',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                    const Text(
+                      'Progress Track',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF3A4456),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Icon(
+                        Icons.tune,
+                        size: 16,
+                        color: Color(0xFF4A80F0),
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 16),
+
+                // Line Chart
+                SizedBox(
+                  height: 180,
+                  child: LineChart(
+                    LineChartData(
+                      gridData: FlGridData(
+                        show: true,
+                        drawVerticalLine: false,
+                        drawHorizontalLine: true,
+                        horizontalInterval: 25,
+                        getDrawingHorizontalLine: (value) {
+                          return FlLine(
+                            color: const Color(0xFF3A4456),
+                            strokeWidth: 1,
+                          );
+                        },
+                      ),
+                      titlesData: FlTitlesData(
+                        leftTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            getTitlesWidget: (value, meta) {
+                              if (value % 25 == 0 &&
+                                  value <= 100 &&
+                                  value >= 0) {
+                                return Text(
+                                  value.toInt().toString(),
+                                  style: const TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 12,
+                                  ),
+                                );
+                              }
+                              return const Text('');
+                            },
+                            reservedSize: 30,
                           ),
                         ),
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF3A4456),
-                            borderRadius: BorderRadius.circular(8),
+                        bottomTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            getTitlesWidget: (value, meta) {
+                              const dates = [
+                                'Week1',
+                                'Week2',
+                                'Week3',
+                                'Week4',
+                                'Final',
+                              ];
+                              if (value.toInt() >= 0 &&
+                                  value.toInt() < dates.length) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(top: 8.0),
+                                  child: Text(
+                                    dates[value.toInt()],
+                                    style: const TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                );
+                              }
+                              return const Text('');
+                            },
                           ),
-                          child: const Icon(
-                            Icons.tune,
-                            size: 16,
-                            color: Color(0xFF4A80F0),
+                        ),
+                        rightTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false),
+                        ),
+                        topTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false),
+                        ),
+                      ),
+                      borderData: FlBorderData(show: false),
+                      lineBarsData: [
+                        LineChartBarData(
+                          spots: _calculateProgressSpots(
+                            percentage,
+                            grade,
+                            totalMarks,
+                          ),
+                          isCurved: true,
+                          color: const Color(0xFF4A80F0),
+                          barWidth: 3,
+                          belowBarData: BarAreaData(
+                            show: true,
+                            gradient: LinearGradient(
+                              colors: [
+                                const Color(0xFF4A80F0).withOpacity(0.5),
+                                const Color(0xFF4A80F0).withOpacity(0.0),
+                              ],
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                            ),
+                          ),
+                          dotData: FlDotData(
+                            show: true,
+                            getDotPainter:
+                                (spot, percent, barData, index) =>
+                                    FlDotCirclePainter(
+                                      radius: 4,
+                                      color: Colors.white,
+                                      strokeWidth: 2,
+                                      strokeColor: const Color(0xFF4A80F0),
+                                    ),
                           ),
                         ),
                       ],
                     ),
+                  ),
+                ),
 
-                    const SizedBox(height: 16),
+                const SizedBox(height: 12),
 
-                    // Line Chart
-                    SizedBox(
-                      height: 180,
-                      child: LineChart(
-                        LineChartData(
-                          gridData: FlGridData(
-                            show: true,
-                            drawVerticalLine: false,
-                            drawHorizontalLine: true,
-                            horizontalInterval: 25,
-                            getDrawingHorizontalLine: (value) {
-                              return FlLine(
-                                color: const Color(0xFF3A4456),
-                                strokeWidth: 1,
-                              );
-                            },
+                // Progress & Summary
+                Center(
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              _getColorForGrade(grade).withOpacity(0.8),
+                              _getColorForGrade(grade).withOpacity(0.4),
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
                           ),
-                          titlesData: FlTitlesData(
-                            leftTitles: AxisTitles(
-                              sideTitles: SideTitles(
-                                showTitles: true,
-                                getTitlesWidget: (value, meta) {
-                                  if (value % 25 == 0 &&
-                                      value <= 100 &&
-                                      value >= 0) {
-                                    return Text(
-                                      value.toInt().toString(),
-                                      style: const TextStyle(
-                                        color: Colors.grey,
-                                        fontSize: 12,
-                                      ),
-                                    );
-                                  }
-                                  return const Text('');
-                                },
-                                reservedSize: 30,
-                              ),
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: _getColorForGrade(grade).withOpacity(0.3),
+                              blurRadius: 10,
+                              spreadRadius: 2,
                             ),
-                            bottomTitles: AxisTitles(
-                              sideTitles: SideTitles(
-                                showTitles: true,
-                                getTitlesWidget: (value, meta) {
-                                  const dates = [
-                                    'Week1',
-                                    'Week2',
-                                    'Week3',
-                                    'Week4',
-                                    'Final',
-                                  ];
-                                  if (value.toInt() >= 0 &&
-                                      value.toInt() < dates.length) {
-                                    return Padding(
-                                      padding: const EdgeInsets.only(top: 8.0),
-                                      child: Text(
-                                        dates[value.toInt()],
-                                        style: const TextStyle(
-                                          color: Colors.grey,
-                                          fontSize: 12,
-                                        ),
-                                      ),
-                                    );
-                                  }
-                                  return const Text('');
-                                },
-                              ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.trending_up,
+                              color: Colors.white,
+                              size: 18,
                             ),
-                            rightTitles: const AxisTitles(
-                              sideTitles: SideTitles(showTitles: false),
-                            ),
-                            topTitles: const AxisTitles(
-                              sideTitles: SideTitles(showTitles: false),
-                            ),
-                          ),
-                          borderData: FlBorderData(show: false),
-                          lineBarsData: [
-                            LineChartBarData(
-                              spots: _calculateProgressSpots(
-                                percentage,
-                                grade,
-                                totalMarks,
-                              ),
-                              isCurved: true,
-                              color: const Color(0xFF4A80F0),
-                              barWidth: 3,
-                              belowBarData: BarAreaData(
-                                show: true,
-                                gradient: LinearGradient(
-                                  colors: [
-                                    const Color(0xFF4A80F0).withOpacity(0.5),
-                                    const Color(0xFF4A80F0).withOpacity(0.0),
-                                  ],
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                ),
-                              ),
-                              dotData: FlDotData(
-                                show: true,
-                                getDotPainter:
-                                    (spot, percent, barData, index) =>
-                                        FlDotCirclePainter(
-                                          radius: 4,
-                                          color: Colors.white,
-                                          strokeWidth: 2,
-                                          strokeColor: const Color(0xFF4A80F0),
-                                        ),
+                            const SizedBox(width: 8),
+                            Text(
+                              '${percentage.toStringAsFixed(1)}% Completion',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
                               ),
                             ),
                           ],
                         ),
                       ),
-                    ),
 
-                    const SizedBox(height: 12),
+                      const SizedBox(height: 12),
 
-                    // Progress & Summary
-                    Center(
-                      child: Column(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
-                            ),
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  _getColorForGrade(grade).withOpacity(0.8),
-                                  _getColorForGrade(grade).withOpacity(0.4),
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
-                              borderRadius: BorderRadius.circular(20),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: _getColorForGrade(
-                                    grade,
-                                  ).withOpacity(0.3),
-                                  blurRadius: 10,
-                                  spreadRadius: 2,
-                                ),
-                              ],
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Icon(
-                                  Icons.trending_up,
-                                  color: Colors.white,
-                                  size: 18,
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  '${percentage.toStringAsFixed(1)}% Completion',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          const SizedBox(height: 12),
-
-                          // Total Marks & Grade
-                          Text(
-                            'Total Marks: $totalMarks',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                            ),
-                          ),
-                          Text(
-                            'Grade: $grade',
-                            style: TextStyle(
-                              color: _getColorForGrade(grade),
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
+                      // Total Marks & Grade
+                      Text(
+                        'Total Marks: $totalMarks',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                        ),
                       ),
-                    ),
-                  ],
+                      Text(
+                        'Grade: $grade',
+                        style: TextStyle(
+                          color: _getColorForGrade(grade),
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            )
-            .animate()
-            .fadeIn(duration: 800.ms)
-            .scale(
-              delay: 200.ms,
-              begin: const Offset(0.9, 0.9),
-              end: const Offset(1, 1),
-            );
+              ],
+            ),
+          ),
+        )
+        .animate()
+        .fadeIn(duration: 800.ms)
+        .scale(
+          delay: 200.ms,
+          begin: const Offset(0.9, 0.9),
+          end: const Offset(1, 1),
+        );
   }
 
   List<FlSpot> _calculateProgressSpots(

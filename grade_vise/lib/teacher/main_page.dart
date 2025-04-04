@@ -47,6 +47,7 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         drawer: Drawer(
           backgroundColor: bgColor,
           child: ListView(

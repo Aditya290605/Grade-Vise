@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:grade_vise/services/storage_methods.dart';
 import 'package:grade_vise/utils/show_error.dart';
+import 'package:lottie/lottie.dart';
 
 class UploadeSubmisson extends StatefulWidget {
   final String assignmentId;
@@ -55,6 +56,7 @@ class _UploadeSubmissonState extends State<UploadeSubmisson> {
     setState(() {
       isLoading = true;
     });
+
     String res = await StorageMethods().uploadSubmisson(
       result,
       childname,
@@ -65,13 +67,35 @@ class _UploadeSubmissonState extends State<UploadeSubmisson> {
       fileType,
       widget.classroomId,
     );
+
     setState(() {
       isLoading = false;
     });
 
     if (res == 'success') {
-      showSnakbar(context, "file uploaded");
-      Navigator.pop(context);
+      // Show Lottie animation
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder:
+            (_) => Center(
+              child: Container(
+                width: 200,
+                height: 200,
+                child: Lottie.asset(
+                  'assets/submission.json',
+                  repeat: false,
+                  onLoaded: (composition) {
+                    Future.delayed(composition.duration, () {
+                      Navigator.of(context).pop(); // Close animation dialog
+                      Navigator.of(context).pop(); // Go back to previous screen
+                      showSnakbar(context, "File uploaded successfully!");
+                    });
+                  },
+                ),
+              ),
+            ),
+      );
     }
   }
 

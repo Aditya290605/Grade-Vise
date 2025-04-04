@@ -75,7 +75,7 @@ class BottomDailog {
                   _buildTextField("Classroom Name", false, context, classRoom),
                   _buildTextField("Section", false, context, section),
                   _buildTextField("Subject", false, context, subject),
-                  _buildTextField("Password", true, context, room),
+
                   const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () {
