@@ -1,12 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:grade_vise/teacher/About/About.dart';
 import 'package:grade_vise/teacher/profile.dart';
 import 'package:grade_vise/teacher/screens/grading.dart';
 import 'package:grade_vise/teacher/screens/classroom_details.dart';
 import 'package:grade_vise/teacher/screens/meet.dart';
 import 'package:grade_vise/teacher/screens/uses_list.dart';
 import 'package:grade_vise/utils/colors.dart';
+import 'package:grade_vise/teacher/About/About.dart';
 
 class MainPage extends StatefulWidget {
   final String classroomId;

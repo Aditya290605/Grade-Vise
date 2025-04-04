@@ -14,7 +14,6 @@ class Grading extends StatefulWidget {
     super.key,
     required this.classroomId,
     required this.students,
-
     required this.assignment,
   });
 

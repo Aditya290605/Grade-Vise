@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:grade_vise/teacher/submissions/ai_methods.dart';
+import 'package:grade_vise/teacher/Submissions/ai_methods.dart';
 import 'package:grade_vise/utils/colors.dart';
 
 class StudentDashboard extends StatefulWidget {
