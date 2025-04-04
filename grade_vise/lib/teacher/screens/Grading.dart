@@ -23,14 +23,30 @@ class Grading extends StatefulWidget {
 
 class GradingState extends State<Grading> {
   final TextEditingController _searchController = TextEditingController();
+  int assignment = 0;
+  int submission = 0;
 
   @override
   void initState() {
     super.initState();
     _searchController.addListener(_filterStudents);
+    getUserInfo();
   }
 
   void _filterStudents() {}
+
+  Future<void> getUserInfo() async {
+    var snap =
+        await FirebaseFirestore.instance
+            .collection('assignments')
+            .where('classroomId', isEqualTo: widget.classroomId)
+            .get();
+
+    for (var i = 0; i < snap.docs.length; i++) {
+      assignment = snap.docs.length;
+      submission += snap.docs[i].data()['submissions'].length as int;
+    }
+  }
 
   @override
   void dispose() {
@@ -128,7 +144,8 @@ class GradingState extends State<Grading> {
                 children: [
                   _buildStatCard(
                     icon: Icons.timer,
-                    value: '64%',
+                    value:
+                        '${(submission / (widget.students * assignment)) * 100}%',
                     label: 'Activity Ratio',
                     color: const Color(0xFFFACC15),
                   ),

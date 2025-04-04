@@ -1,9 +1,21 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:grade_vise/teacher/submissions/ai_methods.dart';
 
 class MyGrades extends StatefulWidget {
-  const MyGrades({super.key});
+  final String name;
+  final String email;
+  final String classroomId;
+  final String uid;
+  const MyGrades({
+    super.key,
+    required this.name,
+    required this.email,
+    required this.classroomId,
+    required this.uid,
+  });
 
   @override
   State<MyGrades> createState() => _MyGradesState();
@@ -13,12 +25,30 @@ class _MyGradesState extends State<MyGrades>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final ScrollController _scrollController = ScrollController();
-  bool _isSearchExpanded = false;
+  bool isLoading = false;
+  var snap;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    getSnap();
+  }
+
+  Future<void> getSnap() async {
+    var snap1 =
+        await FirebaseFirestore.instance
+            .collection('summaryReport')
+            .where('uid', isEqualTo: widget.uid)
+            .get();
+
+    if (snap1.docs.isNotEmpty) {
+      snap = snap1.docs[0].data();
+      debugPrint('$snap');
+    } else {
+      debugPrint('No documents found for uid: ${widget.uid}');
+      snap = {}; // Assign an empty map to avoid null errors later
+    }
   }
 
   @override
@@ -53,79 +83,6 @@ class _MyGradesState extends State<MyGrades>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Search Bar with Animation
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _isSearchExpanded = !_isSearchExpanded;
-                          });
-                        },
-                        child: AnimatedContainer(
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.easeInOut,
-                              margin: const EdgeInsets.only(bottom: 16),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                              ),
-                              height: 50,
-                              width:
-                                  _isSearchExpanded
-                                      ? MediaQuery.of(context).size.width - 32
-                                      : 50,
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF2C3441),
-                                borderRadius: BorderRadius.circular(25),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.1),
-                                    blurRadius: 10,
-                                    offset: const Offset(0, 5),
-                                  ),
-                                ],
-                              ),
-                              child: Row(
-                                children: [
-                                  const Icon(
-                                    Icons.search,
-                                    color: Color(0xFF4A80F0),
-                                  ),
-                                  if (_isSearchExpanded) ...[
-                                    const SizedBox(width: 8),
-                                    Expanded(
-                                      child: TextField(
-                                        decoration: const InputDecoration(
-                                          hintText:
-                                              'Search assignments or courses',
-                                          border: InputBorder.none,
-                                          hintStyle: TextStyle(
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                        ),
-                                        cursorColor: const Color(0xFF4A80F0),
-                                      ),
-                                    ),
-                                    Container(
-                                      width: 40,
-                                      height: 40,
-                                      decoration: BoxDecoration(
-                                        color: const Color(0xFF3A4456),
-                                        borderRadius: BorderRadius.circular(20),
-                                      ),
-                                      child: const Icon(
-                                        Icons.notifications_outlined,
-                                        color: Color(0xFF4A80F0),
-                                      ),
-                                    ).animate().fadeIn(delay: 200.ms),
-                                  ],
-                                ],
-                              ),
-                            )
-                            .animate()
-                            .fadeIn(duration: 600.ms, delay: 300.ms)
-                            .slideY(begin: -0.5, end: 0),
-                      ),
 
                       // User Profile Info with overflow prevention
                       Row(
@@ -153,8 +110,8 @@ class _MyGradesState extends State<MyGrades>
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const Text(
-                                      'Abhishek Sangule',
+                                    Text(
+                                      widget.name,
                                       style: TextStyle(
                                         color: Colors.white,
                                         fontSize: 24,
@@ -174,8 +131,8 @@ class _MyGradesState extends State<MyGrades>
                                         const SizedBox(width: 4),
                                         Expanded(
                                           // Added Expanded to prevent email overflow
-                                          child: const Text(
-                                            'abhisheksangule6@gmail.com',
+                                          child: Text(
+                                            widget.email,
                                             style: TextStyle(
                                               color: Colors.grey,
                                               fontSize: 14,
@@ -215,7 +172,7 @@ class _MyGradesState extends State<MyGrades>
                             children: [
                               _buildStatCard(
                                 title: 'Overall Grade',
-                                value: 'A',
+                                value: snap?['grade'] ?? "",
                                 icon: Icons.grade,
                                 backgroundColor: const Color(0xFF4A80F0),
                                 delay: 500,
@@ -223,7 +180,7 @@ class _MyGradesState extends State<MyGrades>
                               const SizedBox(width: 8),
                               _buildStatCard(
                                 title: 'Percentage',
-                                value: '81.5%',
+                                value: '${snap?['percentage'] ?? ''}%',
                                 icon: Icons.percent,
                                 backgroundColor: const Color(0xFFFFA113),
                                 delay: 600,
@@ -231,7 +188,7 @@ class _MyGradesState extends State<MyGrades>
                               const SizedBox(width: 8),
                               _buildStatCard(
                                 title: 'Completed',
-                                value: '6/8',
+                                value: '',
                                 icon: Icons.task_alt,
                                 backgroundColor: const Color(0xFF1FE56E),
                                 delay: 700,
@@ -274,7 +231,11 @@ class _MyGradesState extends State<MyGrades>
                           physics: const BouncingScrollPhysics(),
                           children: [
                             // Progress Tab
-                            _buildProgressTab(),
+                            _buildProgressTab(
+                              snap?['percentage'] ?? 0.0,
+                              snap?['grade'] ?? '',
+                              snap?['totalMarks'] ?? 0,
+                            ),
 
                             // Assignments Tab with SingleChildScrollView for handling content overflow
                             SingleChildScrollView(
@@ -372,214 +333,364 @@ class _MyGradesState extends State<MyGrades>
         .slideY(begin: 0.2, end: 0);
   }
 
-  Widget _buildProgressTab() {
-    return Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          color: const Color(0xFF2C3441),
-          elevation: 10,
-          shadowColor: Colors.black.withOpacity(0.3),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  Widget _buildProgressTab(double percentage, String grade, int totalMarks) {
+    return snap == null
+        ? Center(child: CircularProgressIndicator())
+        : Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              color: const Color(0xFF2C3441),
+              elevation: 10,
+              shadowColor: Colors.black.withOpacity(0.3),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Progress Track',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                    // Title Row
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Progress Track',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF3A4456),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Icon(
+                            Icons.tune,
+                            size: 16,
+                            color: Color(0xFF4A80F0),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // Line Chart
+                    SizedBox(
+                      height: 180,
+                      child: LineChart(
+                        LineChartData(
+                          gridData: FlGridData(
+                            show: true,
+                            drawVerticalLine: false,
+                            drawHorizontalLine: true,
+                            horizontalInterval: 25,
+                            getDrawingHorizontalLine: (value) {
+                              return FlLine(
+                                color: const Color(0xFF3A4456),
+                                strokeWidth: 1,
+                              );
+                            },
+                          ),
+                          titlesData: FlTitlesData(
+                            leftTitles: AxisTitles(
+                              sideTitles: SideTitles(
+                                showTitles: true,
+                                getTitlesWidget: (value, meta) {
+                                  if (value % 25 == 0 &&
+                                      value <= 100 &&
+                                      value >= 0) {
+                                    return Text(
+                                      value.toInt().toString(),
+                                      style: const TextStyle(
+                                        color: Colors.grey,
+                                        fontSize: 12,
+                                      ),
+                                    );
+                                  }
+                                  return const Text('');
+                                },
+                                reservedSize: 30,
+                              ),
+                            ),
+                            bottomTitles: AxisTitles(
+                              sideTitles: SideTitles(
+                                showTitles: true,
+                                getTitlesWidget: (value, meta) {
+                                  const dates = [
+                                    'Week1',
+                                    'Week2',
+                                    'Week3',
+                                    'Week4',
+                                    'Final',
+                                  ];
+                                  if (value.toInt() >= 0 &&
+                                      value.toInt() < dates.length) {
+                                    return Padding(
+                                      padding: const EdgeInsets.only(top: 8.0),
+                                      child: Text(
+                                        dates[value.toInt()],
+                                        style: const TextStyle(
+                                          color: Colors.grey,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                  return const Text('');
+                                },
+                              ),
+                            ),
+                            rightTitles: const AxisTitles(
+                              sideTitles: SideTitles(showTitles: false),
+                            ),
+                            topTitles: const AxisTitles(
+                              sideTitles: SideTitles(showTitles: false),
+                            ),
+                          ),
+                          borderData: FlBorderData(show: false),
+                          lineBarsData: [
+                            LineChartBarData(
+                              spots: _calculateProgressSpots(
+                                percentage,
+                                grade,
+                                totalMarks,
+                              ),
+                              isCurved: true,
+                              color: const Color(0xFF4A80F0),
+                              barWidth: 3,
+                              belowBarData: BarAreaData(
+                                show: true,
+                                gradient: LinearGradient(
+                                  colors: [
+                                    const Color(0xFF4A80F0).withOpacity(0.5),
+                                    const Color(0xFF4A80F0).withOpacity(0.0),
+                                  ],
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                ),
+                              ),
+                              dotData: FlDotData(
+                                show: true,
+                                getDotPainter:
+                                    (spot, percent, barData, index) =>
+                                        FlDotCirclePainter(
+                                          radius: 4,
+                                          color: Colors.white,
+                                          strokeWidth: 2,
+                                          strokeColor: const Color(0xFF4A80F0),
+                                        ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF3A4456),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Row(
+
+                    const SizedBox(height: 12),
+
+                    // Progress & Summary
+                    Center(
+                      child: Column(
                         children: [
-                          Icon(Icons.tune, size: 16, color: Color(0xFF4A80F0)),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  _getColorForGrade(grade).withOpacity(0.8),
+                                  _getColorForGrade(grade).withOpacity(0.4),
+                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: _getColorForGrade(
+                                    grade,
+                                  ).withOpacity(0.3),
+                                  blurRadius: 10,
+                                  spreadRadius: 2,
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(
+                                  Icons.trending_up,
+                                  color: Colors.white,
+                                  size: 18,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  '${percentage.toStringAsFixed(1)}% Completion',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          const SizedBox(height: 12),
+
+                          // Total Marks & Grade
+                          Text(
+                            'Total Marks: $totalMarks',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                            ),
+                          ),
+                          Text(
+                            'Grade: $grade',
+                            style: TextStyle(
+                              color: _getColorForGrade(grade),
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ],
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
-                SizedBox(
-                  height: 180, // Reduced chart height to prevent overflow
-                  child: LineChart(
-                    LineChartData(
-                      gridData: FlGridData(
-                        show: true,
-                        drawVerticalLine: false,
-                        drawHorizontalLine: true,
-                        horizontalInterval: 25,
-                        getDrawingHorizontalLine: (value) {
-                          return FlLine(
-                            color: const Color(0xFF3A4456),
-                            strokeWidth: 1,
-                          );
-                        },
-                      ),
-                      titlesData: FlTitlesData(
-                        leftTitles: AxisTitles(
-                          sideTitles: SideTitles(
-                            showTitles: true,
-                            getTitlesWidget: (value, meta) {
-                              if (value % 25 == 0 &&
-                                  value <= 100 &&
-                                  value >= 0) {
-                                return Text(
-                                  value.toInt().toString(),
-                                  style: const TextStyle(
-                                    color: Colors.grey,
-                                    fontSize: 12,
-                                  ),
-                                );
-                              }
-                              return const Text('');
-                            },
-                            reservedSize: 30,
-                          ),
-                        ),
-                        bottomTitles: AxisTitles(
-                          sideTitles: SideTitles(
-                            showTitles: true,
-                            getTitlesWidget: (value, meta) {
-                              const dates = [
-                                'Apr10',
-                                'Apr11',
-                                'Apr12',
-                                'Apr13',
-                                'Apr14',
-                              ];
-                              if (value.toInt() >= 0 &&
-                                  value.toInt() < dates.length) {
-                                return Padding(
-                                  padding: const EdgeInsets.only(top: 8.0),
-                                  child: Text(
-                                    dates[value.toInt()],
-                                    style: const TextStyle(
-                                      color: Colors.grey,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                );
-                              }
-                              return const Text('');
-                            },
-                          ),
-                        ),
-                        rightTitles: const AxisTitles(
-                          sideTitles: SideTitles(showTitles: false),
-                        ),
-                        topTitles: const AxisTitles(
-                          sideTitles: SideTitles(showTitles: false),
-                        ),
-                      ),
-                      borderData: FlBorderData(show: false),
-                      lineBarsData: [
-                        LineChartBarData(
-                          spots: const [
-                            FlSpot(0, 55),
-                            FlSpot(0.5, 30),
-                            FlSpot(1, 60),
-                            FlSpot(1.5, 40),
-                            FlSpot(2, 70),
-                            FlSpot(2.5, 55),
-                            FlSpot(3, 80),
-                            FlSpot(3.5, 60),
-                            FlSpot(4, 90),
-                          ],
-                          isCurved: true,
-                          color: const Color(0xFF4A80F0),
-                          barWidth: 3,
-                          belowBarData: BarAreaData(
-                            show: true,
-                            gradient: LinearGradient(
-                              colors: [
-                                const Color(0xFF4A80F0).withOpacity(0.5),
-                                const Color(0xFF4A80F0).withOpacity(0.0),
-                              ],
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                            ),
-                          ),
-                          dotData: FlDotData(
-                            show: true,
-                            getDotPainter:
-                                (spot, percent, barData, index) =>
-                                    FlDotCirclePainter(
-                                      radius: 4,
-                                      color: Colors.white,
-                                      strokeWidth: 2,
-                                      strokeColor: const Color(0xFF4A80F0),
-                                    ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Center(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          const Color(0xFF4A80F0).withOpacity(0.8),
-                          const Color(0xFF4A80F0).withOpacity(0.4),
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFF4A80F0).withOpacity(0.3),
-                          blurRadius: 10,
-                          spreadRadius: 2,
-                        ),
-                      ],
-                    ),
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.trending_up, color: Colors.white, size: 18),
-                        SizedBox(width: 8),
-                        Text(
-                          '70.5% Completion',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        )
-        .animate()
-        .fadeIn(duration: 800.ms)
-        .scale(
-          delay: 200.ms,
-          begin: const Offset(0.9, 0.9),
-          end: const Offset(1, 1),
-        );
+              ),
+            )
+            .animate()
+            .fadeIn(duration: 800.ms)
+            .scale(
+              delay: 200.ms,
+              begin: const Offset(0.9, 0.9),
+              end: const Offset(1, 1),
+            );
+  }
+
+  List<FlSpot> _calculateProgressSpots(
+    double percentage,
+    String grade,
+    int totalMarks,
+  ) {
+    // Base progress pattern that follows a learning curve
+    double baseWeek1 = 20.0;
+    double baseWeek2 = 40.0;
+    double baseWeek3 = 60.0;
+    double baseWeek4 = 80.0;
+
+    // Adjust based on final percentage
+    // Higher performing students show earlier progress
+    double factor = percentage / 100.0;
+
+    // Adjust based on grade - better grades show more consistent progress
+    double gradeAdjustment = _getGradeAdjustment(grade);
+
+    // Adjust based on total marks - higher total marks create more dramatic improvements
+    double marksAdjustment =
+        totalMarks > 100 ? 1.1 : (totalMarks > 80 ? 1.0 : 0.9);
+
+    return [
+      FlSpot(
+        0,
+        _calculateWeekValue(
+          baseWeek1,
+          factor,
+          gradeAdjustment,
+          marksAdjustment,
+        ),
+      ),
+      FlSpot(
+        1,
+        _calculateWeekValue(
+          baseWeek2,
+          factor,
+          gradeAdjustment,
+          marksAdjustment,
+        ),
+      ),
+      FlSpot(
+        2,
+        _calculateWeekValue(
+          baseWeek3,
+          factor,
+          gradeAdjustment,
+          marksAdjustment,
+        ),
+      ),
+      FlSpot(
+        3,
+        _calculateWeekValue(
+          baseWeek4,
+          factor,
+          gradeAdjustment,
+          marksAdjustment,
+        ),
+      ),
+      FlSpot(4, percentage), // Final stays at actual percentage
+    ];
+  }
+
+  // Calculate individual week value based on various factors
+  double _calculateWeekValue(
+    double baseValue,
+    double factor,
+    double gradeAdjustment,
+    double marksAdjustment,
+  ) {
+    // Apply adjustments based on grade and total marks
+    double adjustedValue =
+        baseValue * factor * gradeAdjustment * marksAdjustment;
+
+    // Ensure values stay between 0-100
+    return adjustedValue.clamp(0.0, 100.0);
+  }
+
+  // Get color based on grade
+  Color _getColorForGrade(String grade) {
+    switch (grade.toUpperCase()) {
+      case 'A':
+      case 'A+':
+        return const Color(0xFF4CAF50); // Green for top grades
+      case 'B':
+      case 'B+':
+        return const Color(0xFF4A80F0); // Blue for good grades
+      case 'C':
+      case 'C+':
+        return const Color(0xFFFFA726); // Orange for average grades
+      case 'D':
+      case 'D+':
+        return const Color(0xFFFF7043); // Light red for below average
+      default:
+        return const Color(0xFFF44336); // Red for failing grades
+    }
+  }
+
+  // Grade adjustment factor - better grades show more consistent progress
+  double _getGradeAdjustment(String grade) {
+    switch (grade.toUpperCase()) {
+      case 'A':
+      case 'A+':
+        return 1.2; // A students show faster early progress
+      case 'B':
+      case 'B+':
+        return 1.1;
+      case 'C':
+      case 'C+':
+        return 1.0; // Average
+      case 'D':
+      case 'D+':
+        return 0.9;
+      default:
+        return 0.8; // Struggling students show slower early progress
+    }
   }
 
   Widget _buildAssignmentsTab() {
@@ -812,56 +923,285 @@ class _MyGradesState extends State<MyGrades>
   }
 
   Widget _buildSummaryReport() {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      color: const Color(0xFF2C3441),
-      elevation: 10,
-      shadowColor: Colors.black.withOpacity(0.3),
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return StreamBuilder(
+      stream:
+          FirebaseFirestore.instance
+              .collection('summaryReport')
+              .where('uid', isEqualTo: widget.uid)
+              .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.data == null) {
+          return Center(child: CircularProgressIndicator());
+        }
+
+        return snapshot.data!.docs.isEmpty
+            ? Center(
+              child: InkWell(
+                onTap: () async {
+                  setState(() {
+                    isLoading = true;
+                  });
+                  await generateStudentReport(widget.classroomId, widget.uid);
+                  setState(() {
+                    isLoading = false;
+                  });
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  padding: const EdgeInsets.all(16),
+                  child:
+                      isLoading
+                          ? Center(child: CircularProgressIndicator())
+                          : Text(
+                            'Create summary report',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                ),
+              ),
+            )
+            : _buildContainer(
+              "Summary Report",
+              snapshot.data!.docs[0]["totalMarks"],
+              snapshot.data!.docs[0]["percentage"],
+              snapshot.data!.docs[0]["grade"],
+              snapshot.data!.docs[0]["result"],
+              snapshot.data!.docs[0]["remark"],
+            );
+      },
+    );
+  }
+
+  Widget _buildContainer(
+    String title,
+    int totalMark,
+    double percentage,
+    String grade,
+    String result,
+    String remark,
+  ) {
+    // Determine color scheme based on grade
+    Color primaryColor = _getGradeColor(grade);
+    Color secondaryColor = _getGradeSecondaryColor(grade);
+
+    // Determine result icon
+
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.15),
+            spreadRadius: 2,
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header section with gradient
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [primaryColor, secondaryColor],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+              ),
+            ),
+            padding: const EdgeInsets.all(16),
+            child: Row(
               children: [
-                const Expanded(
-                  // Added to prevent text overflow
-                  child: Text(
-                    'Student Performance',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                    overflow:
-                        TextOverflow.ellipsis, // Added text overflow handling
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.3),
+                    shape: BoxShape.circle,
+                  ),
+                  padding: const EdgeInsets.all(8),
+                  child: Icon(Icons.school, color: Colors.white, size: 24),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.3),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          result,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
+                // Grade pill
                 Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
+                    horizontal: 14,
+                    vertical: 8,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF1FE56E).withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min, // Keep as small as possible
-                    children: [
-                      Icon(
-                        Icons.check_circle,
-                        color: Color(0xFF1FE56E),
-                        size: 16,
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
                       ),
-                      SizedBox(width: 4),
+                    ],
+                  ),
+                  child: Text(
+                    grade,
+                    style: TextStyle(
+                      color: primaryColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Main content
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Stats row
+                Row(
+                  children: [
+                    _buildStatItem(
+                      "Total Marks",
+                      totalMark.toString(),
+                      Icons.score,
+                      primaryColor.withOpacity(0.1),
+                      primaryColor,
+                    ),
+                    const SizedBox(width: 12),
+                    _buildStatItem(
+                      "Percentage",
+                      "${percentage.toStringAsFixed(1)}%",
+                      Icons.percent,
+                      primaryColor.withOpacity(0.1),
+                      primaryColor,
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 20),
+
+                // Progress indicator
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Performance",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey[600],
+                            fontSize: 14,
+                          ),
+                        ),
+                        Text(
+                          "${percentage.toStringAsFixed(1)}%",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: primaryColor,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: LinearProgressIndicator(
+                        value: percentage / 100,
+                        backgroundColor: Colors.grey[200],
+                        valueColor: AlwaysStoppedAnimation<Color>(primaryColor),
+                        minHeight: 8,
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 24),
+
+                // Remarks section
+                Container(
+                  decoration: BoxDecoration(
+                    color: primaryColor.withOpacity(0.05),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: primaryColor.withOpacity(0.2),
+                      width: 1,
+                    ),
+                  ),
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.comment, size: 16, color: primaryColor),
+                          const SizedBox(width: 8),
+                          Text(
+                            "Teacher's Remarks",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: Colors.grey[800],
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
                       Text(
-                        'Passed',
+                        remark,
                         style: TextStyle(
+                          color: Colors.grey[700],
                           fontSize: 14,
-                          color: Color(0xFF1FE56E),
-                          fontWeight: FontWeight.bold,
+                          height: 1.5,
                         ),
                       ),
                     ],
@@ -869,135 +1209,87 @@ class _MyGradesState extends State<MyGrades>
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-            // Summary items in a ScrollView to prevent overflow on smaller devices
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              physics: const BouncingScrollPhysics(),
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF3A4456),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    _buildSummaryItem(
-                      title: 'Total Marks',
-                      value: '489 / 600',
-                      icon: Icons.assessment,
-                      color: const Color(0xFF4A80F0),
-                    ),
-                    const SizedBox(
-                      width: 16,
-                    ), // Added space between summary items
-                    _buildSummaryItem(
-                      title: 'Percentage',
-                      value: '81.5%',
-                      icon: Icons.percent,
-                      color: const Color(0xFFFFA113),
-                    ),
-                    const SizedBox(
-                      width: 16,
-                    ), // Added space between summary items
-                    _buildSummaryItem(
-                      title: 'Grade',
-                      value: 'A',
-                      icon: Icons.grade,
-                      color: const Color(0xFF1FE56E),
-                    ),
-                  ],
-                ),
-              ),
-            ).animate().fadeIn(delay: 300.ms).slideY(begin: 0.5, end: 0),
-            const SizedBox(height: 16),
-            const Text(
-              'Remarks:',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatItem(
+    String label,
+    String value,
+    IconData icon,
+    Color bgColor,
+    Color iconColor,
+  ) {
+    return Expanded(
+      child: Container(
+        decoration: BoxDecoration(
+          color: bgColor,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 14),
+        child: Row(
+          children: [
+            Container(
+              decoration: BoxDecoration(
                 color: Colors.white,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: iconColor.withOpacity(0.2),
+                    blurRadius: 10,
+                    spreadRadius: 2,
+                  ),
+                ],
               ),
+              padding: const EdgeInsets.all(8),
+              child: Icon(icon, color: iconColor, size: 18),
             ),
-            const SizedBox(height: 8),
-            _buildRemarkItem(
-              'Strong performance in Mathematics and Computer Science.',
-            ),
-            _buildRemarkItem('Needs improvement in Social Studies.'),
-            _buildRemarkItem(
-              'Overall, a good academic performance with scope for better scores in weak areas.',
-            ),
-            const SizedBox(height: 24),
-            Center(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      // Detailed report action
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF4A80F0),
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 12,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      elevation: 5,
-                      shadowColor: const Color(0xFF4A80F0).withOpacity(0.5),
-                    ),
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.description, size: 18),
-                        SizedBox(width: 8),
-                        Text(
-                          'View Detailed Report',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ],
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    value,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey[800],
+                      fontSize: 16,
                     ),
                   ),
-                )
-                .animate()
-                .fadeIn(delay: 800.ms)
-                .scale(begin: const Offset(0.8, 0.8), end: const Offset(1, 1)),
+                ],
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildSummaryItem({
-    required String title,
-    required String value,
-    required IconData icon,
-    required Color color,
-  }) {
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: color.withOpacity(0.2),
-            shape: BoxShape.circle,
-          ),
-          child: Icon(icon, color: color, size: 24),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(title, style: const TextStyle(fontSize: 12, color: Colors.grey)),
-      ],
-    );
+  Color _getGradeColor(String grade) {
+    grade = grade.toUpperCase();
+    if (grade.startsWith('A')) return const Color(0xFF4CAF50); // Green
+    if (grade.startsWith('B')) return const Color(0xFF2196F3); // Blue
+    if (grade.startsWith('C')) return const Color(0xFFFFA726); // Orange
+    if (grade.startsWith('D')) return const Color(0xFFFF7043); // Light Red
+    return const Color(0xFFF44336); // Red for F and others
+  }
+
+  // Helper function to get secondary color based on grade
+  Color _getGradeSecondaryColor(String grade) {
+    grade = grade.toUpperCase();
+    if (grade.startsWith('A')) return const Color(0xFF66BB6A);
+    if (grade.startsWith('B')) return const Color(0xFF42A5F5);
+    if (grade.startsWith('C')) return const Color(0xFFFFB74D);
+    if (grade.startsWith('D')) return const Color(0xFFFF8A65);
+    return const Color(0xFFE57373);
   }
 
   IconData _getIconForAssignment(String name) {
@@ -1023,20 +1315,5 @@ class _MyGradesState extends State<MyGrades>
     } else {
       return const Color(0xFFFF4A4A); // Red for low marks
     }
-  }
-
-  Widget _buildRemarkItem(String text) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text('• ', style: TextStyle(fontSize: 16, color: Colors.grey)),
-        Expanded(
-          child: Text(
-            text,
-            style: const TextStyle(fontSize: 16, color: Colors.grey),
-          ),
-        ),
-      ],
-    );
   }
 }

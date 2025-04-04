@@ -314,16 +314,11 @@ class _StudentDashboardState extends State<StudentDashboard> {
                           borderData: FlBorderData(show: false),
                           lineBarsData: [
                             LineChartBarData(
-                              spots: [
-                                FlSpot(
-                                  0,
-                                  percentage * 0.5,
-                                ), // Scale dynamically
-                                FlSpot(1, percentage * 0.6),
-                                FlSpot(2, percentage * 0.7),
-                                FlSpot(3, percentage * 0.8),
-                                FlSpot(4, percentage), // Final percentage
-                              ],
+                              spots: _calculateProgressSpots(
+                                percentage,
+                                grade,
+                                totalMarks,
+                              ),
                               isCurved: true,
                               color: const Color(0xFF4A80F0),
                               barWidth: 3,
@@ -369,8 +364,8 @@ class _StudentDashboardState extends State<StudentDashboard> {
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
                                 colors: [
-                                  const Color(0xFF4A80F0).withOpacity(0.8),
-                                  const Color(0xFF4A80F0).withOpacity(0.4),
+                                  _getColorForGrade(grade).withOpacity(0.8),
+                                  _getColorForGrade(grade).withOpacity(0.4),
                                 ],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
@@ -378,8 +373,8 @@ class _StudentDashboardState extends State<StudentDashboard> {
                               borderRadius: BorderRadius.circular(20),
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color(
-                                    0xFF4A80F0,
+                                  color: _getColorForGrade(
+                                    grade,
                                   ).withOpacity(0.3),
                                   blurRadius: 10,
                                   spreadRadius: 2,
@@ -419,8 +414,8 @@ class _StudentDashboardState extends State<StudentDashboard> {
                           ),
                           Text(
                             'Grade: $grade',
-                            style: const TextStyle(
-                              color: Color(0xFF4A80F0),
+                            style: TextStyle(
+                              color: _getColorForGrade(grade),
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
                             ),
@@ -439,6 +434,125 @@ class _StudentDashboardState extends State<StudentDashboard> {
               begin: const Offset(0.9, 0.9),
               end: const Offset(1, 1),
             );
+  }
+
+  // Calculate spots dynamically based on percentage, grade, and total marks
+  List<FlSpot> _calculateProgressSpots(
+    double percentage,
+    String grade,
+    int totalMarks,
+  ) {
+    // Base progress pattern that follows a learning curve
+    double baseWeek1 = 20.0;
+    double baseWeek2 = 40.0;
+    double baseWeek3 = 60.0;
+    double baseWeek4 = 80.0;
+
+    // Adjust based on final percentage
+    // Higher performing students show earlier progress
+    double factor = percentage / 100.0;
+
+    // Adjust based on grade - better grades show more consistent progress
+    double gradeAdjustment = _getGradeAdjustment(grade);
+
+    // Adjust based on total marks - higher total marks create more dramatic improvements
+    double marksAdjustment =
+        totalMarks > 100 ? 1.1 : (totalMarks > 80 ? 1.0 : 0.9);
+
+    return [
+      FlSpot(
+        0,
+        _calculateWeekValue(
+          baseWeek1,
+          factor,
+          gradeAdjustment,
+          marksAdjustment,
+        ),
+      ),
+      FlSpot(
+        1,
+        _calculateWeekValue(
+          baseWeek2,
+          factor,
+          gradeAdjustment,
+          marksAdjustment,
+        ),
+      ),
+      FlSpot(
+        2,
+        _calculateWeekValue(
+          baseWeek3,
+          factor,
+          gradeAdjustment,
+          marksAdjustment,
+        ),
+      ),
+      FlSpot(
+        3,
+        _calculateWeekValue(
+          baseWeek4,
+          factor,
+          gradeAdjustment,
+          marksAdjustment,
+        ),
+      ),
+      FlSpot(4, percentage), // Final stays at actual percentage
+    ];
+  }
+
+  // Calculate individual week value based on various factors
+  double _calculateWeekValue(
+    double baseValue,
+    double factor,
+    double gradeAdjustment,
+    double marksAdjustment,
+  ) {
+    // Apply adjustments based on grade and total marks
+    double adjustedValue =
+        baseValue * factor * gradeAdjustment * marksAdjustment;
+
+    // Ensure values stay between 0-100
+    return adjustedValue.clamp(0.0, 100.0);
+  }
+
+  // Get color based on grade
+  Color _getColorForGrade(String grade) {
+    switch (grade.toUpperCase()) {
+      case 'A':
+      case 'A+':
+        return const Color(0xFF4CAF50); // Green for top grades
+      case 'B':
+      case 'B+':
+        return const Color(0xFF4A80F0); // Blue for good grades
+      case 'C':
+      case 'C+':
+        return const Color(0xFFFFA726); // Orange for average grades
+      case 'D':
+      case 'D+':
+        return const Color(0xFFFF7043); // Light red for below average
+      default:
+        return const Color(0xFFF44336); // Red for failing grades
+    }
+  }
+
+  // Grade adjustment factor - better grades show more consistent progress
+  double _getGradeAdjustment(String grade) {
+    switch (grade.toUpperCase()) {
+      case 'A':
+      case 'A+':
+        return 1.2; // A students show faster early progress
+      case 'B':
+      case 'B+':
+        return 1.1;
+      case 'C':
+      case 'C+':
+        return 1.0; // Average
+      case 'D':
+      case 'D+':
+        return 0.9;
+      default:
+        return 0.8; // Struggling students show slower early progress
+    }
   }
 
   Widget _buildAssignmentTrack(String name) {
@@ -531,34 +645,314 @@ class _StudentDashboardState extends State<StudentDashboard> {
     String result,
     String remark,
   ) {
+    // Determine color scheme based on grade
+    Color primaryColor = _getGradeColor(grade);
+    Color secondaryColor = _getGradeSecondaryColor(grade);
+
+    // Determine result icon
+    IconData resultIcon =
+        result.toLowerCase().contains('pass')
+            ? Icons.check_circle_outline
+            : Icons.error_outline;
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.15),
+            spreadRadius: 2,
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
-      padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
+          // Header section with gradient
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [primaryColor, secondaryColor],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+              ),
+            ),
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.3),
+                    shape: BoxShape.circle,
+                  ),
+                  padding: const EdgeInsets.all(8),
+                  child: Icon(Icons.school, color: Colors.white, size: 24),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.3),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          result,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // Grade pill
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Text(
+                    grade,
+                    style: TextStyle(
+                      color: primaryColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-          SizedBox(height: 8),
-          Text('Total Marks: $totalMark'),
-          Text('Overall Percentage: $percentage%'),
-          Text('Grade: $grade'),
-          Text('Result: $result'),
-          SizedBox(height: 8),
-          Text('Remarks:'),
-          Text(remark),
+
+          // Main content
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Stats row
+                Row(
+                  children: [
+                    _buildStatItem(
+                      "Total Marks",
+                      totalMark.toString(),
+                      Icons.score,
+                      primaryColor.withOpacity(0.1),
+                      primaryColor,
+                    ),
+                    const SizedBox(width: 12),
+                    _buildStatItem(
+                      "Percentage",
+                      "${percentage.toStringAsFixed(1)}%",
+                      Icons.percent,
+                      primaryColor.withOpacity(0.1),
+                      primaryColor,
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 20),
+
+                // Progress indicator
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Performance",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey[600],
+                            fontSize: 14,
+                          ),
+                        ),
+                        Text(
+                          "${percentage.toStringAsFixed(1)}%",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: primaryColor,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: LinearProgressIndicator(
+                        value: percentage / 100,
+                        backgroundColor: Colors.grey[200],
+                        valueColor: AlwaysStoppedAnimation<Color>(primaryColor),
+                        minHeight: 8,
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 24),
+
+                // Remarks section
+                Container(
+                  decoration: BoxDecoration(
+                    color: primaryColor.withOpacity(0.05),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: primaryColor.withOpacity(0.2),
+                      width: 1,
+                    ),
+                  ),
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.comment, size: 16, color: primaryColor),
+                          const SizedBox(width: 8),
+                          Text(
+                            "Teacher's Remarks",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: Colors.grey[800],
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        remark,
+                        style: TextStyle(
+                          color: Colors.grey[700],
+                          fontSize: 14,
+                          height: 1.5,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
+  }
+
+  Widget _buildStatItem(
+    String label,
+    String value,
+    IconData icon,
+    Color bgColor,
+    Color iconColor,
+  ) {
+    return Expanded(
+      child: Container(
+        decoration: BoxDecoration(
+          color: bgColor,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 14),
+        child: Row(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: iconColor.withOpacity(0.2),
+                    blurRadius: 10,
+                    spreadRadius: 2,
+                  ),
+                ],
+              ),
+              padding: const EdgeInsets.all(8),
+              child: Icon(icon, color: iconColor, size: 18),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    value,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey[800],
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Color _getGradeColor(String grade) {
+    grade = grade.toUpperCase();
+    if (grade.startsWith('A')) return const Color(0xFF4CAF50); // Green
+    if (grade.startsWith('B')) return const Color(0xFF2196F3); // Blue
+    if (grade.startsWith('C')) return const Color(0xFFFFA726); // Orange
+    if (grade.startsWith('D')) return const Color(0xFFFF7043); // Light Red
+    return const Color(0xFFF44336); // Red for F and others
+  }
+
+  // Helper function to get secondary color based on grade
+  Color _getGradeSecondaryColor(String grade) {
+    grade = grade.toUpperCase();
+    if (grade.startsWith('A')) return const Color(0xFF66BB6A);
+    if (grade.startsWith('B')) return const Color(0xFF42A5F5);
+    if (grade.startsWith('C')) return const Color(0xFFFFB74D);
+    if (grade.startsWith('D')) return const Color(0xFFFF8A65);
+    return const Color(0xFFE57373);
   }
 
   Widget _buildSummaryReport() {
