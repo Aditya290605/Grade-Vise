@@ -211,6 +211,9 @@ class _MyGradesState extends State<MyGrades>
                             borderRadius: BorderRadius.circular(25),
                             color: const Color(0xFF4A80F0),
                           ),
+                          indicatorSize:
+                              TabBarIndicatorSize
+                                  .tab, // Adjusted to increase width
                           labelColor: Colors.white,
                           unselectedLabelColor: Colors.grey,
                           tabs: const [
@@ -222,7 +225,6 @@ class _MyGradesState extends State<MyGrades>
                           },
                         ),
                       ).animate().fadeIn(duration: 600.ms, delay: 800.ms),
-
                       // Tab View with reduced height to prevent overflow
                       SizedBox(
                         height: 400, // Reduced from 420 to prevent overflow

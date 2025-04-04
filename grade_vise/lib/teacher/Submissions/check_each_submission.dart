@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:grade_vise/services/firestore_methods.dart';
+import 'package:grade_vise/student/my_grades.dart';
 import 'package:grade_vise/teacher/submissions/ai_methods.dart';
 import 'package:grade_vise/teacher/submissions/pdf_to_text.dart';
 import 'package:grade_vise/widgets/simple_dailog.dart';
@@ -285,18 +286,7 @@ class _CheckeachsubmissionState extends State<Checkeachsubmission> {
                             ),
                           ),
                         ),
-                        Expanded(
-                          flex: 3,
-                          child: Text(
-                            'Check Status',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              letterSpacing: 0.5,
-                            ),
-                          ),
-                        ),
+
                         Expanded(
                           flex: 2,
                           child: Row(
@@ -367,33 +357,49 @@ class _CheckeachsubmissionState extends State<Checkeachsubmission> {
                                 child: CircularProgressIndicator(),
                               );
                             }
-                            return ExamListItem(
-                              title: snapshot.data!['name'],
-                              status:
-                                  users1.contains(snapshot.data!['uid'])
-                                      ? "completed"
-                                      : 'pending',
-                              check:
-                                  (!users.contains(snapshot.data!['uid']) &&
-                                          users1.contains(
-                                            snapshot.data!['uid'],
-                                          ))
-                                      ? Colors.green
-                                      : Colors.red,
-                              statusColor:
-                                  users1.contains(snapshot.data!['uid'])
-                                      ? Colors.green
-                                      : Colors.red,
-                              marks: aiMark == '' ? '0' : aiMark,
-                              shade: true,
-                              aiFeedback: aiMark,
-                              checkStatus:
-                                  (!users.contains(snapshot.data!['uid']) &&
-                                          users1.contains(
-                                            snapshot.data!['uid'],
-                                          ))
-                                      ? 'checked'
-                                      : 'unchecked',
+                            return InkWell(
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder:
+                                        (context) => MyGrades(
+                                          name: snapshot.data!['name'],
+                                          email: snapshot.data!['email'],
+                                          classroomId:
+                                              widget.snap1['classroomId'],
+                                          uid: snapshot.data!['uid'],
+                                        ),
+                                  ),
+                                );
+                              },
+                              child: ExamListItem(
+                                title: snapshot.data!['name'],
+                                status:
+                                    users1.contains(snapshot.data!['uid'])
+                                        ? "completed"
+                                        : 'pending',
+                                check:
+                                    (!users.contains(snapshot.data!['uid']) &&
+                                            users1.contains(
+                                              snapshot.data!['uid'],
+                                            ))
+                                        ? Colors.green
+                                        : Colors.red,
+                                statusColor:
+                                    users1.contains(snapshot.data!['uid'])
+                                        ? Colors.green
+                                        : Colors.red,
+                                marks: aiMark == '' ? '0' : aiMark,
+                                shade: true,
+                                aiFeedback: aiMark,
+                                checkStatus:
+                                    (!users.contains(snapshot.data!['uid']) &&
+                                            users1.contains(
+                                              snapshot.data!['uid'],
+                                            ))
+                                        ? 'checked'
+                                        : 'unchecked',
+                              ),
                             );
                           },
                         );
@@ -679,48 +685,50 @@ class ExamListItem extends StatelessWidget {
         children: [
           Row(
             children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w500,
-                  fontSize: 15,
-                ),
-              ),
-              SizedBox(width: MediaQuery.of(context).size.width * 0.15),
               Expanded(
-                flex: 2,
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 50),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: check,
-                      borderRadius: BorderRadius.circular(8),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          spreadRadius: 0,
-                          blurRadius: 3,
-                          offset: const Offset(0, 1),
-                        ),
-                      ],
-                    ),
-                    child: Text(
-                      checkStatus,
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 15,
                   ),
                 ),
               ),
+              SizedBox(width: MediaQuery.of(context).size.width * 0.15),
+              // Expanded(
+              // flex: 2,
+              // child: Padding(
+              // padding: const EdgeInsets.only(right: 50),
+              // child: Container(
+              // padding: const EdgeInsets.symmetric(
+              // horizontal: 12,
+              // vertical: 8,
+              // ),
+              // decoration: BoxDecoration(
+              // color: check,
+              // borderRadius: BorderRadius.circular(8),
+              // boxShadow: [
+              // BoxShadow(
+              // color: Colors.black.withOpacity(0.1),
+              // spreadRadius: 0,
+              // blurRadius: 3,
+              // offset: const Offset(0, 1),
+              // ),
+              // ],
+              // ),
+              // child: Text(
+              // checkStatus,
+              // style: const TextStyle(
+              // color: Colors.black,
+              // fontWeight: FontWeight.w600,
+              // fontSize: 14,
+              // ),
+              // textAlign: TextAlign.center,
+              // ),
+              // ),
+              // ),
+              // ),
               Expanded(
                 flex: 2,
                 child: Container(
