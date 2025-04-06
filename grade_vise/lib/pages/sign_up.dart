@@ -212,7 +212,7 @@ class _SignUpState extends State<SignUp> with TickerProviderStateMixin {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Text(
-                  "Hello Student",
+                  "Grade Vise",
                   style: Theme.of(context).textTheme.titleLarge!.copyWith(
                     color: Colors.white,
                     fontFamily: sourceSans,
