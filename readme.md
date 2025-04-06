@@ -7,7 +7,7 @@
 
 **Solution**: GradeVise is an Android app built to reduce the burden of manual grading for teachers and provide students with personalized, AI-driven feedback on their assignments. Through smart features like classroom creation, answer key uploads, and automated evaluation, the app enables educators to save time and focus more on teaching. Students, on the other hand, receive instant performance reports, progress-tracking visuals, and tailored learning resources like topic summaries, videos, and model papers—making exam prep smarter and more effective. GradeVise supports the United Nations Sustainable Development Goals of Quality Education and Reduced Inequalities, aiming to bring smart, scalable education solutions to classrooms of all sizes.
 
-A **Google Solution Challenge Project'25** Organised By Google Developer Student Clubs Project by **Team Innovex Squad From Deogiri Institute of Engineering And Management Studies | Goverment College of Engineering Chh. Sambhajinagar | Vishwakarma Institute of Technology Pune.**
+A **Google Solution Challenge Project'25** Organised By Google Developer Student Clubs Project by **Team GradeVise Squad From Deogiri Institute of Engineering And Management Studies | Goverment College of Engineering Chh. Sambhajinagar | Vishwakarma Institute of Technology Pune.**
 
 ## Intro To GradeVise Video
 
@@ -108,53 +108,6 @@ flutter run
 ## 🛳 User Guide
 
 ### Walkthrough
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-    }
-    h2 {
-      text-align: center;
-      margin-top: 40px;
-    }
-    table {
-      width: 95%;
-      margin: 0 auto 50px auto;
-      border-collapse: separate;
-      border-spacing: 20px;
-    }
-    td {
-      text-align: center;
-      vertical-align: top;
-      padding: 20px;
-      background-color: #f9f9f9;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-    img {
-      width: 150px;
-      height: auto;
-      border-radius: 8px;
-      margin-bottom: 10px;
-    }
-    b {
-      display: block;
-      margin: 10px 0 5px;
-      font-size: 16px;
-    }
-    .section-title {
-      font-size: 24px;
-      font-weight: bold;
-      color: #333;
-      margin-bottom: 10px;
-    }
-  </style>
-</head>
-<body>
 
   <h2>Teacher Section</h2>
   <table>
@@ -333,4 +286,4 @@ We are a team from Deogiri Institute of Engineering And Management Studies Chh. 
 
 ## Happy Innovating 💯
 
-Made with love from [Innovex]() ❤️
+Made with love from [GradeVise]() ❤️
