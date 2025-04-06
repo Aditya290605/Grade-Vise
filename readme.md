@@ -105,6 +105,7 @@ flutter run
 ### Walkthrough
 
 <table style="width: 100%;">
+  <tr>Teacher Section</tr>
   <tr>
     <td align="center" width="25%">
       <img src="https://i.postimg.cc/Bbc77H74/Whats-App-Image-2025-04-05-at-22-45-21-5fcf6f4d.jpg" width="120"/><br>
@@ -151,70 +152,97 @@ flutter run
   </tr>
   <tr>
     <td align="center" width="25%">
-      <img src="https://i.postimg.cc/FHfvDbJ0/Screenshot-1743879382.png" width="120"/><br>
+      <img src="https://i.postimg.cc/50sCmbcs/Screenshot-1743879938.png" width="120"/><br>
+      <b>Submission Page</b><br>
+    Teachers can view submissions of students.
+    </td>
+    <td align="center" width="25%">
+      <img src="https://i.postimg.cc/BvHTGdrg/Screenshot-1743923745.png" width="120"/><br>
+      <b>Check with AI</b><br>
+      Teachers can view submissions list and can check with AI
+    </td>
+    <td align="center" width="25%">
+      <img src="https://i.postimg.cc/66nm0pYH/Screenshot-1743923732.png" width="120"/><br>
+      <b>Grading Page</b><br>
+       Teacher can view the no of students activity ratio and their grading with summary report
+    </td>
+    <td align="center" width="25%">
+      <img src="https://i.postimg.cc/Zqzc08h4/Screenshot-1743925016.png" width="120"/><br>
+      <b>Summary report</b><br>
+      Teacher can view each student profile and track his/her performance
+    </td>
+  </tr><br>
+  <tr>
+    <br>
+    <tr><b>Student Section</b></tr>
+    <td align="center" width="25%">
+      <img src="https://i.postimg.cc/k5btRGmC/Screenshot-1743929335.png" width="120"/><br>
+      <b>Student home page</b><br>
+      Allows student to join classrooms by entering classroom code
+    </td>
+    <td align="center" width="25%">
+      <img src="https://i.postimg.cc/pd44k048/Screenshot-1743929447.png" width="120"/><br>
+      <b>Student classroom details</b><br>
+      Students can view ,submit assignements and see thier performance.
+    </td>
+    <td align="center" width="25%">
+      <img src="https://i.postimg.cc/9XRTvLS0/Screenshot-1743929510.png" width="120"/><br>
       <b>Assignments page</b><br>
-    Teachers can create and view their assignments.
+      Students can view the assignments uploaded and submit them.
     </td>
     <td align="center" width="25%">
-      <img src="https://i.postimg.cc/JzdNW8n9/Screenshot-1743879456.png" width="120"/><br>
-      <b>Create assignment</b><br>
-      Teachers can create assignments and upload them to students.
-    </td>
-    <td align="center" width="25%">
-      <img src="https://spoonshare.vercel.app/images/donation.png" width="120"/><br>
-      <b>Assignment list</b><br>
-       Teacher can view the who submitted the assignments.
-    </td>
-    <td align="center" width="25%">
-      <img src="https://i.postimg.cc/xjhD8pWp/freewater.png" width="120"/><br>
-      <b>Share Water Facilities Screen</b><br>
-      Individuals can share free water facilities available at public places like bus stands by filling out a form.
+      <img src="https://i.postimg.cc/CxW9sPW8/Screenshot-1743929649.png" width="120"/><br>
+      <b>Assignment details</b><br>
+      Student can view details of assignment
     </td>
   </tr>
   <tr>
     <td align="center" width="25%">
-      <img src="https://i.postimg.cc/YC1JX1dp/join.png" width="120"/><br>
-      <b>Join Us Page</b><br>
-      Allows users to volunteer for community work or join as an NGO for collaborative efforts.
+      <img src="https://i.postimg.cc/6p5rqnzG/Screenshot-1743929722.png" width="120"/><br>
+      <b>Upload assignments</b><br>
+      Students can submit details and upload assignments
     </td>
     <td align="center" width="25%">
-      <img src="https://i.postimg.cc/431dw6Rt/Volunteer.png" width="120"/><br>
-      <b>Volunteer Form Screen</b><br>
-      Individuals can join the SpoonShare initiative by filling out a volunteer form.
+      <img src="https://i.postimg.cc/Gh3K8Wm2/Screenshot-1743929972.png" width="120"/><br>
+      <b>Submission page</b><br>
+      Student can see their submitted assignment and view feedback
     </td>
     <td align="center" width="25%">
-      <img src="https://i.postimg.cc/vmF30DKs/NGO-FORM-PAGE.png" width="120"/><br>
-      <b>NGO Form Screen</b><br>
-      NGOs can join the SpoonShare initiative by filling out an NGO form.
+      <img src="https://i.postimg.cc/R08fFYbW/Screenshot-1743930150.png" width="120"/><br>
+      <b>Feedback page</b><br>
+      Student can view their personalized feedback on assignment.
     </td>
     <td align="center" width="25%">
-      <img src="https://i.postimg.cc/CL0GxNLT/Black-bezzel-3.png" width="120"/><br>
-      <b>Admin Dashboard Screen</b><br>
-      Admin can manage all operations, including verifying and managing NGOs.
+      <img src="https://i.postimg.cc/9XpWW7k9/Screenshot-1743930425.png" width="120"/><br>
+      <b>Query doubt page</b></br>
+      Student can ask for clearification of marks
     </td>
+   
   </tr>
-  <tr>
+   <tr>
+    <br>
+    <tr><b></b></tr>
     <td align="center" width="25%">
-      <img src="https://i.postimg.cc/4xNpzx9W/Black-bezzel-2.png" width="120"/><br>
-      <b>Verify Free Food/Donate Food</b><br>
-      Admin ensures authenticity by verifying food listings before they appear on the app.
+      <img src="https://i.postimg.cc/GhLSC80H/Screenshot-1743930698.png" width="120"/><br>
+      <b>Student Performance</b><br>
+      Allows student to view his performance in assignment
     </td>
     <td align="center" width="25%">
-      <img src="https://i.postimg.cc/MHpr8Lwm/Black-bezzel-4.png" width="120"/><br>
-      <b>Recycle Screen</b><br>
-      Connect with biogas plants for responsible disposal of expired food items
+      <img src="https://i.postimg.cc/GhD9b2kn/Screenshot-1743930941.png" width="120"/><br>
+      <b>Student summary report</b><br>
+      Students can view his summary report of all past assignments
     </td>
     <td align="center" width="25%">
-      <img src="https://i.postimg.cc/GmYv7jD7/Black-bezzel-6.png " width="120"/><br>
-      <b>Recycle Form Screen</b><br>
-      Individuals can share food for recycling by filling information about food types & location.
+      <img src="https://i.postimg.cc/fRh7N1S5/Screenshot-1743931090.png" width="120"/><br>
+      <b>Student lists</b><br>
+      Students list in the classroom
     </td>
     <td align="center" width="25%">
-      <img src="https://i.postimg.cc/50r1T8dy/Black-bezzel-5.png" width="120"/><br>
-      <b>User Profile Screen</b></br>
-      User Profile where user can see it and edit it also as per this convenience
+      <img src="https://i.postimg.cc/VsnJgLD6/Screenshot-1743931134.png" width="120"/><br>
+      <b>Profile</b><br>
+      Student profile page
     </td>
-    <td colspan="2"></td>
+     <td colspan="2"></td>
   </tr>
 </table>
 
@@ -226,7 +254,7 @@ flutter run
 ## Tech Stack
 **Technologies involved/used:**
 
-![Archtectural-diagram.png]()
+![Archtectural-diagram.png](https://i.postimg.cc/hjd0hFWh/image.png)
 
 # GradeVise Project Implementation Overview
 
