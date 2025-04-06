@@ -11,7 +11,7 @@ A **Google Solution Challenge Project'25** Organised By Google Developer Student
 
 ## Intro To GradeVise Video
 
-[![Intro To GradeVise](https://i.postimg.cc/sDBW8dcM/Whats-App-Image-2025-04-05-at-22-51-26-5836319e.jpg)
+[![Intro To GradeVise](https://i.postimg.cc/Gh342myp/Whats-App-Image-2025-04-06-at-23-42-49-d452082f.jpg)
 ](https://www.youtube.com/watch?v=-EBxBWZGXAc)
 
 
