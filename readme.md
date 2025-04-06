@@ -37,18 +37,23 @@ Join us in the mission to shape the future of education and let's change the way
 > [!IMPORTANT]  
 > Our application requires Internet connection and required permission to run properly.
 
-1. Download & Install : [Get It From drive]()
+1. Download & Install : [Get It From drive](https://drive.google.com/file/d/1pQrHT9KV36237QOUuv61mOhHCFmXhsGU/view)
 2. Run the downloaded file on your adnroid phone!
 3. Test Credentials :
- Email: **
- Password: **
+ (For teacher)
+ Email: *teacher@gmail.com*
+ Password: *teacher@123*
+
+(For Student)
+ Email: *student@gmail.com*
+ Password: *teacher@123*
 
 
 
 
 ## 📊 Public Opinion
 
-#### 150+ teachers from 4️⃣colleges and peoples surveyed across the city. 
+#### 120+ teachers from 4️⃣colleges and peoples surveyed across the city. 
 
 <hr>
 
@@ -57,23 +62,23 @@ Join us in the mission to shape the future of education and let's change the way
     <p>➡ Overall, our research highlighted the urgent need to reduce the burden on educators and improve access to personalized learning, and GradeVise emerged as a solution-driven platform to make a meaningful impact on this critical aspect of education.</p>
     <p>➡ We also conducted a survey to get community response for some sought after features listed below.</p>
     <td>
-      <img src="https://i.postimg.cc/W3G7KRwR/image.png" alt="Image 1" style="width: 100%;">
+      <img src="https://i.postimg.cc/022ZV6k7/image.png" alt="Image 1" style="width: 100%;">
     </td>
     <td>
-      <img src="https://i.postimg.cc/yYmkZ1YC/image.png" alt="Image 8" style="width: 100%;">
+      <img src="https://i.postimg.cc/kgwyK73f/image.png" alt="Image 8" style="width: 100%;">
     </td>
   </tr>
   <tr> 
     <td style="text-align: center;">
-      <img src="https://i.postimg.cc/G3jW86wS/image.png" alt="Image 2" style="width: 100%;">  
+      <img src="https://i.postimg.cc/VL2w1PHZ/image.png" alt="Image 2" style="width: 100%;">  
     </td>
     <td style="text-align: center;">
-      <img src="https://i.postimg.cc/SKqLM1pD/image.png" alt="Image 3" style="width: 100%;">
+      <img src="https://i.postimg.cc/cLNDQd9n/image.png" alt="Image 3" style="width: 100%;">
     </td>
   </tr>
   <tr>
    <td style="text-align: center;">
-      <img src="https://i.postimg.cc/WpJ7xkSm/image.png" alt="Image 3" style="width: 100%;">
+      <img src="https://i.postimg.cc/Xvh3NZL5/image.png" alt="Image 3" style="width: 100%;">
     </td>
     <td align="center">
       <a href="https://docs.google.com/spreadsheets/d/1mDisssUl-5h-kVRBRd29ltHKOC08Ko6KO7_VuSoUrqk/edit?usp=sharing" target="_blank">
@@ -104,147 +109,196 @@ flutter run
 
 ### Walkthrough
 
-<table style="width: 100%;">
-  <tr>Teacher Section</tr>
-  <tr>
-    <td align="center" width="25%">
-      <img src="https://i.postimg.cc/Bbc77H74/Whats-App-Image-2025-04-05-at-22-45-21-5fcf6f4d.jpg" width="120"/><br>
-      <b>Splash Screen</b><br>
-      Displays the GradeVise logo upon app launch.
-    </td>
-    <td align="center" width="25%">
-      <img src="https://i.postimg.cc/7hfM07vK/Screenshot-1743878340.png" width="120"/><br>
-      <b>Signup Screen</b><br>
-       Create an account manually or can  using Google credentials.
-    </td>
-    <td align="center" width="25%">
-      <img src="https://i.postimg.cc/kMS5XcpD/Screenshot-1743878604.png" width="120"/><br>
-      <b>Signin Screen</b><br>
-       Log in via email or continue using Google credentials.
-    </td>
-    <td align="center" width="25%">
-      <img src="https://i.postimg.cc/zfDbPc8V/Screenshot-1743878805.png" width="120"/><br>
-      <b>Choose role</b><br>
-      Asks to select your role weather you are teacher or student 
-    </td>
-  </tr>
-  <tr>
-    <td align="center" width="25%">
-      <img src="https://i.postimg.cc/cLt017hX/Screenshot-1743879052.png" width="120"/><br>
-      <b>Home page</b><br>
-      Teachers can see the classroom and create new classrooms
-    </td>
-    <td align="center" width="25%">
-      <img src="https://i.postimg.cc/8cGmcbLW/Screenshot-1743879143.png" width="120"/><br>
-      <b>Classroom details page </b><br>
-      Contains various details of classroom and tabs like assignements feedback submission etc.
-    </td>
-     <td align="center" width="25%">
-      <img src="https://i.postimg.cc/FHfvDbJ0/Screenshot-1743879382.png" width="120"/><br>
-      <b>Assignments page</b><br>
-    Teachers can create and view their assignments.
-    </td>
-     <td align="center" width="25%">
-      <img src="https://i.postimg.cc/0NDTRfvm/Screenshot-1743879788.png" width="120"/><br>
-      <b>Assignments list</b><br>
-    Teachers can view submissions of students.
-    </td>
-  </tr>
-  <tr>
-    <td align="center" width="25%">
-      <img src="https://i.postimg.cc/50sCmbcs/Screenshot-1743879938.png" width="120"/><br>
-      <b>Submission Page</b><br>
-    Teachers can view submissions of students.
-    </td>
-    <td align="center" width="25%">
-      <img src="https://i.postimg.cc/BvHTGdrg/Screenshot-1743923745.png" width="120"/><br>
-      <b>Check with AI</b><br>
-      Teachers can view submissions list and can check with AI
-    </td>
-    <td align="center" width="25%">
-      <img src="https://i.postimg.cc/66nm0pYH/Screenshot-1743923732.png" width="120"/><br>
-      <b>Grading Page</b><br>
-       Teacher can view the no of students activity ratio and their grading with summary report
-    </td>
-    <td align="center" width="25%">
-      <img src="https://i.postimg.cc/Zqzc08h4/Screenshot-1743925016.png" width="120"/><br>
-      <b>Summary report</b><br>
-      Teacher can view each student profile and track his/her performance
-    </td>
-  </tr><br>
-  <tr>
-    <br>
-    <tr><b>Student Section</b></tr>
-    <td align="center" width="25%">
-      <img src="https://i.postimg.cc/k5btRGmC/Screenshot-1743929335.png" width="120"/><br>
-      <b>Student home page</b><br>
-      Allows student to join classrooms by entering classroom code
-    </td>
-    <td align="center" width="25%">
-      <img src="https://i.postimg.cc/pd44k048/Screenshot-1743929447.png" width="120"/><br>
-      <b>Student classroom details</b><br>
-      Students can view ,submit assignements and see thier performance.
-    </td>
-    <td align="center" width="25%">
-      <img src="https://i.postimg.cc/9XRTvLS0/Screenshot-1743929510.png" width="120"/><br>
-      <b>Assignments page</b><br>
-      Students can view the assignments uploaded and submit them.
-    </td>
-    <td align="center" width="25%">
-      <img src="https://i.postimg.cc/CxW9sPW8/Screenshot-1743929649.png" width="120"/><br>
-      <b>Assignment details</b><br>
-      Student can view details of assignment
-    </td>
-  </tr>
-  <tr>
-    <td align="center" width="25%">
-      <img src="https://i.postimg.cc/6p5rqnzG/Screenshot-1743929722.png" width="120"/><br>
-      <b>Upload assignments</b><br>
-      Students can submit details and upload assignments
-    </td>
-    <td align="center" width="25%">
-      <img src="https://i.postimg.cc/Gh3K8Wm2/Screenshot-1743929972.png" width="120"/><br>
-      <b>Submission page</b><br>
-      Student can see their submitted assignment and view feedback
-    </td>
-    <td align="center" width="25%">
-      <img src="https://i.postimg.cc/R08fFYbW/Screenshot-1743930150.png" width="120"/><br>
-      <b>Feedback page</b><br>
-      Student can view their personalized feedback on assignment.
-    </td>
-    <td align="center" width="25%">
-      <img src="https://i.postimg.cc/9XpWW7k9/Screenshot-1743930425.png" width="120"/><br>
-      <b>Query doubt page</b></br>
-      Student can ask for clearification of marks
-    </td>
-   
-  </tr>
-   <tr>
-    <br>
-    <tr><b></b></tr>
-    <td align="center" width="25%">
-      <img src="https://i.postimg.cc/GhLSC80H/Screenshot-1743930698.png" width="120"/><br>
-      <b>Student Performance</b><br>
-      Allows student to view his performance in assignment
-    </td>
-    <td align="center" width="25%">
-      <img src="https://i.postimg.cc/GhD9b2kn/Screenshot-1743930941.png" width="120"/><br>
-      <b>Student summary report</b><br>
-      Students can view his summary report of all past assignments
-    </td>
-    <td align="center" width="25%">
-      <img src="https://i.postimg.cc/fRh7N1S5/Screenshot-1743931090.png" width="120"/><br>
-      <b>Student lists</b><br>
-      Students list in the classroom
-    </td>
-    <td align="center" width="25%">
-      <img src="https://i.postimg.cc/VsnJgLD6/Screenshot-1743931134.png" width="120"/><br>
-      <b>Profile</b><br>
-      Student profile page
-    </td>
-     <td colspan="2"></td>
-  </tr>
-</table>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    h2 {
+      text-align: center;
+      margin-top: 40px;
+    }
+    table {
+      width: 95%;
+      margin: 0 auto 50px auto;
+      border-collapse: separate;
+      border-spacing: 20px;
+    }
+    td {
+      text-align: center;
+      vertical-align: top;
+      padding: 20px;
+      background-color: #f9f9f9;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    img {
+      width: 150px;
+      height: auto;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+    b {
+      display: block;
+      margin: 10px 0 5px;
+      font-size: 16px;
+    }
+    .section-title {
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Teacher Section</h2>
+  <table>
+    <tr>
+      <td>
+        <img src="https://i.postimg.cc/Bbc77H74/Whats-App-Image-2025-04-05-at-22-45-21-5fcf6f4d.jpg" />
+        <b>Splash Screen</b>
+        Displays the GradeVise logo upon app launch.
+      </td>
+      <td>
+        <img src="https://i.postimg.cc/7hfM07vK/Screenshot-1743878340.png" />
+        <b>Signup Screen</b>
+        Create an account manually or using Google credentials.
+      </td>
+      <td>
+        <img src="https://i.postimg.cc/kMS5XcpD/Screenshot-1743878604.png" />
+        <b>Signin Screen</b>
+        Log in via email or continue using Google credentials.
+      </td>
+      <td>
+        <img src="https://i.postimg.cc/zfDbPc8V/Screenshot-1743878805.png" />
+        <b>Choose Role</b>
+        Select your role - Teacher or Student.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <img src="https://i.postimg.cc/cLt017hX/Screenshot-1743879052.png" />
+        <b>Home Page</b>
+        View and create classrooms.
+      </td>
+      <td>
+        <img src="https://i.postimg.cc/8cGmcbLW/Screenshot-1743879143.png" />
+        <b>Classroom Details</b>
+        View assignments, feedback, submissions, etc.
+      </td>
+      <td>
+        <img src="https://i.postimg.cc/FHfvDbJ0/Screenshot-1743879382.png" />
+        <b>Assignments Page</b>
+        Create and manage assignments.
+      </td>
+      <td>
+        <img src="https://i.postimg.cc/0NDTRfvm/Screenshot-1743879788.png" />
+        <b>Assignments List</b>
+        View submissions from students.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <img src="https://i.postimg.cc/50sCmbcs/Screenshot-1743879938.png" />
+        <b>Submission Page</b>
+        Review student submissions.
+      </td>
+      <td>
+        <img src="https://i.postimg.cc/BvHTGdrg/Screenshot-1743923745.png" />
+        <b>Check with AI</b>
+        Use AI to evaluate assignments.
+      </td>
+      <td>
+        <img src="https://i.postimg.cc/66nm0pYH/Screenshot-1743923732.png" />
+        <b>Grading Page</b>
+        Track activity and grading summary.
+      </td>
+      <td>
+        <img src="https://i.postimg.cc/Zqzc08h4/Screenshot-1743925016.png" />
+        <b>Summary Report</b>
+        View performance of each student.
+      </td>
+    </tr>
+  </table>
+
+  <h2>Student Section</h2>
+  <table>
+    <tr>
+      <td>
+        <img src="https://i.postimg.cc/k5btRGmC/Screenshot-1743929335.png" />
+        <b>Student Home Page</b>
+        Join classrooms with code.
+      </td>
+      <td>
+        <img src="https://i.postimg.cc/pd44k048/Screenshot-1743929447.png" />
+        <b>Classroom Details</b>
+        View, submit assignments, and performance.
+      </td>
+      <td>
+        <img src="https://i.postimg.cc/9XRTvLS0/Screenshot-1743929510.png" />
+        <b>Assignments Page</b>
+        View and submit assignments.
+      </td>
+      <td>
+        <img src="https://i.postimg.cc/CxW9sPW8/Screenshot-1743929649.png" />
+        <b>Assignment Details</b>
+        Detailed view of assignment info.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <img src="https://i.postimg.cc/6p5rqnzG/Screenshot-1743929722.png" />
+        <b>Upload Assignments</b>
+        Submit assignments with details.
+      </td>
+      <td>
+        <img src="https://i.postimg.cc/Gh3K8Wm2/Screenshot-1743929972.png" />
+        <b>Submission Page</b>
+        View submitted work and feedback.
+      </td>
+      <td>
+        <img src="https://i.postimg.cc/R08fFYbW/Screenshot-1743930150.png" />
+        <b>Feedback Page</b>
+        Personalized feedback on assignments.
+      </td>
+      <td>
+        <img src="https://i.postimg.cc/9XpWW7k9/Screenshot-1743930425.png" />
+        <b>Query Doubt Page</b>
+        Ask for clarification on marks.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <img src="https://i.postimg.cc/GhLSC80H/Screenshot-1743930698.png" />
+        <b>Performance Page</b>
+        Track performance in assignments.
+      </td>
+      <td>
+        <img src="https://i.postimg.cc/GhD9b2kn/Screenshot-1743930941.png" />
+        <b>Summary Report</b>
+        See a summary of all past submissions.
+      </td>
+      <td>
+        <img src="https://i.postimg.cc/fRh7N1S5/Screenshot-1743931090.png" />
+        <b>Student List</b>
+        View all students in classroom.
+      </td>
+      <td>
+        <img src="https://i.postimg.cc/VsnJgLD6/Screenshot-1743931134.png" />
+        <b>Profile Page</b>
+        View and manage student profile.
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>
+
 
 
 
