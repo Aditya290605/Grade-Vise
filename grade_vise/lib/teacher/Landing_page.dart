@@ -1,10 +1,15 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:grade_vise/screens/mobile_screen.dart';
+import 'package:grade_vise/teacher/main_page.dart';
 import 'package:grade_vise/utils/colors.dart';
 import 'package:grade_vise/utils/fonts.dart';
 import 'package:grade_vise/widgets/bottom_sheet.dart';
 import 'package:grade_vise/widgets/classroom_container.dart';
+import 'package:intl/intl.dart';
 
 class LandingPage extends StatelessWidget {
   const LandingPage({super.key});
@@ -88,30 +93,41 @@ class LandingPage extends StatelessWidget {
                                       color: Colors.white,
                                       borderRadius: BorderRadius.circular(20),
                                     ),
-                                    child: const Text(
-                                      '2020-2021',
+                                    child: Text(
+                                      '${int.parse(DateFormat('yyyy').format(DateTime.now()))}-${int.parse(DateFormat('yyyy').format(DateTime.now())) + 1}',
                                       style: TextStyle(
                                         fontSize: 16,
+                                        fontWeight: FontWeight.bold,
                                         color: Colors.black54,
                                       ),
                                     ),
                                   ),
                                 ],
                               ),
-                              Container(
-                                width: 60,
-                                height: 60,
-                                decoration: BoxDecoration(
-                                  color: Colors.grey.shade300,
-                                  image: DecorationImage(
-                                    fit: BoxFit.cover,
-                                    image: NetworkImage(
-                                      userData['photoURL'].isEmpty
-                                          ? "https://i.pinimg.com/474x/59/af/9c/59af9cd100daf9aa154cc753dd58316d.jpg"
-                                          : userData['photoURL'],
+                              InkWell(
+                                onTap: () async {
+                                  await FirebaseAuth.instance.signOut();
+                                  Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                      builder: (context) => MobileScreen(),
                                     ),
+                                  );
+                                },
+                                child: Container(
+                                  width: 60,
+                                  height: 60,
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey.shade300,
+                                    image: DecorationImage(
+                                      fit: BoxFit.cover,
+                                      image: NetworkImage(
+                                        userData['photoURL'].isEmpty
+                                            ? "https://i.pinimg.com/474x/59/af/9c/59af9cd100daf9aa154cc753dd58316d.jpg"
+                                            : userData['photoURL'],
+                                      ),
+                                    ),
+                                    shape: BoxShape.circle,
                                   ),
-                                  shape: BoxShape.circle,
                                 ),
                               ),
                             ],
@@ -145,15 +161,64 @@ class LandingPage extends StatelessWidget {
                                       horizontal: 15,
                                       vertical: 8,
                                     ),
-                                    child: ClassroomContainer(
-                                      classroomName:
-                                          snapshot.data!.docs[index]['name'],
-                                      room: snapshot.data!.docs[index]['room'],
-                                      section:
-                                          snapshot.data!.docs[index]['section'],
-                                      subject:
-                                          snapshot.data!.docs[index]['subject'],
-                                      color: containerColor,
+                                    child: InkWell(
+                                      splashColor: Colors.grey,
+                                      onTap: () async {
+                                        final snap =
+                                            await FirebaseFirestore.instance
+                                                .collection('users')
+                                                .doc(
+                                                  snapshot
+                                                      .data!
+                                                      .docs[index]['uid'],
+                                                )
+                                                .get();
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder:
+                                                (context) => MainPage(
+                                                  assignments:
+                                                      snapshot
+                                                          .data!
+                                                          .docs[index]['assignments']
+                                                          .length,
+                                                  students:
+                                                      snapshot
+                                                          .data!
+                                                          .docs[index]['users']
+                                                          .length,
+                                                  uid: snap.data()!['uid'],
+                                                  teacherPhoto:
+                                                      snap.data()!['photoURL'],
+                                                  username: userData['name'],
+                                                  userPhoto:
+                                                      userData['photoURL'],
+                                                  classroomId:
+                                                      snapshot
+                                                          .data!
+                                                          .docs[index]['classroomId'],
+                                                ),
+                                          ),
+                                        );
+                                      },
+                                      child: ClassroomContainer(
+                                        classroomName:
+                                            snapshot.data!.docs[index]['name'],
+                                        room:
+                                            snapshot.data!.docs[index]['room'],
+                                        section:
+                                            snapshot
+                                                .data!
+                                                .docs[index]['section'],
+                                        subject:
+                                            snapshot
+                                                .data!
+                                                .docs[index]['subject'],
+                                        color:
+                                            colors[Random().nextInt(
+                                              colors.length,
+                                            )],
+                                      ),
                                     ),
                                   );
                                 },
